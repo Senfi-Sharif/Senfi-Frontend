@@ -223,7 +223,7 @@ function HeroSection() {
       <div style={styles.heroContent}>
         <h1 style={styles.heroTitle}>{siteConfig.title}</h1>
         <p style={styles.heroSubtitle}>
-          نماینده رسمی دانشجویان دانشگاه صنعتی شریف در امور صنفی و رفاهی
+          پیگیر تمامی مسائل مربوط به صنف دانشجو
         </p>
         <div style={styles.heroButtons}>
           <Link
