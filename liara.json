@@ -1,0 +1,10 @@
+{
+  "platform": "react",
+  "build": {
+    "buildCommand": "npm run build",
+    "publishDirectory": "build"
+  },
+  "node": {
+    "version": "18"
+  }
+}
