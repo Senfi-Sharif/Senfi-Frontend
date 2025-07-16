@@ -141,7 +141,7 @@ export async function getPendingCampaigns() {
   
   let res;
   try {
-    res = await fetch(`${API_BASE}/api/user/pending-campaigns`, {
+    res = await fetch(`${API_BASE}/api/admin/campaigns`, {
       method: 'GET',
       headers: { 
         'Content-Type': 'application/json',

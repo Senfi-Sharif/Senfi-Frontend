@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useParams } from 'react-router-dom';
+
+const API_BASE = typeof process !== "undefined" && process.env && process.env.REACT_APP_API_BASE
+  ? process.env.REACT_APP_API_BASE
+  : "http://localhost:8000";
 
 const UserProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,16 +16,29 @@ const UserProfile: React.FC = () => {
       setLoading(true);
       setError('');
       try {
-        const token = localStorage.getItem('auth_token');
-        const apiBase = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_BASE)
-          ? process.env.REACT_APP_API_BASE
-          : "http://localhost:8000";
-        const res = await axios.get(`${apiBase}/api/auth/user/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError('توکن احراز هویت یافت نشد');
+          return;
+        }
+        
+        const res = await fetch(`${API_BASE}/api/auth/user/${id}`, {
+          method: 'GET',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
         });
-        setUser(res.data);
+        
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData?.detail || 'کاربر پیدا نشد یا خطا در دریافت اطلاعات کاربر');
+        }
+        
+        const data = await res.json();
+        setUser(data);
       } catch (err: any) {
-        setError(err?.response?.data?.detail || 'کاربر پیدا نشد یا خطا در دریافت اطلاعات کاربر');
+        setError(err?.message || 'کاربر پیدا نشد یا خطا در دریافت اطلاعات کاربر');
       } finally {
         setLoading(false);
       }

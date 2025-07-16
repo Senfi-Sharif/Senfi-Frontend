@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '@theme/Layout';
 import { useColorMode } from '@docusaurus/theme-common';
-import axios from 'axios';
+
+const API_BASE = typeof process !== "undefined" && process.env && process.env.REACT_APP_API_BASE
+  ? process.env.REACT_APP_API_BASE
+  : "http://localhost:8000";
 
 function getQueryParam(name: string) {
   if (typeof window === 'undefined') return null;
@@ -52,16 +55,30 @@ function UserProfileContent({ user, signedCampaigns, currentUser }) {
     setRoleSuccess('');
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.put(
-        `http://localhost:8000/api/user/${user.id}/role`,
-        { new_role: newRole },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      if (!token) {
+        setRoleError('توکن احراز هویت یافت نشد');
+        return;
+      }
+      
+      const res = await fetch(`${API_BASE}/api/user/${user.id}/role`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ new_role: newRole }),
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData?.detail || 'خطا در تغییر نقش');
+      }
+      
       setRoleSuccess('نقش با موفقیت تغییر کرد!');
       setShowRoleModal(false);
       user.role = newRole;
     } catch (err: any) {
-      setRoleError(err?.response?.data?.detail || 'خطا در تغییر نقش');
+      setRoleError(err?.message || 'خطا در تغییر نقش');
     } finally {
       setRoleLoading(false);
     }
@@ -179,18 +196,45 @@ const UserProfile: React.FC = () => {
       setError('');
       try {
         const token = localStorage.getItem('token');
+        if (!token) {
+          setError('توکن احراز هویت یافت نشد');
+          return;
+        }
+        
         const [userRes, campaignsRes] = await Promise.all([
-          axios.get(`http://localhost:8000/api/auth/user/${id}`, {
-            headers: { Authorization: `Bearer ${token}` }
+          fetch(`${API_BASE}/api/auth/user/${id}`, {
+            method: 'GET',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
           }),
-          axios.get(`http://localhost:8000/api/user/${id}/signed-campaigns`, {
-            headers: { Authorization: `Bearer ${token}` }
+          fetch(`${API_BASE}/api/user/${id}/signed-campaigns`, {
+            method: 'GET',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
           })
         ]);
-        setUser(userRes.data);
-        setSignedCampaigns(campaignsRes.data.campaigns || []);
+        
+        if (!userRes.ok) {
+          const errorData = await userRes.json().catch(() => ({}));
+          throw new Error(errorData?.detail || 'کاربر پیدا نشد یا خطا در دریافت اطلاعات کاربر');
+        }
+        
+        if (!campaignsRes.ok) {
+          const errorData = await campaignsRes.json().catch(() => ({}));
+          throw new Error(errorData?.detail || 'خطا در دریافت کارزارهای امضاشده');
+        }
+        
+        const userData = await userRes.json();
+        const campaignsData = await campaignsRes.json();
+        
+        setUser(userData);
+        setSignedCampaigns(campaignsData.campaigns || []);
       } catch (err: any) {
-        setError(err?.response?.data?.detail || 'کاربر پیدا نشد یا خطا در دریافت اطلاعات کاربر');
+        setError(err?.message || 'کاربر پیدا نشد یا خطا در دریافت اطلاعات کاربر');
       } finally {
         setLoading(false);
       }
@@ -200,8 +244,21 @@ const UserProfile: React.FC = () => {
     // Fetch current user info for role check
     const token = localStorage.getItem('token');
     if (token) {
-      axios.get('http://localhost:8000/api/auth/validate', { headers: { Authorization: `Bearer ${token}` } })
-        .then(res => setCurrentUser(res.data.user))
+      fetch(`${API_BASE}/api/auth/validate`, { 
+        method: 'GET',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        } 
+      })
+        .then(async res => {
+          if (res.ok) {
+            const data = await res.json();
+            setCurrentUser(data.user);
+          } else {
+            setCurrentUser(null);
+          }
+        })
         .catch(() => setCurrentUser(null));
     }
   }, [id]);

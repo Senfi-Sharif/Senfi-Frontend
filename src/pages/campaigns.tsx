@@ -14,7 +14,7 @@ const API_BASE = typeof process !== "undefined" && process.env && process.env.RE
 // تابع بررسی لاگین
 function isLoggedIn() {
   if (typeof window === 'undefined') return false;
-  return Boolean(localStorage.getItem('auth_token'));
+  return Boolean(localStorage.getItem('token'));
 }
 
 function HeaderBanner() {
