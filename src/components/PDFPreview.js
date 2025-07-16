@@ -11,17 +11,17 @@ export default function PDFPreview({ fileId }) {
       borderRadius: '0.5rem',
       overflow: 'hidden',
     }}>
-      <iframe
-        src={`https://drive.google.com/file/d/${fileId}/preview`}
+    <iframe
+      src={`https://drive.google.com/file/d/${fileId}/preview`}
         width="100%"
         height="100%"
-        allow="autoplay"
-        title="PDF Preview"
+      allow="autoplay"
+      title="PDF Preview"
         style={{ 
           border: "none",
           borderRadius: '0.5rem',
         }}
-      />
+    />
     </div>
   );
 }

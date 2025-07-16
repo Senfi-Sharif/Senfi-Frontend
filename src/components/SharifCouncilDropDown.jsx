@@ -3,29 +3,29 @@ import React, { useState } from "react";
 // استایل‌های مدرن و بهبود یافته
 const styles = {
   dropdownRoot: {
-    direction: 'rtl',
-    fontFamily: 'IRANYekan,Vazirmatn,Shabnam,Tahoma,Arial,sans-serif',
+  direction: 'rtl',
+  fontFamily: 'IRANYekan,Vazirmatn,Shabnam,Tahoma,Arial,sans-serif',
     margin: "2rem 0",
-    textAlign: 'center',
-    background: 'unset'
+  textAlign: 'center',
+  background: 'unset'
   },
   dropBtn: (isOpen) => ({
     margin: "0 auto 1.5rem auto",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
     gap: "0.75rem",
-    background: isOpen
+  background: isOpen
       ? "linear-gradient(135deg, var(--ifm-color-primary) 0%, var(--ifm-color-primary-dark) 100%)"
       : "linear-gradient(135deg, var(--ifm-color-primary-lightest) 0%, var(--ifm-color-primary-lighter) 100%)",
     color: isOpen ? "#fff" : "var(--ifm-color-primary-dark)",
-    border: "none",
+  border: "none",
     borderRadius: "1.5rem",
     fontSize: "1.1rem",
     fontWeight: 700,
-    fontFamily: "inherit",
+  fontFamily: "inherit",
     padding: "0.75rem 2rem",
-    cursor: "pointer",
+  cursor: "pointer",
     boxShadow: !isOpen ? "0 4px 20px rgba(0, 0, 0, 0.1)" : "0 2px 10px rgba(0, 0, 0, 0.2)",
     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
     outline: 'none',
@@ -37,7 +37,7 @@ const styles = {
   },
   dropArrow: (isOpen) => ({
     transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-    display: "inline-block",
+  display: "inline-block",
     transform: isOpen ? "rotate(-90deg)" : "rotate(0)",
     fontSize: '1rem',
   }),
@@ -76,7 +76,7 @@ const styles = {
     color: '#fff',
     fontWeight: 700,
     fontSize: "1rem",
-    fontFamily: 'inherit',
+  fontFamily: 'inherit',
     position: "relative",
     boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
   },
@@ -137,46 +137,46 @@ export default function SharifCouncilDropDown({ title, items = [], defaultOpen =
     <>
       <style>{animations}</style>
       <div style={styles.dropdownRoot}>
-        <button
+      <button
           style={{
             ...styles.dropBtn(open),
             ...(isButtonHovered && styles.dropBtnHover)
           }}
-          onClick={() => setOpen(o => !o)}
+        onClick={() => setOpen(o => !o)}
           onMouseEnter={() => setIsButtonHovered(true)}
           onMouseLeave={() => setIsButtonHovered(false)}
-          aria-expanded={open}
-          aria-controls={"drop-sec-" + title}
-        >
+        aria-expanded={open}
+        aria-controls={"drop-sec-" + title}
+      >
           <span style={styles.dropArrow(open)}>
             <svg width="20" height="12" viewBox="0 0 20 12">
               <path d="M2 2L10 10L18 2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
-            </svg>
-          </span>
-          {title}
-        </button>
-        {open && (
-          <div
-            id={"drop-sec-" + title}
+          </svg>
+        </span>
+        {title}
+      </button>
+      {open && (
+        <div
+          id={"drop-sec-" + title}
             style={styles.cardsContainer}
-          >
-            {items.map((group, idx) =>
-              <div
-                style={{
+        >
+          {items.map((group, idx) =>
+            <div
+              style={{
                   ...styles.cardStyle,
                   ...(hovered === idx && styles.cardHoverStyle)
-                }}
-                key={idx}
-                onMouseEnter={() => setHovered(idx)}
-                onMouseLeave={() => setHovered(null)}
-              >
+              }}
+              key={idx}
+              onMouseEnter={() => setHovered(idx)}
+              onMouseLeave={() => setHovered(null)}
+            >
                 <div style={styles.cardHeader}>
                   {group.type === "unit" ? 
                     <span style={styles.cardIcon}>🏢</span> : 
                     <span style={styles.cardIcon}>👥</span>
                   }
-                  {group.name}
-                </div>
+                {group.name}
+              </div>
                 <ul style={styles.memberList}>
                   {(group.members || []).map((mem, j) => {
                     const isMain = mem.type === "main" || mem.role === "دبیر";
@@ -189,17 +189,17 @@ export default function SharifCouncilDropDown({ title, items = [], defaultOpen =
                         }}
                       >
                         {isMain ? "⭐ " : ""}
-                        {mem.name}
-                        {mem.role ? ` (${mem.role})` : ""}
-                      </li>
+                    {mem.name}
+                    {mem.role ? ` (${mem.role})` : ""}
+                  </li>
                     );
                   })}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
     </>
   );
 }

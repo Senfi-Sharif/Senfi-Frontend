@@ -298,7 +298,7 @@ function LayoutContent(props) {
       {/* BG overlays end */}
 
       {/* کل محتوا میاد روی پس‌زمینه */}
-      <div style={{position: 'relative', zIndex: 1}}>
+      <div style={{position: 'relative', zIndex: 1}}> 
         {props.children}
       </div>
       {/* Modal ورود/ثبت‌نام */}

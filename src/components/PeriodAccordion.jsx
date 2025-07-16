@@ -77,32 +77,32 @@ export function PeriodAccordion({ title, children, defaultOpen = false, icon = "
   return (
     <>
       <style>{slideDownAnimation}</style>
-      <div style={{
+    <div style={{
         ...styles.container,
         ...(isHovered && !open && { transform: 'translateY(-2px)', boxShadow: '0 6px 25px rgba(0, 0, 0, 0.15)' })
-      }}>
-        <button
-          onClick={() => setOpen(o => !o)}
-          style={{
+    }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
             ...styles.button(open),
             ...(isHovered && styles.buttonHover)
           }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          aria-expanded={open}
-        >
+        aria-expanded={open}
+      >
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <span style={styles.icon}>{icon}</span>
             <span>{title}</span>
           </div>
           <span style={styles.arrow(open)}>▼</span>
-        </button>
-        {open && (
+      </button>
+      {open && (
           <div style={styles.content}>
-            {children}
-          </div>
-        )}
-      </div>
+          {children}
+        </div>
+      )}
+    </div>
     </>
   );
 }
