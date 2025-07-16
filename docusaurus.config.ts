@@ -31,14 +31,6 @@ const config: Config = {
           sidebarPath: require.resolve('./sidebars.ts'),
           editUrl: 'https://github.com/senfi-sharif/senfi-sharif.ir/tree/main/',
         },
-        blog: {
-          showReadingTime: true,
-          feedOptions: { type: ['rss', 'atom'], xslt: true },
-          editUrl: 'https://github.com/senfi-sharif/senfi-sharif.ir/tree/main/',
-          onInlineTags: 'warn',
-          onInlineAuthors: 'warn',
-          onUntruncatedBlogPosts: 'warn',
-        },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
@@ -47,12 +39,19 @@ const config: Config = {
   ],
   themeConfig: {    
     image: 'img/maini_colors.png',
+    colorMode: {
+      defaultMode: 'light',
+      disableSwitch: false,
+      respectPrefersColorScheme: true,
+    },
     navbar: {
       title: 'شورای صنفی دانشجویان دانشگاه صنعتی شریف',
       logo: { alt: 'My Site Logo', src: 'img/maini_colors.png' },
       items: [
         {to: '/tree', label: 'شجره‌نامه', position: 'left'},
         {to: '/publications', label: 'نشریه شورا', position: 'left'},
+        {to: '/campaigns', label: 'کارزارها', position: 'left'},
+        // دکمه ورود/ثبت‌نام حذف شد
       ],
     },
     footer: {
