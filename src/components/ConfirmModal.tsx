@@ -1,4 +1,5 @@
 import React from 'react';
+import { useColorMode } from '@docusaurus/theme-common';
 
 interface ConfirmModalProps {
   open: boolean;
@@ -21,11 +22,19 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   onCancel,
   loading = false,
 }) => {
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === 'dark';
+
   if (!open) return null;
 
   return (
     <div style={styles.overlay}>
-      <div style={styles.modal}>
+      <div style={{
+        ...styles.modal,
+        background: isDark ? 'var(--ifm-background-surface-color, #23263a)' : '#fff',
+        color: isDark ? 'var(--ifm-font-color-base, #f3f6fa)' : '#333',
+        border: isDark ? '1.5px solid #637eda' : 'none',
+      }}>
         <div style={styles.header}>{title}</div>
         <div style={styles.body}>{message}</div>
         <div style={styles.actions}>

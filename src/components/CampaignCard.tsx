@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useColorMode } from '@docusaurus/theme-common';
 import SignCampaignButtons from './SignCampaignButtons';
 import CampaignSignatures from './CampaignSignatures';
 import styles from '../css/campaignsStyles';
@@ -18,19 +19,33 @@ interface CampaignCardProps {
 
 const CampaignCard: React.FC<CampaignCardProps> = ({ c, isSigned = false, userRole, handleSetPending, handleSignSuccess }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === 'dark';
+  const cardBg = isDark ? 'rgba(30,34,54,0.98)' : 'rgba(255,255,255,0.95)';
+  const cardBorder = isDark ? '1.5px solid #637eda' : '1px solid #e0e7ff';
+  const textColor = isDark ? 'var(--ifm-font-color-base, #f3f6fa)' : '#222';
+  const metaColor = isDark ? 'var(--ifm-color-primary-lightest)' : 'var(--ifm-color-primary-dark)';
+
   return (
     <div
       key={c.id}
+      className="campaign-card"
       style={{
-        ...styles.campaignCard,
+        background: cardBg,
+        border: cardBorder,
+        borderRadius: 16,
+        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+        padding: 24,
+        marginBottom: 24,
+        color: textColor,
         ...(isHovered && styles.campaignCardHover)
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div style={styles.campaignTitle}>{c.title}</div>
-      <div style={styles.campaignDescription}>{c.description}</div>
-      <div style={styles.campaignMeta}>
+      <div style={{...styles.campaignTitle, color: textColor}}>{c.title}</div>
+      <div style={{...styles.campaignDescription, color: textColor}}>{c.description}</div>
+      <div style={{...styles.campaignMeta, color: metaColor}}>
         {c.email && <span>📧 ثبت‌کننده: {c.email} | </span>}
         {c.created_at && <span>📅 تاریخ: {formatDate(c.created_at)}</span>}
         {c.end_datetime && <span style={{marginRight: 8}}>⏰ پایان: {formatDate(c.end_datetime)}</span>}

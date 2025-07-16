@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useColorMode } from '@docusaurus/theme-common';
 
 // استایل‌های مدرن و بهبود یافته
 const styles = {
@@ -132,6 +133,8 @@ export default function SharifCouncilDropDown({ title, items = [], defaultOpen =
   const [open, setOpen] = useState(!!defaultOpen);
   const [hovered, setHovered] = useState(null);
   const [isButtonHovered, setIsButtonHovered] = useState(false);
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === 'dark';
 
   return (
     <>
@@ -140,7 +143,13 @@ export default function SharifCouncilDropDown({ title, items = [], defaultOpen =
       <button
           style={{
             ...styles.dropBtn(open),
-            ...(isButtonHovered && styles.dropBtnHover)
+            ...(isButtonHovered && styles.dropBtnHover),
+            background: open
+              ? 'linear-gradient(135deg, var(--ifm-color-primary) 0%, var(--ifm-color-primary-dark) 100%)'
+              : (isDark
+                  ? 'linear-gradient(135deg, #23263a 0%, #181a23 100%)'
+                  : 'linear-gradient(135deg, var(--ifm-color-primary-lightest) 0%, var(--ifm-color-primary-lighter) 100%)'),
+            color: open ? '#fff' : (isDark ? 'var(--ifm-color-primary-lightest)' : 'var(--ifm-color-primary-dark)'),
           }}
         onClick={() => setOpen(o => !o)}
           onMouseEnter={() => setIsButtonHovered(true)}
@@ -164,13 +173,22 @@ export default function SharifCouncilDropDown({ title, items = [], defaultOpen =
             <div
               style={{
                   ...styles.cardStyle,
-                  ...(hovered === idx && styles.cardHoverStyle)
+                  ...(hovered === idx && styles.cardHoverStyle),
+                  background: isDark ? 'rgba(30,34,54,0.95)' : 'rgba(255,255,255,0.9)',
+                  border: isDark ? '1px solid #637eda' : '1px solid var(--ifm-color-primary-lightest)',
+                  color: isDark ? 'var(--ifm-color-primary-lightest)' : 'var(--ifm-color-primary-dark)',
               }}
               key={idx}
               onMouseEnter={() => setHovered(idx)}
               onMouseLeave={() => setHovered(null)}
             >
-                <div style={styles.cardHeader}>
+                <div style={{
+                  ...styles.cardHeader,
+                  background: isDark
+                    ? 'linear-gradient(135deg, #23263a 0%, #181a23 100%)'
+                    : 'linear-gradient(135deg, var(--ifm-color-primary) 0%, var(--ifm-color-primary-light) 100%)',
+                  color: '#fff',
+                }}>
                   {group.type === "unit" ? 
                     <span style={styles.cardIcon}>🏢</span> : 
                     <span style={styles.cardIcon}>👥</span>
@@ -185,7 +203,16 @@ export default function SharifCouncilDropDown({ title, items = [], defaultOpen =
                         key={j} 
                         style={{
                           ...styles.memberStyle(isMain),
-                          ...(hovered === idx && isMain && styles.memberHover)
+                          ...(hovered === idx && isMain && styles.memberHover),
+                          background: isMain
+                            ? (isDark ? 'rgba(40,44,64,0.95)' : 'rgba(255,255,255,0.8)')
+                            : (isDark ? 'rgba(30,34,54,0.7)' : 'rgba(255,255,255,0.4)'),
+                          color: isMain
+                            ? (isDark ? 'var(--ifm-color-primary-lightest)' : 'var(--ifm-color-primary-darker)')
+                            : (isDark ? 'var(--ifm-color-primary-light)' : 'var(--ifm-color-primary-dark)'),
+                          border: isMain
+                            ? (isDark ? '1px solid #637eda' : '1px solid var(--ifm-color-primary-lightest)')
+                            : 'none',
                         }}
                       >
                         {isMain ? "⭐ " : ""}

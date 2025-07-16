@@ -5,6 +5,7 @@ import CampaignSignatures from './CampaignSignatures';
 import SignCampaignButtons from './SignCampaignButtons';
 import ConfirmModal from './ConfirmModal';
 import CampaignCard from './CampaignCard';
+import { useColorMode } from '@docusaurus/theme-common';
 
 const ApprovedCampaigns = () => {
   const [campaigns, setCampaigns] = useState([]);
@@ -20,6 +21,12 @@ const ApprovedCampaigns = () => {
   const [pendingId, setPendingId] = useState<number | null>(null);
   const [pendingLoading, setPendingLoading] = useState(false);
   const [search, setSearch] = useState('');
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === 'dark';
+  const containerBg = isDark ? 'rgba(24,26,38,0.98)' : 'rgba(255,255,255,0.95)';
+  const containerBorder = isDark ? '1.5px solid #637eda' : '1px solid #e0e7ff';
+  const innerBoxBg = isDark ? 'rgba(30,34,54,0.95)' : 'rgba(245,245,245,0.98)';
+  const innerBoxBorder = isDark ? '1px solid #637eda' : '1px solid #e0e7ff';
 
   React.useEffect(() => {
     setLoading(true);
@@ -144,7 +151,16 @@ const ApprovedCampaigns = () => {
   }
 
   return (
-    <div style={{padding: '1rem'}}>
+    <div
+      className="approved-campaigns-container"
+      style={{
+        borderRadius: 18,
+        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+        padding: 32,
+        marginBottom: 32,
+        // ...other styles
+      }}
+    >
       {/* سرچ بار */}
       <div style={{margin: '1.5rem 0', textAlign: 'center'}}>
         <input
@@ -196,7 +212,7 @@ const ApprovedCampaigns = () => {
       {/* Layout برای دسکتاپ */}
       <div className="desktop-layout" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem'}}>
         {/* بخش کارزارهای امضا نشده */}
-        <div style={{padding: '1rem', borderRadius: '8px', backgroundColor: '#f5f5f5'}}>
+        <div style={{padding: '1rem', borderRadius: '8px', background: innerBoxBg, border: innerBoxBorder}}>
           <h3 style={{fontSize: '1.2rem', marginBottom: '0.5rem'}}>
             📝 کارزارهای امضا نشده ({unsignedCampaigns.length})
           </h3>
@@ -213,7 +229,7 @@ const ApprovedCampaigns = () => {
           </div>
         </div>
         {/* بخش کارزارهای امضا شده */}
-        <div style={{padding: '1rem', borderRadius: '8px', backgroundColor: '#f5f5f5'}}>
+        <div style={{padding: '1rem', borderRadius: '8px', background: innerBoxBg, border: innerBoxBorder}}>
           <h3 style={{fontSize: '1.2rem', marginBottom: '0.5rem'}}>
             ✅ کارزارهای امضا شده ({signedCampaigns.length})
           </h3>
@@ -234,7 +250,7 @@ const ApprovedCampaigns = () => {
       <div className="mobile-layout" style={{display: 'block'}}>
         {/* کارزارهای امضا نشده (بالا) */}
         <div style={{marginBottom: '2rem'}}>
-          <div style={{padding: '1rem', borderRadius: '8px', backgroundColor: '#f5f5f5'}}>
+          <div style={{padding: '1rem', borderRadius: '8px', background: innerBoxBg, border: innerBoxBorder}}>
             <h3 style={{fontSize: '1.2rem', marginBottom: '0.5rem'}}>
               📝 کارزارهای امضا نشده ({unsignedCampaigns.length})
             </h3>
@@ -253,7 +269,7 @@ const ApprovedCampaigns = () => {
         </div>
         {/* کارزارهای امضا شده (پایین) */}
         <div>
-          <div style={{padding: '1rem', borderRadius: '8px', backgroundColor: '#f5f5f5'}}>
+          <div style={{padding: '1rem', borderRadius: '8px', background: innerBoxBg, border: innerBoxBorder}}>
             <h3 style={{fontSize: '1.2rem', marginBottom: '0.5rem'}}>
               ✅ کارزارهای امضا شده ({signedCampaigns.length})
             </h3>

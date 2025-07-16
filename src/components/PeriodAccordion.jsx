@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useColorMode } from '@docusaurus/theme-common';
 
 // استایل‌های مدرن و بهبود یافته
 const styles = {
@@ -73,18 +74,43 @@ const slideDownAnimation = `
 export function PeriodAccordion({ title, children, defaultOpen = false, icon = "📋" }) {
   const [open, setOpen] = useState(defaultOpen);
   const [isHovered, setIsHovered] = useState(false);
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === 'dark';
+
+  // Dynamic styles for dark mode
+  const containerBg = isDark ? 'rgba(20,22,34,0.98)' : 'rgba(255, 255, 255, 0.8)';
+  const containerBorder = isDark ? '1px solid #637eda' : '1px solid var(--ifm-color-primary-lightest)';
+  const buttonBg = open
+    ? (isDark
+        ? 'linear-gradient(135deg, #23263a 0%, #181a23 100%)'
+        : 'linear-gradient(135deg, var(--ifm-color-primary-lightest) 0%, var(--ifm-color-primary-lighter) 100%)')
+    : (isDark
+        ? 'rgba(30,34,54,0.95)'
+        : 'rgba(255, 255, 255, 0.9)');
+  const buttonColor = open
+    ? (isDark ? 'var(--ifm-color-primary-lightest)' : 'var(--ifm-color-primary-darker)')
+    : (isDark ? 'var(--ifm-color-primary-light)' : 'var(--ifm-color-primary-dark)');
+  const buttonHoverBg = isDark
+    ? 'linear-gradient(135deg, #23263a 0%, #181a23 100%)'
+    : 'linear-gradient(135deg, var(--ifm-color-primary-lightest) 0%, var(--ifm-color-primary-lighter) 100%)';
+  const contentBg = isDark ? 'rgba(30,34,54,0.85)' : 'rgba(255, 255, 255, 0.5)';
+  const arrowColor = isDark ? 'var(--ifm-color-primary-light)' : 'var(--ifm-color-primary)';
 
   return (
     <>
       <style>{slideDownAnimation}</style>
     <div style={{
         ...styles.container,
+        background: containerBg,
+        border: containerBorder,
         ...(isHovered && !open && { transform: 'translateY(-2px)', boxShadow: '0 6px 25px rgba(0, 0, 0, 0.15)' })
     }}>
       <button
         onClick={() => setOpen(o => !o)}
         style={{
             ...styles.button(open),
+            background: isHovered ? buttonHoverBg : buttonBg,
+            color: buttonColor,
             ...(isHovered && styles.buttonHover)
           }}
           onMouseEnter={() => setIsHovered(true)}
@@ -95,10 +121,10 @@ export function PeriodAccordion({ title, children, defaultOpen = false, icon = "
             <span style={styles.icon}>{icon}</span>
             <span>{title}</span>
           </div>
-          <span style={styles.arrow(open)}>▼</span>
+          <span style={{ ...styles.arrow(open), color: arrowColor }}>▼</span>
       </button>
       {open && (
-          <div style={styles.content}>
+          <div style={{ ...styles.content, background: contentBg }}>
           {children}
         </div>
       )}

@@ -26,25 +26,38 @@ function LayoutContent(props) {
   // مقداردهی اولیه و sync با localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('auth_token');
-      const email = localStorage.getItem('auth_email');
-      const role = localStorage.getItem('auth_role');
+      const token = localStorage.getItem('token');
+      const email = localStorage.getItem('email');
+      const role = localStorage.getItem('role');
       setIsLoggedIn(Boolean(token));
       setUserEmail(email || '');
       setUserRole(role || '');
     }
     // sync با تغییرات localStorage (مثلاً در تب دیگر)
     const handleStorage = () => {
-      const token = localStorage.getItem('auth_token');
-      const email = localStorage.getItem('auth_email');
-      const role = localStorage.getItem('auth_role');
+      const token = localStorage.getItem('token');
+      const email = localStorage.getItem('email');
+      const role = localStorage.getItem('role');
       setIsLoggedIn(Boolean(token));
       setUserEmail(email || '');
       setUserRole(role || '');
     };
+
+    // Handle auth logout event from auth.js
+    const handleAuthLogout = () => {
+      setIsLoggedIn(false);
+      setUserEmail('');
+      setUserRole('');
+      showNotification('جلسه شما منقضی شده است. به صفحه اصلی هدایت می‌شوید.', 'error');
+    };
+    
     window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
-  }, []);
+    window.addEventListener('auth:logout', handleAuthLogout);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('auth:logout', handleAuthLogout);
+    };
+  }, [showNotification]);
 
   // تایمر بررسی اعتبار توکن (هر 5 دقیقه)
   useEffect(() => {
@@ -55,9 +68,9 @@ function LayoutContent(props) {
         const isValid = await validateToken();
         if (!isValid) {
           // پاک کردن اطلاعات کاربر و خروج
-          localStorage.removeItem('auth_token');
-          localStorage.removeItem('auth_email');
-          localStorage.removeItem('auth_role');
+          localStorage.removeItem('token');
+          localStorage.removeItem('email');
+          localStorage.removeItem('role');
           setIsLoggedIn(false);
           setUserEmail('');
           setUserRole('');
@@ -69,9 +82,9 @@ function LayoutContent(props) {
         }
       } catch (err) {
         // در صورت خطا، کاربر را خارج می‌کنیم
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('auth_email');
-        localStorage.removeItem('auth_role');
+        localStorage.removeItem('token');
+        localStorage.removeItem('email');
+        localStorage.removeItem('role');
         setIsLoggedIn(false);
         setUserEmail('');
         setUserRole('');
@@ -184,9 +197,9 @@ function LayoutContent(props) {
       const res = await login(email, password);
       if (res.success && res.token) {
         // ذخیره توکن، ایمیل و نقش در localStorage
-        localStorage.setItem('auth_token', res.token);
-        localStorage.setItem('auth_email', email);
-        localStorage.setItem('auth_role', res.user?.role || '');
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('email', email);
+        localStorage.setItem('role', res.user?.role || '');
         setIsLoggedIn(true);
         setUserEmail(email);
         setUserRole(res.user?.role || '');
@@ -219,9 +232,9 @@ function LayoutContent(props) {
 
   // تابع خروج
   const handleLogout = () => {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('auth_email');
-    localStorage.removeItem('auth_role');
+    localStorage.removeItem('token');
+    localStorage.removeItem('email');
+    localStorage.removeItem('role');
     setIsLoggedIn(false);
     setUserEmail('');
     setUserRole('');
@@ -307,7 +320,7 @@ function LayoutContent(props) {
         {step === 1 && (
           <form style={{display:'flex', flexDirection:'column', gap:14}} onSubmit={handleEmailSubmit}>
             <label style={{fontWeight:600, fontSize:16}}>ایمیل دانشگاه شریف:</label>
-            <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="yourname@sharif.edu" style={{fontSize:17, padding:'0.7em 1em', borderRadius:8, border:'1.5px solid #bfcbe6', fontFamily:'inherit'}} required pattern="^[^@\s]+@sharif\.edu$" disabled={loading} />
+            <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="yourname@sharif.edu" style={{fontSize:17, padding:'0.7em 1em', borderRadius:8, border:'1.5px solid #bfcbe6', fontFamily:'inherit', textAlign:'left'}} required pattern="^[^@\s]+@sharif\.edu$" disabled={loading} />
             {emailError && <div style={{color:'#b71c1c', fontWeight:600, fontSize:15}}>{emailError}</div>}
             <button type="submit" style={{marginTop:10, fontSize:17, background:'var(--ifm-color-primary)', color:'#fff', border:'none', borderRadius:8, padding:'0.7em 0', fontWeight:700, cursor:'pointer'}} disabled={loading}>{loading ? '...' : 'ادامه'}</button>
           </form>
@@ -315,7 +328,7 @@ function LayoutContent(props) {
         {step === 2 && hasAccount === true && (
           <form style={{display:'flex', flexDirection:'column', gap:14}} onSubmit={handleLoginSubmit}>
             <label style={{fontWeight:600, fontSize:16}}>رمز عبور:</label>
-            <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="رمز عبور" style={{fontSize:17, padding:'0.7em 1em', borderRadius:8, border:'1.5px solid #bfcbe6', fontFamily:'inherit'}} required disabled={loading} />
+            <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="رمز عبور" style={{fontSize:17, padding:'0.7em 1em', borderRadius:8, border:'1.5px solid #bfcbe6', fontFamily:'inherit', textAlign:'left'}} required disabled={loading} />
             {passwordError && <div style={{color:'#b71c1c', fontWeight:600, fontSize:15}}>{passwordError}</div>}
             <button type="submit" style={{marginTop:10, fontSize:17, background:'var(--ifm-color-primary)', color:'#fff', border:'none', borderRadius:8, padding:'0.7em 0', fontWeight:700, cursor:'pointer'}} disabled={loading}>{loading ? '...' : 'ورود'}</button>
           </form>
@@ -331,9 +344,9 @@ function LayoutContent(props) {
         {step === 2 && hasAccount === false && codeAccepted && (
           <form style={{display:'flex', flexDirection:'column', gap:14}} onSubmit={handlePasswordSubmit}>
             <label style={{fontWeight:600, fontSize:16}}>رمز عبور جدید:</label>
-            <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="رمز عبور جدید" style={{fontSize:17, padding:'0.7em 1em', borderRadius:8, border:'1.5px solid #bfcbe6', fontFamily:'inherit'}} required disabled={loading} />
+            <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="رمز عبور جدید" style={{fontSize:17, padding:'0.7em 1em', borderRadius:8, border:'1.5px solid #bfcbe6', fontFamily:'inherit', textAlign:'left'}} required disabled={loading} />
             <label style={{fontWeight:600, fontSize:16}}>تکرار رمز عبور:</label>
-            <input type="password" value={password2} onChange={e=>setPassword2(e.target.value)} placeholder="تکرار رمز عبور" style={{fontSize:17, padding:'0.7em 1em', borderRadius:8, border:'1.5px solid #bfcbe6', fontFamily:'inherit'}} required disabled={loading} />
+            <input type="password" value={password2} onChange={e=>setPassword2(e.target.value)} placeholder="تکرار رمز عبور" style={{fontSize:17, padding:'0.7em 1em', borderRadius:8, border:'1.5px solid #bfcbe6', fontFamily:'inherit', textAlign:'left'}} required disabled={loading} />
             {passwordError && <div style={{color:'#b71c1c', fontWeight:600, fontSize:15}}>{passwordError}</div>}
             <button type="submit" style={{marginTop:10, fontSize:17, background:'var(--ifm-color-primary)', color:'#fff', border:'none', borderRadius:8, padding:'0.7em 0', fontWeight:700, cursor:'pointer'}} disabled={loading}>{loading ? '...' : 'ثبت رمز عبور'}</button>
           </form>

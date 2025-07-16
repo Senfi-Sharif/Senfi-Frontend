@@ -22,11 +22,11 @@ const config: Config = {
     [
       'classic',
       {
-        // 👇👇 اضافه کردن این بخش!
-        gtag: {
-          trackingID: 'G-3Y3WE0GLKY',
-          anonymizeIP: false,
-        },
+        // 👇👇 حذف کامل این بخش!
+        // gtag: {
+        //   trackingID: 'G-3Y3WE0GLKY',
+        //   anonymizeIP: false,
+        // },
         docs: {
           sidebarPath: require.resolve('./sidebars.ts'),
           editUrl: 'https://github.com/senfi-sharif/senfi-sharif.ir/tree/main/',
@@ -39,6 +39,7 @@ const config: Config = {
   ],
   themeConfig: {    
     image: 'img/maini_colors.png',
+    scripts: ['/custom.js'],
     colorMode: {
       defaultMode: 'light',
       disableSwitch: false,

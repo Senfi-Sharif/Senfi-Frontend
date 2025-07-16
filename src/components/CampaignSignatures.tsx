@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getCampaignSignatures } from '@site/src/api/auth';
+import { useColorMode } from '@docusaurus/theme-common';
 
 interface Signature {
   id: number;
@@ -13,6 +14,8 @@ interface CampaignSignaturesProps {
 }
 
 export default function CampaignSignatures({ campaignId }: CampaignSignaturesProps) {
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === 'dark';
   const [signatures, setSignatures] = useState<Signature[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -71,9 +74,9 @@ export default function CampaignSignatures({ campaignId }: CampaignSignaturesPro
             style={{
               padding: '0.75rem',
               marginBottom: '0.5rem',
-              background: 'rgba(255, 255, 255, 0.8)',
+              background: isDark ? 'rgba(30,34,54,0.95)' : 'rgba(255,255,255,0.8)',
               borderRadius: '0.5rem',
-              border: '1px solid var(--ifm-color-primary-lightest)',
+              border: isDark ? '1px solid #637eda' : '1px solid var(--ifm-color-primary-lightest)',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',

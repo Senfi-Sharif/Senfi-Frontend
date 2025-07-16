@@ -10,6 +10,31 @@ async function safeJson(res) {
   }
 }
 
+function handleNoCredentials() {
+  // Clear localStorage and redirect
+  localStorage.removeItem('token');
+  localStorage.removeItem('email');
+  localStorage.removeItem('role');
+
+  // Notify other components
+  window.dispatchEvent(new CustomEvent('auth:logout'));
+
+  // Redirect to home
+  window.location.href = '/';
+}
+
+async function processResponse(res) {
+  const data = await safeJson(res);
+
+  if (!res.ok) {
+    if (res.status === 401 || data?.detail?.includes('no credentials')) {
+      handleNoCredentials();
+    }
+    throw new Error(data?.detail || 'خطا در ارتباط با سرور');
+  }
+  return data;
+}
+
 export async function checkEmailExists(email) {
   let res;
   try {
@@ -21,10 +46,7 @@ export async function checkEmailExists(email) {
   } catch (err) {
     throw new Error('ارتباط با سرور برقرار نشد');
   }
-  const data = await safeJson(res);
-  if (!res.ok) {
-    throw new Error(data?.detail || 'خطا در بررسی ایمیل');
-  }
+  const data = await processResponse(res);
   return data.exists;
 }
 
@@ -39,10 +61,7 @@ export async function sendVerificationCode(email) {
   } catch (err) {
     throw new Error('ارتباط با سرور برقرار نشد');
   }
-  const data = await safeJson(res);
-  if (!res.ok) {
-    throw new Error(data?.detail || 'خطا در ارسال کد');
-  }
+  const data = await processResponse(res);
   return data.success;
 }
 
@@ -57,10 +76,7 @@ export async function verifyCode(email, code) {
   } catch (err) {
     throw new Error('ارتباط با سرور برقرار نشد');
   }
-  const data = await safeJson(res);
-  if (!res.ok) {
-    throw new Error(data?.detail || 'خطا در بررسی کد');
-  }
+  const data = await processResponse(res);
   return data.valid;
 }
 
@@ -75,11 +91,7 @@ export async function register(email, password) {
   } catch (err) {
     throw new Error('ارتباط با سرور برقرار نشد');
   }
-  const data = await safeJson(res);
-  if (!res.ok) {
-    throw new Error(data?.detail || 'خطا در ثبت‌نام');
-  }
-  return data;
+  return await processResponse(res);
 }
 
 export async function login(email, password) {
@@ -93,11 +105,7 @@ export async function login(email, password) {
   } catch (err) {
     throw new Error('ارتباط با سرور برقرار نشد');
   }
-  const data = await safeJson(res);
-  if (!res.ok) {
-    throw new Error(data?.detail || 'خطا در ورود');
-  }
-  return data;
+  return await processResponse(res);
 }
 
 // تابع استخراج اطلاعات از JWT
@@ -117,7 +125,7 @@ function decodeJWT(token) {
 // تابع بررسی نقش کاربر
 export function getUserRole() {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem('auth_role') || null;
+  return localStorage.getItem('role') || null;
 }
 
 // تابع بررسی دسترسی ادمین
@@ -128,34 +136,15 @@ export function hasAdminAccess() {
 
 // دریافت لیست کارزارهای pending
 export async function getPendingCampaigns() {
-  const token = localStorage.getItem('auth_token');
-  if (!token) throw new Error('توکن احراز هویت یافت نشد');
-  
-  let res;
-  try {
-    res = await fetch(`${API_BASE}/api/admin/campaigns`, {
-      method: 'GET',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-    });
-  } catch (err) {
-    throw new Error('ارتباط با سرور برقرار نشد');
-  }
-  
-  const data = await safeJson(res);
-  if (!res.ok) {
-    throw new Error(data?.detail || 'خطا در دریافت لیست کارزارها');
-  }
-  
-  // استفاده از فیلد campaigns از پاسخ
-  return data.campaigns || [];
+  const token = localStorage.getItem('token');
+  return axios.get('http://localhost:8000/api/user/pending-campaigns', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 }
 
 // تأیید یا رد کارزار
 export async function updateCampaignStatus(campaignId, approved, status) {
-  const token = localStorage.getItem('auth_token');
+  const token = localStorage.getItem('token');
   if (!token) throw new Error('توکن احراز هویت یافت نشد');
 
   let res;
@@ -172,12 +161,7 @@ export async function updateCampaignStatus(campaignId, approved, status) {
     throw new Error('ارتباط با سرور برقرار نشد');
   }
 
-  const data = await safeJson(res);
-  if (!res.ok) {
-    throw new Error(data?.detail || 'خطا در بروزرسانی وضعیت کارزار');
-  }
-
-  return data;
+  return await processResponse(res);
 } 
 
 // دریافت لیست کارزارهای تاییدشده
@@ -202,31 +186,10 @@ export async function getApprovedCampaigns() {
 
 // امضا کردن کارزار
 export async function signCampaign(campaignId, isAnonymous = false) {
-  const token = localStorage.getItem('auth_token');
-  if (!token) throw new Error('توکن احراز هویت یافت نشد');
-  
-  let res;
-  try {
-    res = await fetch(`${API_BASE}/api/campaigns/${campaignId}/sign`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({ 
-        is_anonymous: isAnonymous ? "anonymous" : "public" 
-      }),
-    });
-  } catch (err) {
-    throw new Error('ارتباط با سرور برقرار نشد');
-  }
-  
-  const data = await safeJson(res);
-  if (!res.ok) {
-    throw new Error(data?.detail || 'خطا در امضا کردن کارزار');
-  }
-  
-  return data;
+  const token = localStorage.getItem('token');
+  return axios.post(`http://localhost:8000/api/campaigns/${campaignId}/sign`, { is_anonymous: isAnonymous ? 'anonymous' : 'public' }, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 }
 
 // دریافت امضاهای یک کارزار
@@ -251,7 +214,7 @@ export async function getCampaignSignatures(campaignId) {
 
 // دریافت کارزارهای امضاشده توسط کاربر
 export async function getUserSignedCampaigns() {
-  const token = localStorage.getItem('auth_token');
+  const token = localStorage.getItem('token');
   if (!token) throw new Error('توکن احراز هویت یافت نشد');
   
   let res;
@@ -267,43 +230,20 @@ export async function getUserSignedCampaigns() {
     throw new Error('ارتباط با سرور برقرار نشد');
   }
   
-  const data = await safeJson(res);
-  if (!res.ok) {
-    throw new Error(data?.detail || 'خطا در دریافت کارزارهای امضاشده');
-  }
-  
-  return data;
+  return await processResponse(res);
 }
 
 // بررسی امضای کاربر در یک کارزار
 export async function checkUserSignature(campaignId) {
-  const token = localStorage.getItem('auth_token');
-  if (!token) throw new Error('توکن احراز هویت یافت نشد');
-  
-  let res;
-  try {
-    res = await fetch(`${API_BASE}/api/campaigns/${campaignId}/check-signature`, {
-      method: 'GET',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-    });
-  } catch (err) {
-    throw new Error('ارتباط با سرور برقرار نشد');
-  }
-  
-  const data = await safeJson(res);
-  if (!res.ok) {
-    throw new Error(data?.detail || 'خطا در بررسی امضا');
-  }
-  
-  return data;
+  const token = localStorage.getItem('token');
+  return axios.get(`http://localhost:8000/api/campaigns/${campaignId}/check-signature`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 }
 
 // بررسی اعتبار توکن
 export async function validateToken() {
-  const token = localStorage.getItem('auth_token');
+  const token = localStorage.getItem('token');
   if (!token) return { valid: false };
   
   let res;
@@ -319,6 +259,10 @@ export async function validateToken() {
     return { valid: false };
   }
   
-  const data = await safeJson(res);
-  return { valid: res.ok, user: data.user };
-} 
+  try {
+    const data = await processResponse(res);
+    return { valid: true, user: data.user };
+  } catch (err) {
+    return { valid: false };
+  }
+}

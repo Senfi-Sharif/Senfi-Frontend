@@ -15,6 +15,10 @@
   opacity: 0.7;
   /* کدهای دیگه که میخوای (مثلاً پدینگ یا ...) */
 }
+[data-theme='dark'] .footer {
+  background: var(--ifm-color-primary-darkest) 0%;
+  opacity: 0.95;
+}
 
 .ltr-section {
   direction: ltr !important;
@@ -72,4 +76,109 @@
 
 body, * {
   font-family: 'IRANYekan', 'IranSans', Vazirmatn, Tahoma, Arial, sans-serif !important;
+}
+
+/* Custom styles for DatePicker time picker */
+.rmdp-time-picker {
+  border: 1px solid var(--ifm-color-primary-lightest) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 10px rgba(22, 51, 124, 0.1) !important;
+  background: #fff !important;
+}
+
+.rmdp-time-picker .rmdp-time-picker-input {
+  border: 1px solid var(--ifm-color-primary-lightest) !important;
+  border-radius: 4px !important;
+  padding: 6px 8px !important;
+  font-family: inherit !important;
+  font-size: 14px !important;
+  text-align: center !important;
+  direction: ltr !important;
+}
+
+.rmdp-time-picker .rmdp-time-picker-input:focus {
+  border-color: var(--ifm-color-primary) !important;
+  box-shadow: 0 0 0 2px rgba(22, 51, 124, 0.1) !important;
+  outline: none !important;
+}
+
+.rmdp-time-picker .rmdp-time-picker-label {
+  font-weight: 600 !important;
+  color: var(--ifm-color-primary-dark) !important;
+  margin-bottom: 4px !important;
+  font-size: 12px !important;
+}
+
+.rmdp-time-picker .rmdp-time-picker-colon {
+  color: var(--ifm-color-primary) !important;
+  font-weight: bold !important;
+  font-size: 16px !important;
+}
+
+/* Custom styles for DatePicker calendar */
+.rmdp-calendar {
+  border: 1px solid var(--ifm-color-primary-lightest) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 20px rgba(22, 51, 124, 0.1) !important;
+  background: #fff !important;
+}
+
+.rmdp-calendar .rmdp-header {
+  background: var(--ifm-color-primary) !important;
+  color: #fff !important;
+  border-radius: 8px 8px 0 0 !important;
+}
+
+.rmdp-calendar .rmdp-header .rmdp-header-value {
+  color: #fff !important;
+}
+
+.rmdp-calendar .rmdp-day.rmdp-selected {
+  background: var(--ifm-color-primary) !important;
+  color: #fff !important;
+}
+
+.rmdp-calendar .rmdp-day.rmdp-today {
+  background: var(--ifm-color-primary-lightest) !important;
+  color: var(--ifm-color-primary-dark) !important;
+}
+
+.rmdp-calendar .rmdp-day:hover {
+  background: var(--ifm-color-primary-light) !important;
+  color: #fff !important;
+}
+
+/* Custom input styling */
+.custom-date-input {
+  font-family: inherit !important;
+  font-size: 16px !important;
+  padding: 8px 12px !important;
+  border: 1px solid var(--ifm-color-primary-lightest) !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  direction: ltr !important;
+  text-align: left !important;
+  transition: all 0.3s ease !important;
+}
+
+.custom-date-input:focus {
+  border-color: var(--ifm-color-primary) !important;
+  box-shadow: 0 0 0 3px rgba(22, 51, 124, 0.1) !important;
+  outline: none !important;
+}
+
+.custom-date-input::placeholder {
+  color: #999 !important;
+  opacity: 0.7 !important;
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+  .rmdp-calendar {
+    max-width: 90vw !important;
+  }
+  
+  .rmdp-time-picker {
+    max-width: 90vw !important;
+  }
 }
