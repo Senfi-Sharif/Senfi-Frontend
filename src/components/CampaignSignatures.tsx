@@ -4,8 +4,8 @@ import { getCampaignSignatures } from '@site/src/api/auth';
 interface Signature {
   id: number;
   user_email: string;
-  is_anonymous: boolean;
-  created_at: string;
+  is_anonymous: string; // 'public' | 'anonymous'
+  signed_at: string;
 }
 
 interface CampaignSignaturesProps {
@@ -81,13 +81,13 @@ export default function CampaignSignatures({ campaignId }: CampaignSignaturesPro
           >
             <div>
               <div style={{ fontWeight: 600, color: 'var(--ifm-color-primary-dark)' }}>
-                {signature.is_anonymous ? 'کاربر ناشناس' : signature.user_email}
+                {signature.is_anonymous === 'anonymous' ? 'کاربر ناشناس' : signature.user_email}
               </div>
               <div style={{ fontSize: '0.85rem', color: '#666', marginTop: '0.25rem' }}>
-                {new Date(signature.created_at).toLocaleDateString('fa-IR')}
+                {signature.signed_at ? new Date(signature.signed_at).toLocaleDateString('fa-IR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}
               </div>
             </div>
-            {signature.is_anonymous && (
+            {signature.is_anonymous === 'anonymous' && (
               <span style={{ fontSize: '0.8rem', color: '#666', fontStyle: 'italic' }}>
                 ناشناس
               </span>

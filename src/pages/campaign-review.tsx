@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Layout from '@theme/Layout';
 import { getPendingCampaigns, updateCampaignStatus, hasAdminAccess, getUserRole } from '@site/src/api/auth';
 import { useNotification } from '@site/src/contexts/NotificationContext';
+import ConfirmModal from '@site/src/components/ConfirmModal';
 
 // استایل‌های بهبود یافته
 const styles = {
@@ -230,10 +231,8 @@ const styles = {
 };
 
 // کامپوننت کارت کارزار بهبود یافته
-function CampaignCard({ campaign, onStatusUpdate, processing }) {
+function CampaignCard({ campaign, onApprove, onReject, processing }) {
   const [isHovered, setIsHovered] = useState(false);
-  const handleApprove = () => onStatusUpdate(campaign.id, true);
-  const handleReject = () => onStatusUpdate(campaign.id, false);
   const isProcessing = processing[campaign.id];
 
   const formatDate = (dateString) => {
@@ -283,7 +282,7 @@ function CampaignCard({ campaign, onStatusUpdate, processing }) {
       
       <div style={styles.buttonContainer}>
         <button 
-          onClick={handleApprove}
+          onClick={() => onApprove(campaign)}
           disabled={isProcessing}
           style={{
             ...styles.approveButton,
@@ -307,7 +306,7 @@ function CampaignCard({ campaign, onStatusUpdate, processing }) {
         </button>
         
         <button 
-          onClick={handleReject}
+          onClick={() => onReject(campaign)}
           disabled={isProcessing}
           style={{
             ...styles.rejectButton,
@@ -367,6 +366,10 @@ function CampaignReviewPanel() {
   const [error, setError] = useState('');
   const [processing, setProcessing] = useState({});
   const { showNotification } = useNotification();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<'approve' | 'reject' | null>(null);
+  const [selectedCampaign, setSelectedCampaign] = useState<any>(null);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     if (!hasAdminAccess()) {
@@ -391,22 +394,54 @@ function CampaignReviewPanel() {
     }
   };
 
-  const handleStatusUpdate = async (campaignId: number, approved: boolean) => {
+  // فیلتر بر اساس سرچ
+  const filteredCampaigns = useMemo(() => {
+    if (!search.trim()) return campaigns;
+    const s = search.trim().toLowerCase();
+    return campaigns.filter(c =>
+      (c.title && c.title.toLowerCase().includes(s)) ||
+      (c.description && c.description.toLowerCase().includes(s))
+    );
+  }, [campaigns, search]);
+
+  const handleApproveClick = (campaign: any) => {
+    setSelectedCampaign(campaign);
+    setModalType('approve');
+    setModalOpen(true);
+  };
+
+  const handleRejectClick = (campaign: any) => {
+    setSelectedCampaign(campaign);
+    setModalType('reject');
+    setModalOpen(true);
+  };
+
+  const handleModalConfirm = async () => {
+    if (!selectedCampaign || !modalType) return;
+    setModalOpen(false);
+    setLoading(true);
     try {
-      setLoading(true);
-      const result = await updateCampaignStatus(campaignId, approved);
+      const approved = modalType === 'approve';
+      const result = await updateCampaignStatus(selectedCampaign.id, approved);
       if (result.success) {
-        // Refresh the campaigns list
         loadCampaigns();
-        showNotification(`کارزار ${approved ? 'تایید' : 'رد'} شد`, 'success');
+        showNotification(approved ? 'کارزار تایید شد.' : 'کارزار رد شد.', 'success');
       } else {
-        showNotification('خطا در بروزرسانی وضعیت کارزار', 'error');
+        showNotification(result.message || 'خطا در تغییر وضعیت کارزار', 'error');
       }
-    } catch (error) {
-      showNotification('خطا در بروزرسانی وضعیت کارزار', 'error');
+    } catch (err) {
+      showNotification(err.message || 'خطا در تغییر وضعیت کارزار', 'error');
     } finally {
       setLoading(false);
+      setSelectedCampaign(null);
+      setModalType(null);
     }
+  };
+
+  const handleModalCancel = () => {
+    setModalOpen(false);
+    setSelectedCampaign(null);
+    setModalType(null);
   };
 
   // بررسی دسترسی
@@ -465,19 +500,63 @@ function CampaignReviewPanel() {
           </div>
         </div>
       )}
-      
-      {campaigns.length > 0 && (
-        <div style={styles.campaignsContainer}>
-          {campaigns.map(campaign => (
-            <CampaignCard
-              key={campaign.id}
-              campaign={campaign}
-              onStatusUpdate={handleStatusUpdate}
-              processing={processing}
-            />
-          ))}
-        </div>
-      )}
+      {/* سرچ بار */}
+      <div style={{margin: '1.5rem 0', textAlign: 'center'}}>
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="جستجو در عنوان یا متن کارزار..."
+          style={{
+            width: '100%',
+            maxWidth: 400,
+            padding: '0.8rem 1.2rem',
+            borderRadius: '0.7rem',
+            border: '1.5px solid var(--ifm-color-primary-lightest)',
+            fontSize: '1.1rem',
+            fontFamily: 'inherit',
+            margin: '0 auto',
+            boxShadow: '0 2px 8px rgba(22,51,124,0.06)',
+            outline: 'none',
+            direction: 'rtl',
+          }}
+        />
+      </div>
+      <div style={styles.campaignsContainer}>
+        {loading ? (
+          <div style={styles.loadingContainer}>در حال بارگذاری...</div>
+        ) : error ? (
+          <div style={styles.errorContainer}>{error}</div>
+        ) : campaigns.length === 0 ? null : (
+          filteredCampaigns.length === 0 ? (
+            <div style={styles.emptyContainer}>
+              <div style={styles.emptyIcon}>📭</div>
+              <div>هیچ کارزاری مطابق جستجو یافت نشد</div>
+            </div>
+          ) : (
+            filteredCampaigns.map((campaign) => (
+              <CampaignCard
+                key={campaign.id}
+                campaign={campaign}
+                onApprove={handleApproveClick}
+                onReject={handleRejectClick}
+                processing={processing}
+              />
+            ))
+          )
+        )}
+      </div>
+
+      <ConfirmModal
+        open={modalOpen}
+        title={modalType === 'approve' ? 'تایید کارزار' : 'رد کارزار'}
+        message={modalType === 'approve' ? 'آیا از تایید این کارزار مطمئن هستید؟' : 'آیا از رد این کارزار مطمئن هستید؟'}
+        confirmText={modalType === 'approve' ? 'تایید' : 'رد'}
+        cancelText="انصراف"
+        onConfirm={handleModalConfirm}
+        onCancel={handleModalCancel}
+        loading={loading}
+      />
     </div>
   );
 }
@@ -485,7 +564,7 @@ function CampaignReviewPanel() {
 // صفحه اصلی
 export default function CampaignReview() {
   return (
-    <Layout title="بررسی کارزارها" description="صفحه بررسی و مدیریت کارزارهای ارسال‌شده">
+    <Layout>
       <CampaignReviewPanel />
     </Layout>
   );

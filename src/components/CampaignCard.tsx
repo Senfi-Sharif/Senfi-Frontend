@@ -5,7 +5,7 @@ import styles from '../css/campaignsStyles';
 
 function formatDate(dateString: string) {
   const d = new Date(dateString);
-  return d.toLocaleDateString('fa-IR');
+  return d.toLocaleDateString('fa-IR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
 }
 
 interface CampaignCardProps {
@@ -33,6 +33,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ c, isSigned = false, userRo
       <div style={styles.campaignMeta}>
         {c.email && <span>📧 ثبت‌کننده: {c.email} | </span>}
         {c.created_at && <span>📅 تاریخ: {formatDate(c.created_at)}</span>}
+        {c.end_datetime && <span style={{marginRight: 8}}>⏰ پایان: {formatDate(c.end_datetime)}</span>}
       </div>
       <SignCampaignButtons
         campaignId={c.id}

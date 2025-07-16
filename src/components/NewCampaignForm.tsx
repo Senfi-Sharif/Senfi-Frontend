@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { useNotification } from '../contexts/NotificationContext';
 import styles from '../css/campaignsStyles';
+import DatePicker from 'react-multi-date-picker';
+import persian from 'react-date-object/calendars/persian';
+import persian_fa from 'react-date-object/locales/persian_fa';
+import moment from 'moment';
 
 const API_BASE = typeof process !== "undefined" && process.env && process.env.REACT_APP_API_BASE
   ? process.env.REACT_APP_API_BASE
@@ -15,12 +19,17 @@ function NewCampaignForm() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [endDate, setEndDate] = useState<any>(null);
   const { showNotification } = useNotification();
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !desc.trim()) {
       showNotification('لطفاً تیتر و متن را وارد کنید.', 'warning');
+      return;
+    }
+    if (!endDate) {
+      showNotification('لطفاً تاریخ و ساعت پایان را انتخاب کنید.', 'warning');
       return;
     }
     setError('');
@@ -30,6 +39,8 @@ function NewCampaignForm() {
       if (typeof window !== 'undefined') {
         email = localStorage.getItem('auth_email') || '';
       }
+      // تبدیل تاریخ جلالی به میلادی (ISO)
+      const end_datetime = moment(endDate?.toDate()).format('YYYY-MM-DDTHH:mm:ss');
       const res = await fetch(`${API_BASE}/api/campaigns/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -37,7 +48,8 @@ function NewCampaignForm() {
           title, 
           description: desc, 
           ...(email ? {email} : {}),
-          is_anonymous: isAnonymous ? "anonymous" : "public"
+          is_anonymous: isAnonymous ? "anonymous" : "public",
+          end_datetime
         }),
       });
       const data = await res.json();
@@ -161,6 +173,41 @@ function NewCampaignForm() {
                   <span style={styles.radioLabel}>🔒 ناشناس (فقط تعداد امضاها نمایش داده می‌شود)</span>
                 </label>
               </div>
+            </div>
+            
+            <div style={styles.formGroup}>
+              <label style={styles.formLabel}>⏰ تاریخ و ساعت پایان کارزار (اجباری):</label>
+              <DatePicker
+                value={endDate}
+                onChange={setEndDate}
+                calendar={persian}
+                locale={persian_fa}
+                format="YYYY/MM/DD HH:mm"
+                calendarPosition="bottom-right"
+                editable={false}
+                disableDayPicker={false}
+                style={{
+                  ...styles.formInput,
+                  direction: 'ltr',
+                  fontFamily: 'inherit',
+                  minWidth: 180,
+                  maxWidth: 250,
+                  background: '#fff',
+                  border: '1px solid var(--ifm-color-primary-lightest)',
+                  borderRadius: 8,
+                  padding: '8px 12px',
+                  fontSize: 16,
+                  marginTop: 4,
+                }}
+                plugins={[]}
+                showOtherDays
+                disableMonthPicker={false}
+                disableYearPicker={false}
+                inputClass="custom-date-input"
+                placeholder="انتخاب تاریخ و ساعت..."
+                minDate={new Date()}
+                required
+              />
             </div>
             
             {error && <div style={styles.errorMessage}>⚠️ {error}</div>}

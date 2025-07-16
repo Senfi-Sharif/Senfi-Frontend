@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { getApprovedCampaigns, checkUserSignature, updateCampaignStatus, getUserRole } from '../api/auth';
 import { useNotification } from '../contexts/NotificationContext';
 import CampaignSignatures from './CampaignSignatures';
@@ -19,6 +19,7 @@ const ApprovedCampaigns = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingId, setPendingId] = useState<number | null>(null);
   const [pendingLoading, setPendingLoading] = useState(false);
+  const [search, setSearch] = useState('');
 
   React.useEffect(() => {
     setLoading(true);
@@ -119,8 +120,18 @@ const ApprovedCampaigns = () => {
     });
   };
 
-  const unsignedCampaigns = campaigns.filter((c: any) => !userSignatures[c.id]?.has_signed);
-  const signedCampaigns = campaigns.filter((c: any) => userSignatures[c.id]?.has_signed);
+  // فیلتر بر اساس سرچ
+  const filteredCampaigns = useMemo(() => {
+    if (!search.trim()) return campaigns;
+    const s = search.trim().toLowerCase();
+    return campaigns.filter((c: any) =>
+      (c.title && c.title.toLowerCase().includes(s)) ||
+      (c.description && c.description.toLowerCase().includes(s))
+    );
+  }, [campaigns, search]);
+
+  const unsignedCampaigns = filteredCampaigns.filter((c: any) => !userSignatures[c.id]?.has_signed);
+  const signedCampaigns = filteredCampaigns.filter((c: any) => userSignatures[c.id]?.has_signed);
 
   const allChecked = campaigns.length === 0 || campaigns.every((c: any) => userSignatures.hasOwnProperty(c.id));
   if (!allChecked) {
@@ -134,6 +145,28 @@ const ApprovedCampaigns = () => {
 
   return (
     <div style={{padding: '1rem'}}>
+      {/* سرچ بار */}
+      <div style={{margin: '1.5rem 0', textAlign: 'center'}}>
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="جستجو در عنوان یا متن کارزار..."
+          style={{
+            width: '100%',
+            maxWidth: 400,
+            padding: '0.8rem 1.2rem',
+            borderRadius: '0.7rem',
+            border: '1.5px solid var(--ifm-color-primary-lightest)',
+            fontSize: '1.1rem',
+            fontFamily: 'inherit',
+            margin: '0 auto',
+            boxShadow: '0 2px 8px rgba(22,51,124,0.06)',
+            outline: 'none',
+            direction: 'rtl',
+          }}
+        />
+      </div>
       <h2 style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>
         📋 کارزارهای تاییدشده
         {total > 0 && <span style={{fontSize: '0.8em', color: 'var(--ifm-color-primary-dark)', fontWeight: 'normal'}}> ({total} کارزار)</span>}
