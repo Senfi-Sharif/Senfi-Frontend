@@ -137,9 +137,22 @@ export function hasAdminAccess() {
 // دریافت لیست کارزارهای pending
 export async function getPendingCampaigns() {
   const token = localStorage.getItem('token');
-  return axios.get('http://localhost:8000/api/user/pending-campaigns', {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  if (!token) throw new Error('توکن احراز هویت یافت نشد');
+  
+  let res;
+  try {
+    res = await fetch(`${API_BASE}/api/user/pending-campaigns`, {
+      method: 'GET',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+    });
+  } catch (err) {
+    throw new Error('ارتباط با سرور برقرار نشد');
+  }
+  
+  return await processResponse(res);
 }
 
 // تأیید یا رد کارزار
@@ -187,9 +200,23 @@ export async function getApprovedCampaigns() {
 // امضا کردن کارزار
 export async function signCampaign(campaignId, isAnonymous = false) {
   const token = localStorage.getItem('token');
-  return axios.post(`http://localhost:8000/api/campaigns/${campaignId}/sign`, { is_anonymous: isAnonymous ? 'anonymous' : 'public' }, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  if (!token) throw new Error('توکن احراز هویت یافت نشد');
+  
+  let res;
+  try {
+    res = await fetch(`${API_BASE}/api/campaigns/${campaignId}/sign`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ is_anonymous: isAnonymous ? 'anonymous' : 'public' }),
+    });
+  } catch (err) {
+    throw new Error('ارتباط با سرور برقرار نشد');
+  }
+  
+  return await processResponse(res);
 }
 
 // دریافت امضاهای یک کارزار
@@ -236,9 +263,22 @@ export async function getUserSignedCampaigns() {
 // بررسی امضای کاربر در یک کارزار
 export async function checkUserSignature(campaignId) {
   const token = localStorage.getItem('token');
-  return axios.get(`http://localhost:8000/api/campaigns/${campaignId}/check-signature`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  if (!token) throw new Error('توکن احراز هویت یافت نشد');
+  
+  let res;
+  try {
+    res = await fetch(`${API_BASE}/api/campaigns/${campaignId}/check-signature`, {
+      method: 'GET',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+    });
+  } catch (err) {
+    throw new Error('ارتباط با سرور برقرار نشد');
+  }
+  
+  return await processResponse(res);
 }
 
 // بررسی اعتبار توکن

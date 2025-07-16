@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import { getUserSignedCampaigns } from '@site/src/api/auth';
 import { useColorMode } from '@docusaurus/theme-common';
-import axios from 'axios';
+
+const API_BASE = typeof process !== "undefined" && process.env && process.env.REACT_APP_API_BASE
+  ? process.env.REACT_APP_API_BASE
+  : "http://localhost:8000";
 
 function AdminUserList() {
   const { colorMode } = useColorMode();
@@ -15,13 +18,28 @@ function AdminUserList() {
       try {
         setLoading(true);
         const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:8000/api/auth/users', {
-          headers: { Authorization: `Bearer ${token}` }
+        if (!token) {
+          setError('توکن احراز هویت یافت نشد');
+          return;
+        }
+        
+        const res = await fetch(`${API_BASE}/api/auth/users`, {
+          method: 'GET',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
         });
-        setUsers(res.data);
+        
+        if (!res.ok) {
+          throw new Error('خطا در دریافت لیست کاربران');
+        }
+        
+        const data = await res.json();
+        setUsers(data);
         setError('');
       } catch (err) {
-        console.error('DEBUG: error fetching users:', err, err?.response?.data);
+        console.error('DEBUG: error fetching users:', err);
         setError('خطا در دریافت لیست کاربران');
       } finally {
         setLoading(false);
