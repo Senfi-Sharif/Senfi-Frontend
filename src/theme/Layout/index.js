@@ -3,7 +3,7 @@ import Layout from '@theme-original/Layout';
 import { NotificationProvider, useNotification } from '@site/src/contexts/NotificationContext';
 import Modal from '@site/src/components/Modal';
 import Header from '@site/src/components/Header';
-import { checkEmailExists, sendVerificationCode, verifyCode, register, login, validateToken } from '@site/src/api/auth';
+import { useAuthApi } from '../../api/auth';
 
 function LayoutContent(props) {
   const { showNotification } = useNotification();
@@ -22,6 +22,8 @@ function LayoutContent(props) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [userRole, setUserRole] = useState('');
+
+  const authApi = useAuthApi();
 
   // مقداردهی اولیه و sync با localStorage
   useEffect(() => {
@@ -65,7 +67,7 @@ function LayoutContent(props) {
 
     const checkTokenValidity = async () => {
       try {
-        const isValid = await validateToken();
+        const isValid = await authApi.validateToken();
         if (!isValid) {
           // پاک کردن اطلاعات کاربر و خروج
           localStorage.removeItem('token');
@@ -103,7 +105,7 @@ function LayoutContent(props) {
     const interval = setInterval(checkTokenValidity, 5 * 60 * 1000);
 
     return () => clearInterval(interval);
-  }, [isLoggedIn]);
+  }, [isLoggedIn, authApi]);
 
 
 
@@ -117,12 +119,12 @@ function LayoutContent(props) {
     setEmailError('');
     setLoading(true);
     try {
-      const exists = await checkEmailExists(value);
+      const exists = await authApi.checkEmailExists(value);
       setHasAccount(exists);
       if (exists) {
         setStep(2); // فرم رمز عبور
       } else {
-        const sent = await sendVerificationCode(value);
+        const sent = await authApi.sendVerificationCode(value);
         if (sent) {
           setStep(2); // فرم کد ۶ رقمی
         } else {
@@ -145,7 +147,7 @@ function LayoutContent(props) {
     setCodeError('');
     setLoading(true);
     try {
-      const valid = await verifyCode(email, code);
+      const valid = await authApi.verifyCode(email, code);
       if (valid) {
         setCodeAccepted(true);
       } else {
@@ -171,7 +173,7 @@ function LayoutContent(props) {
     setPasswordError('');
     setLoading(true);
     try {
-      const res = await register(email, password);
+      const res = await authApi.register(email, password);
       if (res.success) {
         showNotification('ثبت‌نام با موفقیت انجام شد!', 'success');
         handleClose();
@@ -194,12 +196,15 @@ function LayoutContent(props) {
     setPasswordError('');
     setLoading(true);
     try {
-      const res = await login(email, password);
+      const res = await authApi.login(email, password);
+      // Debug log to localStorage
+      localStorage.setItem('debug_login_res', JSON.stringify(res));
+      localStorage.setItem('debug_login_email', email);
+      localStorage.setItem('debug_login_time', new Date().toISOString());
       if (res.success && res.token) {
-        // ذخیره توکن، ایمیل و نقش در localStorage
         localStorage.setItem('token', res.token);
-        localStorage.setItem('email', email);
         localStorage.setItem('role', res.user?.role || '');
+        localStorage.setItem('email', email); // ایمیل را هم ذخیره کن
         setIsLoggedIn(true);
         setUserEmail(email);
         setUserRole(res.user?.role || '');
@@ -209,6 +214,7 @@ function LayoutContent(props) {
         setPasswordError('ایمیل یا رمز عبور اشتباه است.');
       }
     } catch (err) {
+      localStorage.setItem('debug_login_error', err?.message || String(err));
       setPasswordError('خطا: ' + (err?.message || err));
     } finally {
       setLoading(false);

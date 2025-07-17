@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { signCampaign, checkUserSignature } from '@site/src/api/auth';
+import { useAuthApi } from '../api/auth';
 import { useNotification } from '@site/src/contexts/NotificationContext';
 
 interface SignCampaignButtonsProps {
@@ -17,6 +17,7 @@ export default function SignCampaignButtons({
   const [hasSigned, setHasSigned] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { showNotification } = useNotification();
+  const authApi = useAuthApi();
 
   const isAnonymous = campaignIsAnonymous === "anonymous";
 
@@ -26,7 +27,7 @@ export default function SignCampaignButtons({
 
   const checkSignature = async () => {
     try {
-      const result = await checkUserSignature(campaignId);
+      const result = await authApi.checkUserSignature(campaignId);
       setHasSigned(result.has_signed);
     } catch (err) {
       // Silent error - user might not be logged in
@@ -38,7 +39,7 @@ export default function SignCampaignButtons({
       setLoading(true);
       setError(null);
       
-      const result = await signCampaign(campaignId, isAnonymous);
+      const result = await authApi.signCampaign(campaignId, isAnonymous);
       
       if (result.success) {
         setHasSigned(true);

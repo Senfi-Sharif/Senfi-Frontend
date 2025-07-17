@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getCampaignSignatures } from '@site/src/api/auth';
+import { useAuthApi } from '../api/auth';
 import { useColorMode } from '@docusaurus/theme-common';
 
 interface Signature {
@@ -19,12 +19,13 @@ export default function CampaignSignatures({ campaignId }: CampaignSignaturesPro
   const [signatures, setSignatures] = useState<Signature[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const authApi = useAuthApi();
 
   useEffect(() => {
     const fetchSignatures = async () => {
       try {
         setLoading(true);
-        const data = await getCampaignSignatures(campaignId);
+        const data = await authApi.getCampaignSignatures(campaignId);
         setSignatures(data.signatures || []);
         setError(null);
       } catch (err) {

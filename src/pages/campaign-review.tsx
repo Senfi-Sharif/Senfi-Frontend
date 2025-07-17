@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Layout from '@theme/Layout';
-import { getPendingCampaigns, updateCampaignStatus, hasAdminAccess, getUserRole } from '@site/src/api/auth';
+import { useAuthApi } from '../api/auth';
 import { useNotification } from '@site/src/contexts/NotificationContext';
 import ConfirmModal from '@site/src/components/ConfirmModal';
 
@@ -370,9 +370,10 @@ function CampaignReviewPanel() {
   const [modalType, setModalType] = useState<'approve' | 'reject' | null>(null);
   const [selectedCampaign, setSelectedCampaign] = useState<any>(null);
   const [search, setSearch] = useState('');
+  const authApi = useAuthApi();
 
   useEffect(() => {
-    if (!hasAdminAccess()) {
+    if (!authApi.hasAdminAccess()) {
       setError('شما دسترسی لازم برای مشاهده این صفحه را ندارید.');
       setLoading(false);
       return;
@@ -388,7 +389,7 @@ function CampaignReviewPanel() {
       console.log('Loading campaigns...');
       console.log('Token:', localStorage.getItem('token'));
       console.log('Role:', localStorage.getItem('role'));
-      const data = await getPendingCampaigns();
+      const data = await authApi.getPendingCampaigns();
       console.log('API Response:', data);
       setCampaigns(Array.isArray(data.campaigns) ? data.campaigns : []);
     } catch (err) {
@@ -427,7 +428,7 @@ function CampaignReviewPanel() {
     setLoading(true);
     try {
       const approved = modalType === 'approve';
-      const result = await updateCampaignStatus(selectedCampaign.id, approved);
+      const result = await authApi.updateCampaignStatus(selectedCampaign.id, approved);
       if (result.success) {
         loadCampaigns();
         showNotification(approved ? 'کارزار تایید شد.' : 'کارزار رد شد.', 'success');
@@ -450,8 +451,8 @@ function CampaignReviewPanel() {
   };
 
   // بررسی دسترسی
-  if (!hasAdminAccess()) {
-    const currentRole = getUserRole();
+  if (!authApi.hasAdminAccess()) {
+    const currentRole = authApi.getUserRole();
     return (
       <div style={styles.accessDenied}>
         <h3 style={styles.accessDeniedTitle}>🚫 دسترسی محدود</h3>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Layout from '@theme/Layout';
-import { getApprovedCampaigns, signCampaign, checkUserSignature, getUserRole, updateCampaignStatus } from '../api/auth';
+import { useAuthApi } from '../api/auth';
 import { useNotification } from '../contexts/NotificationContext';
 import ApprovedCampaigns from '../components/ApprovedCampaigns';
 import NewCampaignForm from '../components/NewCampaignForm';
@@ -120,6 +120,7 @@ function HeaderBanner() {
 // کامپوننت اصلی صفحه کارزارها
 export default function CampaignsPage() {
   const [loggedIn, setLoggedIn] = useState(false);
+  const authApi = useAuthApi();
 
   useEffect(() => {
     setLoggedIn(isLoggedIn());

@@ -16,10 +16,11 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@docusaurus/core": "3.8.1",
+    "@docusaurus/core": "^3.8.1",
     "@docusaurus/preset-classic": "3.8.1",
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",
+    "dotenv": "^16.4.5",
     "express": "^5.1.0",
     "http-proxy-middleware": "^3.0.5",
     "moment": "^2.30.1",

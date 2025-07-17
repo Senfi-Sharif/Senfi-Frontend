@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { getApprovedCampaigns, checkUserSignature, updateCampaignStatus, getUserRole } from '../api/auth';
+import { useAuthApi } from '../api/auth';
 import { useNotification } from '../contexts/NotificationContext';
 import CampaignSignatures from './CampaignSignatures';
 import SignCampaignButtons from './SignCampaignButtons';
@@ -16,7 +16,7 @@ const ApprovedCampaigns = () => {
   const [userSignatures, setUserSignatures] = useState<{[key: number]: any}>({});
   const { showNotification } = useNotification();
   const [refresh, setRefresh] = useState(0);
-  const userRole = getUserRole();
+  const authApi = useAuthApi();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingId, setPendingId] = useState<number | null>(null);
   const [pendingLoading, setPendingLoading] = useState(false);
@@ -30,24 +30,21 @@ const ApprovedCampaigns = () => {
 
   React.useEffect(() => {
     setLoading(true);
-    getApprovedCampaigns()
+    authApi.getApprovedCampaigns()
       .then(async data => {
-        if (data.success && Array.isArray(data.campaigns)) {
-          setCampaigns(data.campaigns);
-          setTotal(data.total || data.campaigns.length);
-          // فقط امضاهای کاربر برای کارزارهای جدید یا تغییر یافته را چک کن
-          const signatures: {[key: number]: any} = { ...userSignatures };
-          await Promise.all(data.campaigns.map(async (c: any) => {
-            if (!(c.id in signatures)) {
-              const sig = await checkUserSignature(c.id);
-              signatures[c.id] = sig;
-            }
-          }));
-          setUserSignatures(signatures);
-        } else {
-          setCampaigns([]);
-          setTotal(0);
-        }
+        // پشتیبانی از هر دو حالت خروجی: آرایه یا آبجکت
+        const campaigns = Array.isArray(data) ? data : data.campaigns;
+        setCampaigns(campaigns || []);
+        setTotal((campaigns && campaigns.length) || 0);
+        // فقط امضاهای کاربر برای کارزارهای جدید یا تغییر یافته را چک کن
+        const signatures: {[key: number]: any} = { ...userSignatures };
+        await Promise.all((campaigns || []).map(async (c: any) => {
+          if (!(c.id in signatures)) {
+            const sig = await authApi.checkUserSignature(c.id);
+            signatures[c.id] = sig;
+          }
+        }));
+        setUserSignatures(signatures);
         setLoading(false);
       })
       .catch(err => {
@@ -67,7 +64,7 @@ const ApprovedCampaigns = () => {
     let sig = signatureData;
     if (!sig) {
       try {
-        sig = await checkUserSignature(campaignId);
+        sig = await authApi.checkUserSignature(campaignId);
       } catch {}
     }
     setUserSignatures(prev => ({
@@ -88,13 +85,13 @@ const ApprovedCampaigns = () => {
     setPendingLoading(true);
     try {
       console.log('Calling updateCampaignStatus', pendingId);
-      await updateCampaignStatus(pendingId, undefined, 'pending');
+      await authApi.updateCampaignStatus(pendingId, undefined, 'pending');
       console.log('updateCampaignStatus finished', pendingId);
       showNotification('کارزار به حالت بررسی بازگردانده شد.', 'success');
       setRefresh(r => r + 1); // رفرش لیست بعد از تغییر وضعیت
       // فقط امضای همین کارزار را چک کن
       try {
-        const sig = await checkUserSignature(pendingId);
+        const sig = await authApi.checkUserSignature(pendingId);
         setUserSignatures(prev => ({ ...prev, [pendingId]: sig }));
       } catch (err) {
         console.log('Error checking signature after setPending', err);
@@ -107,7 +104,7 @@ const ApprovedCampaigns = () => {
       setConfirmOpen(false);
       setPendingId(null);
     }
-  }, [pendingId, pendingLoading, updateCampaignStatus, showNotification]);
+  }, [pendingId, pendingLoading, authApi, showNotification]);
 
   const handleCancelPending = useCallback(() => {
     setConfirmOpen(false);
@@ -218,7 +215,7 @@ const ApprovedCampaigns = () => {
           </h3>
           <div style={{direction: 'rtl'}}>
             {unsignedCampaigns.map((c: any) => (
-              <CampaignCard key={c.id} c={c} userRole={userRole} handleSetPending={handleSetPending} handleSignSuccess={handleSignSuccess} />
+              <CampaignCard key={c.id} c={c} userRole={authApi.getUserRole()} handleSetPending={handleSetPending} handleSignSuccess={handleSignSuccess} />
             ))}
             {unsignedCampaigns.length === 0 && (
               <div style={{textAlign: 'center', margin: '2rem auto'}}>
@@ -235,7 +232,7 @@ const ApprovedCampaigns = () => {
           </h3>
           <div style={{direction: 'rtl'}}>
             {signedCampaigns.map((c: any) => (
-              <CampaignCard key={c.id} c={c} isSigned={true} userRole={userRole} handleSetPending={handleSetPending} handleSignSuccess={handleSignSuccess} />
+              <CampaignCard key={c.id} c={c} isSigned={true} userRole={authApi.getUserRole()} handleSetPending={handleSetPending} handleSignSuccess={handleSignSuccess} />
             ))}
             {signedCampaigns.length === 0 && (
               <div>
@@ -256,7 +253,7 @@ const ApprovedCampaigns = () => {
             </h3>
             <div>
               {unsignedCampaigns.map((c: any) => (
-                <CampaignCard key={c.id} c={c} userRole={userRole} handleSetPending={handleSetPending} handleSignSuccess={handleSignSuccess} />
+                <CampaignCard key={c.id} c={c} userRole={authApi.getUserRole()} handleSetPending={handleSetPending} handleSignSuccess={handleSignSuccess} />
               ))}
               {unsignedCampaigns.length === 0 && (
                 <div>
@@ -275,7 +272,7 @@ const ApprovedCampaigns = () => {
             </h3>
             <div>
               {signedCampaigns.map((c: any) => (
-                <CampaignCard key={c.id} c={c} isSigned={true} userRole={userRole} handleSetPending={handleSetPending} handleSignSuccess={handleSignSuccess} />
+                <CampaignCard key={c.id} c={c} isSigned={true} userRole={authApi.getUserRole()} handleSetPending={handleSetPending} handleSignSuccess={handleSignSuccess} />
               ))}
               {signedCampaigns.length === 0 && (
                 <div>

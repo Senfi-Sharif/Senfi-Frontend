@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '@theme/Layout';
 import { useColorMode } from '@docusaurus/theme-common';
+import { useAuthApi } from '../api/auth';
 
 const API_BASE = typeof process !== "undefined" && process.env && process.env.REACT_APP_API_BASE
   ? process.env.REACT_APP_API_BASE
@@ -26,7 +27,7 @@ const ROLE_OPTIONS = [
   { value: 'simple_user', label: 'کاربر عادی' },
 ];
 
-function UserProfileContent({ user, signedCampaigns, currentUser }) {
+function UserProfileContent({ user, signedCampaigns, currentUser, authApi }) {
   const { colorMode } = useColorMode();
   const isDark = colorMode === 'dark';
   const mainBg = isDark ? 'rgba(20,22,34,0.98)' : '#f9fafd';
@@ -60,14 +61,7 @@ function UserProfileContent({ user, signedCampaigns, currentUser }) {
         return;
       }
       
-      const res = await fetch(`${API_BASE}/api/user/${user.id}/role`, {
-        method: 'PUT',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ new_role: newRole }),
-      });
+      const res = await authApi.updateUserRole(user.id, newRole);
       
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
@@ -189,6 +183,7 @@ const UserProfile: React.FC = () => {
   const [error, setError] = useState('');
   const id = getQueryParam('id');
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const authApi = useAuthApi();
 
   useEffect(() => {
     async function fetchUserAndCampaigns() {
@@ -201,21 +196,9 @@ const UserProfile: React.FC = () => {
           return;
         }
         
-        const [userRes, campaignsRes] = await Promise.all([
-          fetch(`${API_BASE}/api/auth/user/${id}`, {
-            method: 'GET',
-            headers: { 
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-          }),
-          fetch(`${API_BASE}/api/user/${id}/signed-campaigns`, {
-            method: 'GET',
-            headers: { 
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-          })
+        const [userRes, campaignsData] = await Promise.all([
+          authApi.getUser(id),
+          authApi.getUserSignedCampaigns(id)
         ]);
         
         if (!userRes.ok) {
@@ -223,14 +206,8 @@ const UserProfile: React.FC = () => {
           throw new Error(errorData?.detail || 'کاربر پیدا نشد یا خطا در دریافت اطلاعات کاربر');
         }
         
-        if (!campaignsRes.ok) {
-          const errorData = await campaignsRes.json().catch(() => ({}));
-          throw new Error(errorData?.detail || 'خطا در دریافت کارزارهای امضاشده');
-        }
-        
         const userData = await userRes.json();
-        const campaignsData = await campaignsRes.json();
-        
+        // campaignsData همین الان آبجکت است و نیاز به .json() ندارد
         setUser(userData);
         setSignedCampaigns(campaignsData.campaigns || []);
       } catch (err: any) {
@@ -244,17 +221,10 @@ const UserProfile: React.FC = () => {
     // Fetch current user info for role check
     const token = localStorage.getItem('token');
     if (token) {
-      fetch(`${API_BASE}/api/auth/validate`, { 
-        method: 'GET',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` 
-        } 
-      })
-        .then(async res => {
-          if (res.ok) {
-            const data = await res.json();
-            setCurrentUser(data.user);
+      authApi.validateToken()
+        .then(res => {
+          if (res && res.valid && res.user) {
+            setCurrentUser(res.user);
           } else {
             setCurrentUser(null);
           }
@@ -284,7 +254,7 @@ const UserProfile: React.FC = () => {
 
   return (
     <Layout title="پروفایل کاربر">
-      <UserProfileContent user={user} signedCampaigns={signedCampaigns} currentUser={currentUser} />
+      <UserProfileContent user={user} signedCampaigns={signedCampaigns} currentUser={currentUser} authApi={authApi} />
     </Layout>
   );
 };

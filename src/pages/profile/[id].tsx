@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useAuthApi } from '../../api/auth';
 
 const API_BASE = typeof process !== "undefined" && process.env && process.env.REACT_APP_API_BASE
   ? process.env.REACT_APP_API_BASE
@@ -10,6 +11,8 @@ const UserProfile: React.FC = () => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const authApi = useAuthApi();
 
   useEffect(() => {
     async function fetchUser() {
@@ -22,13 +25,7 @@ const UserProfile: React.FC = () => {
           return;
         }
         
-        const res = await fetch(`${API_BASE}/api/auth/user/${id}`, {
-          method: 'GET',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-        });
+        const res = await authApi.getUser(id);
         
         if (!res.ok) {
           const errorData = await res.json().catch(() => ({}));

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { hasAdminAccess, getUserRole } from '@site/src/api/auth';
+import { useAuthApi } from '../api/auth';
 import { useColorMode } from '@docusaurus/theme-common';
 import { FaBars, FaTimes } from 'react-icons/fa';
 
@@ -191,6 +191,7 @@ export default function Header({
   const [isAdmin, setIsAdmin] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { colorMode, setColorMode } = useColorMode();
+  const authApi = useAuthApi();
 
   // Dynamic styles for dark mode
   const isDark = colorMode === 'dark';
@@ -213,7 +214,7 @@ export default function Header({
   const themeToggleBorder = isDark ? '1.5px solid #637eda' : '1.5px solid #bfcbe6';
 
   useEffect(() => {
-    setIsAdmin(hasAdminAccess());
+    setIsAdmin(authApi.hasAdminAccess());
   }, [userRole]);
 
   const handleLogout = () => {

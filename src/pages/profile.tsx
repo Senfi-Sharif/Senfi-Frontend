@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
-import { getUserSignedCampaigns } from '@site/src/api/auth';
+import { useAuthApi } from '../api/auth';
 import { useColorMode } from '@docusaurus/theme-common';
 
 const API_BASE = typeof process !== "undefined" && process.env && process.env.REACT_APP_API_BASE
@@ -160,6 +160,8 @@ export default function Profile() {
   const [userEmail, setUserEmail] = useState('');
   const [userRole, setUserRole] = useState('');
 
+  const authApi = useAuthApi();
+
   useEffect(() => {
     // بررسی لاگین بودن کاربر
     if (typeof window !== 'undefined') {
@@ -177,7 +179,7 @@ export default function Profile() {
     const fetchSignedCampaigns = async () => {
       try {
         setLoading(true);
-        const data = await getUserSignedCampaigns();
+        const data = await authApi.getUserSignedCampaigns();
         setSignedCampaigns(data.campaigns || []);
         setError(null);
       } catch (err) {

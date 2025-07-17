@@ -7,6 +7,7 @@ import persian from 'react-date-object/calendars/persian';
 import persian_fa from 'react-date-object/locales/persian_fa';
 import moment from 'moment';
 import { useColorMode } from '@docusaurus/theme-common';
+import { useAuthApi } from '../api/auth';
 
 const API_BASE = typeof process !== "undefined" && process.env && process.env.REACT_APP_API_BASE
   ? process.env.REACT_APP_API_BASE
@@ -25,6 +26,7 @@ function NewCampaignForm() {
   const { showNotification } = useNotification();
   const { colorMode } = useColorMode();
   const isDark = colorMode === 'dark';
+  const authApi = useAuthApi();
   // Dynamic styles
   const formBg = isDark ? 'rgba(30,34,54,0.98)' : 'rgba(255,255,255,0.98)';
   const formBorder = isDark ? '1.5px solid #637eda' : '1px solid #e0e7ff';
@@ -51,19 +53,14 @@ function NewCampaignForm() {
       }
       // تبدیل تاریخ جلالی به میلادی (ISO)
       const end_datetime = moment(endDate?.toDate()).format('YYYY-MM-DDTHH:mm:ss');
-      const res = await fetch(`${API_BASE}/api/campaigns/submit`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+      const res = await authApi.submitCampaign({ 
           title, 
           description: desc, 
           ...(email ? {email} : {}),
           is_anonymous: isAnonymous ? "anonymous" : "public",
           end_datetime
-        }),
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
+        });
+      if (res.success) {
         showNotification('کارزار با موفقیت ایجاد شد!', 'success');
         setTitle('');
         setDesc('');
@@ -74,7 +71,7 @@ function NewCampaignForm() {
           setOpen(false);
         }, 3000);
       } else {
-        showNotification(data.message || 'خطا در ثبت کارزار', 'error');
+        showNotification(res.message || 'خطا در ثبت کارزار', 'error');
       }
     } catch (err) {
       console.error('Error in handleSubmit:', err);
