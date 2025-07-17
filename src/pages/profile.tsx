@@ -3,10 +3,6 @@ import Layout from '@theme/Layout';
 import { useAuthApi } from '../api/auth';
 import { useColorMode } from '@docusaurus/theme-common';
 
-const API_BASE = typeof process !== "undefined" && process.env && process.env.REACT_APP_API_BASE
-  ? process.env.REACT_APP_API_BASE
-  : "http://localhost:8000";
-
 function AdminUserList() {
   const { colorMode } = useColorMode();
   const isDark = colorMode === 'dark';

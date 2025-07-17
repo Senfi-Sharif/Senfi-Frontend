@@ -1,7 +1,6 @@
 import React from 'react';
-import SharifCouncilDropDown from '@site/src/components/SharifCouncilDropDown';
 import { groupedPeriods } from '@site/src/data/council-periods.js';
-import { PeriodAccordion } from './PeriodAccordion';
+import SenfiAccordion from './SenfiAccordion';
 import { useColorMode } from '@docusaurus/theme-common';
 
 // استایل‌های مدرن و بهبود یافته
@@ -92,17 +91,17 @@ const FamilyTree = () => {
       <StatsPanel groupedPeriods={groupedPeriods} />
       
       {groupedPeriods.map((group, groupIndex) => (
-        <PeriodAccordion 
-          key={group.groupTitle} 
-          title={group.groupTitle} 
-          defaultOpen={false} // هیچ گروهی به صورت پیش‌فرض باز نباشه
+        <SenfiAccordion
+          key={group.groupTitle}
+          title={group.groupTitle}
+          defaultOpen={false}
           icon="📅"
         >
           {group.periods.map((council, periodIndex) => (
-            <PeriodAccordion
+            <SenfiAccordion
               key={council.meta.period}
               title={council.meta.faTitle}
-              defaultOpen={false} // هیچ دوره‌ای به صورت پیش‌فرض باز نباشه
+              defaultOpen={false}
               icon="👥"
             >
               {council.meta.description && (
@@ -122,9 +121,9 @@ const FamilyTree = () => {
               )}
               <SharifCouncilDropDown title="کارگروه‌ها" items={council.committees} />
               <SharifCouncilDropDown title="واحدها" items={council.units} />
-            </PeriodAccordion>
+            </SenfiAccordion>
           ))}
-        </PeriodAccordion>
+        </SenfiAccordion>
       ))}
     </div>
   );

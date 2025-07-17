@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { useColorMode } from '@docusaurus/theme-common';
 
-// استایل‌های مدرن و بهبود یافته
-const styles = {
+// استایل‌های مدرن و قابل تنظیم
+const baseStyles = {
   container: {
     margin: "1.5rem 0",
-    background: "rgba(255, 255, 255, 0.8)",
     borderRadius: "1rem",
     boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
     overflow: "hidden",
@@ -16,10 +15,6 @@ const styles = {
   button: (open) => ({
     fontSize: '1.1rem',
     fontWeight: 700,
-    color: open ? "var(--ifm-color-primary-darker)" : "var(--ifm-color-primary-dark)",
-    background: open 
-      ? "linear-gradient(135deg, var(--ifm-color-primary-lightest) 0%, var(--ifm-color-primary-lighter) 100%)" 
-      : "rgba(255, 255, 255, 0.9)",
     border: "none",
     padding: "1.2rem 1.5rem",
     width: "100%",
@@ -33,7 +28,6 @@ const styles = {
     justifyContent: 'space-between',
   }),
   buttonHover: {
-    background: "linear-gradient(135deg, var(--ifm-color-primary-lightest) 0%, var(--ifm-color-primary-lighter) 100%)",
     transform: 'translateY(-1px)',
     boxShadow: '0 6px 25px rgba(0, 0, 0, 0.15)',
   },
@@ -52,7 +46,6 @@ const styles = {
   }),
   content: {
     padding: "1rem 1.5rem",
-    background: 'rgba(255, 255, 255, 0.5)',
     animation: 'slideDown 0.3s ease-out',
   },
 };
@@ -71,13 +64,28 @@ const slideDownAnimation = `
   }
 `;
 
-export function PeriodAccordion({ title, children, defaultOpen = false, icon = "📋" }) {
+/**
+ * SenfiAccordion: یک آکوردیون ری‌یوزبل برای همه صفحات
+ * Props:
+ *   - title: عنوان
+ *   - icon: آیکون (اختیاری)
+ *   - children: محتوای بازشونده
+ *   - defaultOpen: باز بودن پیش‌فرض
+ *   - styleOverrides: امکان سفارشی‌سازی استایل‌ها (اختیاری)
+ */
+export default function SenfiAccordion({
+  title,
+  icon = null,
+  children,
+  defaultOpen = false,
+  styleOverrides = {},
+}) {
   const [open, setOpen] = useState(defaultOpen);
   const [isHovered, setIsHovered] = useState(false);
   const { colorMode } = useColorMode();
   const isDark = colorMode === 'dark';
 
-  // Dynamic styles for dark mode
+  // رنگ‌ها و استایل‌های داینامیک
   const containerBg = isDark ? 'rgba(20,22,34,0.98)' : 'rgba(255, 255, 255, 0.8)';
   const containerBorder = isDark ? '1px solid #637eda' : '1px solid var(--ifm-color-primary-lightest)';
   const buttonBg = open
@@ -91,44 +99,52 @@ export function PeriodAccordion({ title, children, defaultOpen = false, icon = "
     ? (isDark ? 'var(--ifm-color-primary-lightest)' : 'var(--ifm-color-primary-darker)')
     : (isDark ? 'var(--ifm-color-primary-light)' : 'var(--ifm-color-primary-dark)');
   const buttonHoverBg = isDark
-    ? 'linear-gradient(135deg, #23263a 0%, #181a23 100%)'
-    : 'linear-gradient(135deg, var(--ifm-color-primary-lightest) 0%, var(--ifm-color-primary-lighter) 100%)';
+    ? 'rgba(134, 140, 175, 0.95)'
+    : '#fff';
+  const buttonHoverColor = '#222';
   const contentBg = isDark ? 'rgba(30,34,54,0.85)' : 'rgba(255, 255, 255, 0.5)';
   const arrowColor = isDark ? 'var(--ifm-color-primary-light)' : 'var(--ifm-color-primary)';
+
+  // امکان override استایل‌ها
+  const mergedStyles = {
+    ...baseStyles,
+    ...styleOverrides,
+  };
 
   return (
     <>
       <style>{slideDownAnimation}</style>
-    <div style={{
-        ...styles.container,
-        background: containerBg,
-        border: containerBorder,
-        ...(isHovered && !open && { transform: 'translateY(-2px)', boxShadow: '0 6px 25px rgba(0, 0, 0, 0.15)' })
-    }}>
-      <button
-        onClick={() => setOpen(o => !o)}
+      <div
         style={{
-            ...styles.button(open),
+          ...mergedStyles.container,
+          background: containerBg,
+          border: containerBorder,
+        }}
+      >
+        <button
+          onClick={() => setOpen((o) => !o)}
+          style={{
+            ...mergedStyles.button(open),
             background: isHovered ? buttonHoverBg : buttonBg,
-            color: buttonColor,
-            ...(isHovered && styles.buttonHover)
+            color: isHovered ? buttonHoverColor : buttonColor,
+            ...(isHovered && mergedStyles.buttonHover),
           }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-        aria-expanded={open}
-      >
+          aria-expanded={open}
+        >
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <span style={styles.icon}>{icon}</span>
+            {icon && <span style={mergedStyles.icon}>{icon}</span>}
             <span>{title}</span>
           </div>
-          <span style={{ ...styles.arrow(open), color: arrowColor }}>▼</span>
-      </button>
-      {open && (
-          <div style={{ ...styles.content, background: contentBg }}>
-          {children}
-        </div>
-      )}
-    </div>
+          <span style={{ ...mergedStyles.arrow(open), color: arrowColor }}>▼</span>
+        </button>
+        {open && (
+          <div style={{ ...mergedStyles.content, background: contentBg }}>
+            {children}
+          </div>
+        )}
+      </div>
     </>
   );
-}
+} 

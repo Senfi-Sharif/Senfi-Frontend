@@ -4,6 +4,7 @@ import PDFPreview from '@site/src/components/PDFPreview';
 import Head from '@docusaurus/Head';
 import { useColorMode } from '@docusaurus/theme-common';
 import { magazines, Magazine } from '@site/src/data/magazines';
+import SenfiAccordion from '../components/SenfiAccordion';
 
 // استایل‌های مدرن و بهبود یافته
 const styles = {
@@ -240,23 +241,23 @@ function PublicationsContent() {
   // Dynamic style helpers
   const bgMain = isDark ? 'rgba(20,22,34,0.98)' : 'rgba(255,255,255,0.8)';
   const borderMain = isDark ? '1px solid #637eda' : '1px solid var(--ifm-color-primary-lightest)';
-  const bgHeader = isDark ? 'linear-gradient(120deg, #23263a 0%, #181a23 100%)' : styles.header.background;
-  const colorHeader = isDark ? 'var(--ifm-color-primary-lightest)' : styles.headerTitle.color;
-  const bgPdf = isDark ? 'rgba(30,34,54,0.95)' : styles.pdfPreview.background;
+  const bgHeader = isDark ? 'linear-gradient(120deg, #23263a 0%, #181a23 100%)' : styles.header.background ?? undefined;
+  const colorHeader = isDark ? 'var(--ifm-color-primary-lightest)' : styles.headerTitle.color ?? undefined;
+  const bgPdf = isDark ? 'rgba(30,34,54,0.95)' : styles.pdfPreview.background ?? undefined;
   const borderPdf = isDark ? '1px solid #637eda' : styles.pdfPreview.border;
-  const bgMainList = isDark ? 'rgba(30,34,54,0.95)' : styles.mainList.background;
+  const bgMainList = isDark ? 'rgba(30,34,54,0.95)' : styles.mainList.background ?? undefined;
   const borderMainList = isDark ? '1px solid #637eda' : styles.mainList.border;
-  const bgManagerBox = isDark ? 'rgba(40,44,64,0.95)' : styles.managerBox.background;
+  const bgManagerBox = isDark ? 'rgba(40,44,64,0.95)' : styles.managerBox.background ?? undefined;
   const borderManagerBox = isDark ? '1px solid #637eda' : styles.managerBox.border;
-  const bgEditorButton = isDark ? 'rgba(30,34,54,0.85)' : styles.editorButton.background;
-  const colorEditorButton = isDark ? 'var(--ifm-color-primary-lightest)' : styles.editorButton.color;
+  const bgEditorButton = isDark ? 'rgba(30,34,54,0.85)' : styles.editorButton.background ?? undefined;
+  const colorEditorButton = isDark ? 'var(--ifm-color-primary-lightest)' : styles.editorButton.color ?? undefined;
   const borderEditorButton = isDark ? '1px solid #637eda' : styles.editorButton.border;
-  const bgStats = isDark ? 'rgba(20,22,34,0.98)' : styles.statsContainer.background;
+  const bgStats = isDark ? 'rgba(20,22,34,0.98)' : styles.statsContainer.background ?? undefined;
   const borderStats = isDark ? '1px solid #637eda' : styles.statsContainer.border;
-  const bgStatItem = isDark ? 'rgba(30,34,54,0.95)' : styles.statItem.background;
+  const bgStatItem = isDark ? 'rgba(30,34,54,0.95)' : styles.statItem.background ?? undefined;
   const borderStatItem = isDark ? '1px solid #637eda' : styles.statItem.border;
-  const colorStatNumber = isDark ? 'var(--ifm-color-primary-light)' : styles.statNumber.color;
-  const colorStatLabel = isDark ? 'var(--ifm-color-primary-lightest)' : styles.statLabel.color;
+  const colorStatNumber = isDark ? 'var(--ifm-color-primary-light)' : styles.statNumber.color ?? undefined;
+  const colorStatLabel = isDark ? 'var(--ifm-color-primary-lightest)' : styles.statLabel.color ?? undefined;
 
   const toggleManager = (idx: number) => setManagerOpen(opened =>
     opened.includes(idx) ? opened.filter(i => i !== idx) : [...opened, idx]
@@ -272,9 +273,20 @@ function PublicationsContent() {
   };
 
   return (
-    <div style={{ ...styles.container, background: bgMain, border: borderMain }}>
-      <div style={{ ...styles.header, background: bgHeader, color: colorHeader }}>
-        <h1 style={{ ...styles.headerTitle, color: colorHeader }}>
+    <div style={{ 
+      ...styles.container, 
+      ...(bgMain && {background: bgMain}), 
+      border: borderMain 
+    }}>
+      <div style={{ 
+        ...styles.header, 
+        ...(bgHeader && {background: bgHeader}), 
+        ...(colorHeader && {color: colorHeader}) 
+      }}>
+        <h1 style={{ 
+          ...styles.headerTitle, 
+          ...(colorHeader && {color: colorHeader}) 
+        }}>
           <span style={styles.headerIcon}>📰</span>
           نشریه شورا
         </h1>
@@ -286,7 +298,11 @@ function PublicationsContent() {
       <StatsPanel magazines={magazines} bgStats={bgStats} borderStats={borderStats} bgStatItem={bgStatItem} borderStatItem={borderStatItem} colorStatNumber={colorStatNumber} colorStatLabel={colorStatLabel} />
 
       {currentPdf && (
-        <div style={{ ...styles.pdfPreview, background: bgPdf, border: borderPdf }}>
+        <div style={{ 
+          ...styles.pdfPreview, 
+          ...(bgPdf && {background: bgPdf}), 
+          border: borderPdf 
+        }}>
           <PDFPreview fileId={currentPdf} />
           <div style={{ textAlign: 'left', marginTop: '1rem' }}>
             <button 
@@ -311,112 +327,64 @@ function PublicationsContent() {
         </div>
       )}
 
-      <div style={{ ...styles.mainList, background: bgMainList, border: borderMainList }}>
+      <div style={{ 
+        ...styles.mainList, 
+        ...(bgMainList && {background: bgMainList}), 
+        border: borderMainList 
+      }}>
         {magazines.map((mag, i) => (
-          <div style={{ ...styles.managerBox, background: bgManagerBox, border: borderManagerBox }} key={i}>
-            <button
-              style={styles.managerButton}
-              onClick={() => toggleManager(i)}
-              onMouseEnter={(e) => {
-                const target = e.target as HTMLButtonElement;
-                target.style.background = 'linear-gradient(135deg, var(--ifm-color-primary-dark) 0%, var(--ifm-color-primary) 100%)';
-                target.style.transform = 'translateY(-1px)';
-                target.style.boxShadow = '0 4px 12px rgba(22, 51, 124, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                const target = e.target as HTMLButtonElement;
-                target.style.background = 'linear-gradient(135deg, var(--ifm-color-primary) 0%, var(--ifm-color-primary-light) 100%)';
-                target.style.transform = 'translateY(0)';
-                target.style.boxShadow = 'none';
-              }}
-            >
-              <span>👤 مدیرمسئول: {mag.manager}</span>
-              <span style={{
-                ...styles.managerIcon,
-                transform: managerOpen.includes(i) ? 'rotate(180deg)' : 'rotate(0deg)'
-              }}>
-                ▼
-              </span>
-            </button>
-            
-            {managerOpen.includes(i) && mag.editors.map((ed, j) => (
-              <div style={styles.editorBlock} key={j}>
-                <button
-                  style={{
-                    ...styles.editorButton,
-                    background: bgEditorButton,
-                    color: colorEditorButton,
-                    border: borderEditorButton,
-                    ...(ed.title.toLowerCase().includes("داخلی") && styles.editorButtonGray)
-                  }}
-                  onClick={() => toggleEditor(i, j)}
-                  onMouseEnter={(e) => {
-                    const target = e.target as HTMLButtonElement;
-                    if (ed.title.toLowerCase().includes("داخلی")) {
-                      target.style.background = 'rgba(128, 128, 128, 0.15)';
-                      target.style.color = '#444';
-                    } else {
-                      target.style.background = 'rgba(22, 51, 124, 0.05)';
-                      target.style.color = 'var(--ifm-color-primary-darker)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    const target = e.target as HTMLButtonElement;
-                    if (ed.title.toLowerCase().includes("داخلی")) {
-                      target.style.background = 'rgba(128, 128, 128, 0.1)';
-                      target.style.color = '#666';
-                    } else {
-                      target.style.background = 'rgba(255, 255, 255, 0.8)';
-                      target.style.color = 'var(--ifm-color-primary-dark)';
-                    }
-                  }}
-                >
-                  <span>{ed.title ? ed.title : "(بدون عنوان سردبیر)"}</span>
-                  <span style={{
-                    ...styles.toggleIcon,
-                    transform: editorOpen.includes(`${i}-${j}`) ? 'rotate(90deg)' : 'rotate(0deg)'
-                  }}>
-                    ▶
-                  </span>
-                </button>
-                
-                {editorOpen.includes(`${i}-${j}`) && (
-                  <ul style={styles.issuesList}>
-                    {ed.issues.map((issue, k) => (
-                      <li style={styles.issueItem} key={k}>
-                        {issue.fileId ? (
-                          <button 
-                            style={styles.issueButton}
-                            onClick={() => setCurrentPdf(issue.fileId)}
-                            onMouseEnter={(e) => {
-                              const target = e.target as HTMLButtonElement;
-                              target.style.background = 'rgba(22, 51, 124, 0.05)';
-                              target.style.color = 'var(--ifm-color-primary-darker)';
-                              target.style.transform = 'translateX(-5px)';
-                            }}
-                            onMouseLeave={(e) => {
-                              const target = e.target as HTMLButtonElement;
-                              target.style.background = 'transparent';
-                              target.style.color = 'var(--ifm-color-primary-dark)';
-                              target.style.transform = 'translateX(0)';
-                            }}
-                          >
-                            <span style={styles.issueIcon}>📄</span>
-                            {issue.title}
-                          </button>
-                        ) : (
-                          <div style={styles.issueMissing}>
-                            <span style={styles.issueIcon}>🚫</span>
-                            {issue.title}
-                          </div>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+          <SenfiAccordion
+            key={i}
+            title={`👤 مدیرمسئول: ${mag.manager}`}
+            icon={null}
+            defaultOpen={managerOpen.includes(i)}
+            styleOverrides={{}}
+            // اگر خواستی می‌توانی onToggle هم اضافه کنی
+          >
+            {mag.editors.map((ed, j) => (
+              <SenfiAccordion
+                key={j}
+                title={ed.title ? ed.title : "(بدون عنوان سردبیر)"}
+                icon={null}
+                defaultOpen={editorOpen.includes(`${i}-${j}`)}
+                styleOverrides={{}}
+              >
+                {/* محتوای شماره‌ها و ... */}
+                <ul style={styles.issuesList}>
+                  {ed.issues.map((issue, k) => (
+                    <li style={styles.issueItem} key={k}>
+                      {issue.fileId ? (
+                        <button 
+                          style={styles.issueButton}
+                          onClick={() => setCurrentPdf(issue.fileId)}
+                          onMouseEnter={(e) => {
+                            const target = e.target as HTMLButtonElement;
+                            target.style.background = 'rgba(22, 51, 124, 0.05)';
+                            target.style.color = 'var(--ifm-color-primary-darker)';
+                            target.style.transform = 'translateX(-5px)';
+                          }}
+                          onMouseLeave={(e) => {
+                            const target = e.target as HTMLButtonElement;
+                            target.style.background = 'transparent';
+                            target.style.color = 'var(--ifm-color-primary-dark)';
+                            target.style.transform = 'translateX(0)';
+                          }}
+                        >
+                          <span style={styles.issueIcon}>📄</span>
+                          {issue.title}
+                        </button>
+                      ) : (
+                        <div style={styles.issueMissing}>
+                          <span style={styles.issueIcon}>🚫</span>
+                          {issue.title}
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </SenfiAccordion>
             ))}
-          </div>
+          </SenfiAccordion>
         ))}
       </div>
     </div>

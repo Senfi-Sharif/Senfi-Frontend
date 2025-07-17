@@ -7,10 +7,6 @@ import NewCampaignForm from '../components/NewCampaignForm';
 import styles from '../css/campaignsStyles';
 import { useColorMode } from '@docusaurus/theme-common';
 
-const API_BASE = typeof process !== "undefined" && process.env && process.env.REACT_APP_API_BASE
-  ? process.env.REACT_APP_API_BASE
-  : "http://localhost:8000";
-
 // تابع بررسی لاگین
 function isLoggedIn() {
   if (typeof window === 'undefined') return false;

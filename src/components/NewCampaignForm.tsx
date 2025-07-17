@@ -9,10 +9,6 @@ import moment from 'moment';
 import { useColorMode } from '@docusaurus/theme-common';
 import { useAuthApi } from '../api/auth';
 
-const API_BASE = typeof process !== "undefined" && process.env && process.env.REACT_APP_API_BASE
-  ? process.env.REACT_APP_API_BASE
-  : "http://localhost:8000";
-
 function NewCampaignForm() {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');

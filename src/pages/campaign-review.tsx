@@ -386,14 +386,9 @@ function CampaignReviewPanel() {
     setLoading(true);
     setError('');
     try {
-      console.log('Loading campaigns...');
-      console.log('Token:', localStorage.getItem('token'));
-      console.log('Role:', localStorage.getItem('role'));
       const data = await authApi.getPendingCampaigns();
-      console.log('API Response:', data);
       setCampaigns(Array.isArray(data.campaigns) ? data.campaigns : []);
     } catch (err) {
-      console.error('Error loading campaigns:', err);
       setError(err.message || 'خطا در دریافت لیست کارزارها');
     } finally {
       setLoading(false);
