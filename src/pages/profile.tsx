@@ -6,6 +6,7 @@ import { useColorMode } from '@docusaurus/theme-common';
 function AdminUserList() {
   const { colorMode } = useColorMode();
   const isDark = colorMode === 'dark';
+  const authApi = useAuthApi();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -13,26 +14,8 @@ function AdminUserList() {
     async function fetchUsers() {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setError('توکن احراز هویت یافت نشد');
-          return;
-        }
-        
-        const res = await fetch(`${API_BASE}/api/auth/users`, {
-          method: 'GET',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-        });
-        
-        if (!res.ok) {
-          throw new Error('خطا در دریافت لیست کاربران');
-        }
-        
-        const data = await res.json();
-        setUsers(data);
+        const users = await authApi.getUsers();
+        setUsers(users);
         setError('');
       } catch (err) {
         console.error('DEBUG: error fetching users:', err);

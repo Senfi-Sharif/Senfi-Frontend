@@ -2,46 +2,10 @@ import React from 'react';
 import { groupedPeriods } from '@site/src/data/council-periods.js';
 import SenfiAccordion from './SenfiAccordion';
 import { useColorMode } from '@docusaurus/theme-common';
+import StatsPanel from './StatsPanel';
+import { container as sharedContainer } from '../theme/sharedStyles';
 
-// استایل‌های مدرن و بهبود یافته
-const styles = {
-  container: {
-    direction: 'rtl',
-    textAlign: 'right',
-    fontFamily: "inherit",
-    maxWidth: '100%',
-  },
-  statsContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    marginBottom: '2rem',
-    padding: '1.5rem',
-    background: 'rgba(255, 255, 255, 0.8)',
-    borderRadius: '1rem',
-    border: '1px solid var(--ifm-color-primary-lighter)',
-  },
-  statItem: {
-    textAlign: 'center',
-    padding: '1rem 2rem',
-    background: 'rgba(255, 255, 255, 0.5)',
-    borderRadius: '0.5rem',
-    border: '1px solid var(--ifm-color-primary-lightest)',
-  },
-  statNumber: {
-    fontSize: '2.5rem',
-    fontWeight: 700,
-    color: 'var(--ifm-color-primary)',
-    marginBottom: '0.5rem',
-  },
-  statLabel: {
-    fontSize: '1rem',
-    color: 'var(--ifm-color-primary-dark)',
-    fontWeight: 500,
-  },
-};
-
-// کامپوننت آمار ساده
-function StatsPanel({ groupedPeriods }) {
+const FamilyTree = () => {
   const { colorMode } = useColorMode();
   const isDark = colorMode === 'dark';
   // محاسبه تعداد کل اعضا
@@ -59,36 +23,13 @@ function StatsPanel({ groupedPeriods }) {
   const displayNumber = `+${approximateMembers}`;
 
   return (
-    <div style={{
-      ...styles.statsContainer,
-      background: isDark ? 'rgba(20,22,34,0.98)' : 'rgba(255,255,255,0.8)',
-      border: isDark ? '1px solid #637eda' : '1px solid var(--ifm-color-primary-lighter)',
-    }}>
-      <div style={{
-        ...styles.statItem,
-        background: isDark ? 'rgba(30,34,54,0.95)' : 'rgba(255,255,255,0.5)',
-        border: isDark ? '1px solid #637eda' : '1px solid var(--ifm-color-primary-lightest)',
-        color: isDark ? 'var(--ifm-color-primary-light)' : 'var(--ifm-color-primary)',
-      }}>
-        <div style={{
-          ...styles.statNumber,
-          color: isDark ? 'var(--ifm-color-primary-light)' : 'var(--ifm-color-primary)',
-        }}>👥 {displayNumber}</div>
-        <div style={{
-          ...styles.statLabel,
-          color: isDark ? 'var(--ifm-color-primary-lightest)' : 'var(--ifm-color-primary-dark)',
-        }}>تعداد کل اعضا</div>
-      </div>
-    </div>
-  );
-}
-
-const FamilyTree = () => {
-  const { colorMode } = useColorMode();
-  const isDark = colorMode === 'dark';
-  return (
-    <div style={styles.container}>
-      <StatsPanel groupedPeriods={groupedPeriods} />
+    <div style={sharedContainer}>
+      <StatsPanel
+        stats={[
+          { icon: '👥', label: 'تعداد کل اعضا', value: displayNumber },
+        ]}
+        // حذف background/border سفارشی، فقط sharedStyles
+      />
       
       {groupedPeriods.map((group, groupIndex) => (
         <SenfiAccordion
@@ -119,8 +60,42 @@ const FamilyTree = () => {
                   dangerouslySetInnerHTML={{ __html: council.meta.description }}
                 />
               )}
-              <SharifCouncilDropDown title="کارگروه‌ها" items={council.committees} />
-              <SharifCouncilDropDown title="واحدها" items={council.units} />
+              {/* Committees List */}
+              {council.committees && council.committees.length > 0 && (
+                <div style={{ marginBottom: '1rem' }}>
+                  <div style={{ fontWeight: 600, marginBottom: 4 }}>کارگروه‌ها:</div>
+                  <ul style={{ paddingRight: 18, margin: 0 }}>
+                    {council.committees.map((committee, idx) => (
+                      <li key={idx} style={{ marginBottom: 2 }}>
+                        <span style={{ fontWeight: 500 }}>{committee.title}</span>
+                        {committee.members && committee.members.length > 0 && (
+                          <span style={{ color: '#888', fontSize: '0.95em', marginRight: 8 }}>
+                            {' '}({committee.members.length} عضو)
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {/* Units List */}
+              {council.units && council.units.length > 0 && (
+                <div style={{ marginBottom: '1rem' }}>
+                  <div style={{ fontWeight: 600, marginBottom: 4 }}>واحدها:</div>
+                  <ul style={{ paddingRight: 18, margin: 0 }}>
+                    {council.units.map((unit, idx) => (
+                      <li key={idx} style={{ marginBottom: 2 }}>
+                        <span style={{ fontWeight: 500 }}>{unit.title}</span>
+                        {unit.members && unit.members.length > 0 && (
+                          <span style={{ color: '#888', fontSize: '0.95em', marginRight: 8 }}>
+                            {' '}({unit.members.length} عضو)
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </SenfiAccordion>
           ))}
         </SenfiAccordion>

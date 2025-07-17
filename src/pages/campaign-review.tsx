@@ -3,6 +3,8 @@ import Layout from '@theme/Layout';
 import { useAuthApi } from '../api/auth';
 import { useNotification } from '@site/src/contexts/NotificationContext';
 import ConfirmModal from '@site/src/components/ConfirmModal';
+import StatsPanel from '../components/StatsPanel';
+import { statsContainer, statItem, statNumber, statLabel } from '../theme/sharedStyles';
 
 // استایل‌های بهبود یافته
 const styles = {
@@ -61,34 +63,6 @@ const styles = {
     fontSize: '3rem',
     marginBottom: '1rem',
     opacity: 0.6,
-  },
-  statsContainer: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '1rem',
-    marginBottom: '2rem',
-    padding: '1.5rem',
-    background: 'rgba(255, 255, 255, 0.8)',
-    borderRadius: '1rem',
-    border: '1px solid var(--ifm-color-primary-lighter)',
-  },
-  statItem: {
-    textAlign: 'center' as const,
-    padding: '1rem',
-    background: 'rgba(255, 255, 255, 0.5)',
-    borderRadius: '0.5rem',
-    border: '1px solid var(--ifm-color-primary-lightest)',
-  },
-  statNumber: {
-    fontSize: '2rem',
-    fontWeight: 700,
-    color: 'var(--ifm-color-primary)',
-    marginBottom: '0.5rem',
-  },
-  statLabel: {
-    fontSize: '0.9rem',
-    color: 'var(--ifm-color-primary-dark)',
-    fontWeight: 500,
   },
   campaignsContainer: {
     maxHeight: '70vh',
@@ -335,30 +309,6 @@ function CampaignCard({ campaign, onApprove, onReject, processing }) {
   );
 }
 
-// کامپوننت آمار بهبود یافته
-function StatsPanel({ campaigns }) {
-  const totalCampaigns = campaigns.length;
-  const publicCampaigns = campaigns.filter(c => c.is_anonymous === 'public').length;
-  const anonymousCampaigns = campaigns.filter(c => c.is_anonymous === 'anonymous').length;
-
-  return (
-    <div style={styles.statsContainer}>
-      <div style={styles.statItem}>
-        <div style={styles.statNumber}>📊 {totalCampaigns}</div>
-        <div style={styles.statLabel}>کل کارزارها</div>
-      </div>
-      <div style={styles.statItem}>
-        <div style={styles.statNumber}>🌐 {publicCampaigns}</div>
-        <div style={styles.statLabel}>کارزارهای عمومی</div>
-      </div>
-      <div style={styles.statItem}>
-        <div style={styles.statNumber}>🔒 {anonymousCampaigns}</div>
-        <div style={styles.statLabel}>کارزارهای ناشناس</div>
-      </div>
-    </div>
-  );
-}
-
 // کامپوننت اصلی بهبود یافته
 function CampaignReviewPanel() {
   const [campaigns, setCampaigns] = useState([]);
@@ -463,6 +413,10 @@ function CampaignReviewPanel() {
     );
   }
 
+  const totalCampaigns = campaigns.length;
+  const publicCampaigns = campaigns.filter(c => c.is_anonymous === 'public').length;
+  const anonymousCampaigns = campaigns.filter(c => c.is_anonymous === 'anonymous').length;
+
   return (
     <div style={styles.container}>
       <div style={styles.header}>
@@ -487,7 +441,16 @@ function CampaignReviewPanel() {
       )}
       
       {!loading && !error && campaigns.length > 0 && (
-        <StatsPanel campaigns={campaigns} />
+        <StatsPanel
+          stats={[
+            { icon: '📊', label: 'کل کارزارها', value: totalCampaigns },
+            { icon: '🌐', label: 'کارزارهای عمومی', value: publicCampaigns },
+            { icon: '🔒', label: 'کارزارهای ناشناس', value: anonymousCampaigns },
+          ]}
+          // حذف background و border که در sharedStyles نیستند
+          numberColor={statNumber.color}
+          labelColor={statLabel.color}
+        />
       )}
       
       {campaigns.length === 0 && !loading && !error && (

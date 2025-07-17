@@ -13,8 +13,8 @@ const baseStyles = {
     transition: 'all 0.3s ease',
   },
   button: (open) => ({
-    fontSize: '1.1rem',
-    fontWeight: 700,
+    fontSize: '1rem',
+    fontWeight: 500,
     border: "none",
     padding: "1.2rem 1.5rem",
     width: "100%",

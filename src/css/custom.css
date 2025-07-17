@@ -182,3 +182,44 @@ body, * {
     max-width: 90vw !important;
   }
 }
+
+/* Profile card theme styles */
+[data-theme='dark'] .profile-card {
+  background: rgba(30,34,54,0.98);
+  border: 1.5px solid #637eda;
+  color: #f3f6fa;
+}
+[data-theme='light'] .profile-card {
+  background: #fff;
+  border: 1px solid #e0e7ff;
+  color: #222;
+}
+.profile-card {
+  max-width: 600px;
+  margin: 2em auto;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px #244bb92a;
+  padding: 2em;
+}
+.color-toggle-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+[data-theme='dark'] .color-toggle-btn {
+  background: #222b;
+  color: #fff;
+  border: 1px solid #bfcbe6;
+}
+[data-theme='light'] .color-toggle-btn {
+  background: #f5f7fa;
+  color: #222;
+  border: 1px solid #bfcbe6;
+}
+.color-toggle-btn {
+  padding: 0.3em 1em;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+}

@@ -298,7 +298,7 @@ export function useAuthApi() {
     } catch (err) {
       throw new Error('ارتباط با سرور برقرار نشد');
     }
-    return res;
+    return await processResponse(res);
   }
 
   async function updateUserRole(userId, newRole) {
@@ -317,7 +317,7 @@ export function useAuthApi() {
     } catch (err) {
       throw new Error('ارتباط با سرور برقرار نشد');
     }
-    return res;
+    return await processResponse(res);
   }
 
   async function submitCampaign({ title, description, email, is_anonymous, end_datetime }) {
@@ -337,6 +337,24 @@ export function useAuthApi() {
       throw new Error('ارتباط با سرور برقرار نشد');
     }
     return await res.json();
+  }
+
+  async function getUsers() {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('توکن احراز هویت یافت نشد');
+    let res;
+    try {
+      res = await fetch(`${API_BASE}/api/auth/users`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+      });
+    } catch (err) {
+      throw new Error('ارتباط با سرور برقرار نشد');
+    }
+    return await processResponse(res);
   }
 
   return {
@@ -359,5 +377,6 @@ export function useAuthApi() {
     getUser,
     updateUserRole,
     submitCampaign,
+    getUsers,
   };
 }
