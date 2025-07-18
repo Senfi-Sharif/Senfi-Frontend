@@ -2,23 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { useAuthApi } from '../api/auth';
 import { useNotification } from '../contexts/NotificationContext';
 import { FaCheckCircle } from 'react-icons/fa';
+import ConfirmModal from './ConfirmModal';
 
 interface SignCampaignButtonsProps {
   campaignId: number;
   campaignIsAnonymous: string;
   onSignatureSuccess?: () => void;
+  disabled?: boolean;
 }
 
 export default function SignCampaignButtons({ 
   campaignId, 
   campaignIsAnonymous, 
-  onSignatureSuccess 
+  onSignatureSuccess,
+  disabled = false
 }: SignCampaignButtonsProps) {
   const [loading, setLoading] = useState(false);
   const [hasSigned, setHasSigned] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { showNotification } = useNotification();
   const authApi = useAuthApi();
+  const [confirmOpen, setConfirmOpen] = useState<false | 'anonymous' | 'public'>(false);
 
   const isAnonymous = campaignIsAnonymous === "anonymous";
 
@@ -55,6 +59,7 @@ export default function SignCampaignButtons({
       setError(err.message || 'خطا در ثبت امضا');
     } finally {
       setLoading(false);
+      setConfirmOpen(false);
     }
   };
 
@@ -72,24 +77,34 @@ export default function SignCampaignButtons({
         <div className="sign-campaign-error">{error}</div>
       )}
       <div className="sign-campaign-buttons">
-        {isAnonymous && (
+        {isAnonymous ? (
           <button
-            onClick={() => handleSign(true)}
-            disabled={loading}
-            className={`sign-campaign-button sign-campaign-anonymous${loading ? ' sign-campaign-disabled' : ''}`}
+            onClick={() => !disabled && setConfirmOpen('anonymous')}
+            disabled={loading || disabled}
+            className={`sign-campaign-button sign-campaign-anonymous${loading || disabled ? ' sign-campaign-disabled' : ''}`}
           >
-            {loading ? 'در حال ثبت...' : 'امضای ناشناس'}
+            {loading && confirmOpen === 'anonymous' ? 'در حال ثبت...' : 'امضای ناشناس'}
+          </button>
+        ) : (
+          <button
+            onClick={() => !disabled && setConfirmOpen('public')}
+            disabled={loading || disabled}
+            className={`sign-campaign-button sign-campaign-public${loading || disabled ? ' sign-campaign-disabled' : ''}`}
+          >
+            {loading && confirmOpen === 'public' ? 'در حال ثبت...' : 'امضای عمومی'}
           </button>
         )}
-        
-        <button
-          onClick={() => handleSign(false)}
-          disabled={loading}
-          className={`sign-campaign-button sign-campaign-public${loading ? ' sign-campaign-disabled' : ''}`}
-        >
-          {loading ? 'در حال ثبت...' : 'امضای عمومی'}
-        </button>
       </div>
+      <ConfirmModal
+        open={!!confirmOpen}
+        title="تایید امضا"
+        message={confirmOpen === 'anonymous' ? 'آیا مطمئن هستید می‌خواهید این کارزار را به صورت ناشناس امضا کنید؟ (نام شما نمایش داده نمی‌شود)' : 'آیا مطمئن هستید می‌خواهید این کارزار را به صورت عمومی امضا کنید؟ (نام شما نمایش داده می‌شود)'}
+        confirmText="بله، امضا کن"
+        cancelText="انصراف"
+        loading={loading}
+        onConfirm={() => handleSign(confirmOpen === 'anonymous')}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </div>
   );
 }

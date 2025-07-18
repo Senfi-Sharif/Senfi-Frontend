@@ -821,4 +821,27 @@ const styles = {
   },
 };
 
+export const campaignCardClosed = {
+  background: 'var(--ifm-color-danger-lightest)',
+  position: 'relative' as 'relative',
+  border: '2px solid var(--ifm-color-danger-dark, #b71c1c)',
+  paddingTop: '2.5em', // فضای کافی برای لیبل بالا
+};
+
+export const campaignCardEndedLabel = {
+  top: 0,
+  left: 0,
+  right: 0,
+  background: 'var(--ifm-color-danger-lightest)',
+  color: 'var(--ifm-color-danger-dark, #b71c1c)',
+  fontWeight: 700,
+  textAlign: 'center' as 'center',
+  padding: '0.5em 0',
+  borderBottom: '2px solid var(--ifm-color-danger-dark, #b71c1c)',
+  zIndex: 2,
+  borderTopLeftRadius: '1em',
+  borderTopRightRadius: '1em',
+  fontSize: '1.1em',
+};
+
 export default styles; 

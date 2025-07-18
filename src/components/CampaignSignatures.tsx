@@ -17,6 +17,7 @@ export default function CampaignSignatures({ campaignId }: CampaignSignaturesPro
   const [signatures, setSignatures] = useState<Signature[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<any>(null);
   const authApi = useAuthApi();
 
   useEffect(() => {
@@ -25,10 +26,12 @@ export default function CampaignSignatures({ campaignId }: CampaignSignaturesPro
         setLoading(true);
         const data = await authApi.getCampaignSignatures(campaignId);
         setSignatures(data.signatures || []);
+        setData(data);
         setError(null);
       } catch (err) {
         setError('خطا در بارگذاری امضاها');
         setSignatures([]);
+        setData(null);
       } finally {
         setLoading(false);
       }
@@ -53,7 +56,21 @@ export default function CampaignSignatures({ campaignId }: CampaignSignaturesPro
     );
   }
 
-  if (signatures.length === 0) {
+  // اگر کارزار ناشناس است، فقط تعداد را نمایش بده
+  if (data && data.campaign_is_anonymous === 'anonymous') {
+    return (
+      <div className="campaign-signatures-empty">
+        <div className="campaign-signatures-empty-text">
+          {data.total === 0
+            ? 'هنوز امضایی ثبت نشده است'
+            : `${data.total} امضا ثبت شده است`}
+        </div>
+      </div>
+    );
+  }
+
+  // اگر کارزار عمومی است و هیچ امضایی ثبت نشده
+  if (data && data.campaign_is_anonymous === 'public' && signatures.length === 0) {
     return (
       <div className="campaign-signatures-empty">
         <div className="campaign-signatures-empty-text">هنوز امضایی ثبت نشده است</div>

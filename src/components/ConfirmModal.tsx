@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 
 interface ConfirmModalProps {
   open: boolean;
@@ -21,10 +22,9 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   onCancel,
   loading = false,
 }) => {
-
   if (!open) return null;
 
-  return (
+  const modal = (
     <div className="confirm-modal-overlay">
       <div className="confirm-modal-content">
         <div className="confirm-modal-header">{title}</div>
@@ -48,8 +48,11 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
       </div>
     </div>
   );
+
+  if (typeof window !== 'undefined') {
+    return ReactDOM.createPortal(modal, document.body);
+  }
+  return modal;
 };
-
-
 
 export default ConfirmModal; 

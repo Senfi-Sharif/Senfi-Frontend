@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import SignCampaignButtons from './SignCampaignButtons';
 import CampaignSignatures from './CampaignSignatures';
-import styles from '../css/campaignsStyles';
+import styles, { campaignCardClosed, campaignCardEndedLabel } from '../css/campaignsStyles';
 import { FaEnvelope, FaRegCalendarAlt, FaRegClock } from 'react-icons/fa';
 
 function formatDate(dateString: string) {
@@ -19,6 +19,8 @@ interface CampaignCardProps {
 
 const CampaignCard: React.FC<CampaignCardProps> = ({ c, isSigned = false, userRole, handleSetPending, handleSignSuccess }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const now = new Date();
+  const isClosed = c.end_datetime && new Date(c.end_datetime) < now;
 
   return (
     <div
@@ -27,19 +29,25 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ c, isSigned = false, userRo
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+      {/* برچسب پایان یافته */}
+      {isClosed && (
+        <div className="campaign-card-ended-label" style={campaignCardEndedLabel}>این کارزار به پایان رسیده است</div>
+      )}
       {/* Title row: remove inline sign status */}
       <div className="campaign-title">{c.title}</div>
       <div className="campaign-description">{c.description}</div>
-      <div className="campaign-meta">
+      <div className={`campaign-meta${isClosed ? ' campaign-meta-closed' : ''}`}>
         {c.email && <span><FaEnvelope /> ثبت‌کننده: {c.email} | </span>}
         {c.created_at && <span><FaRegCalendarAlt /> تاریخ: {formatDate(c.created_at)}</span>}
         {c.end_datetime && <span className="campaign-end-date"><FaRegClock /> پایان: {formatDate(c.end_datetime)}</span>}
       </div>
-      <SignCampaignButtons
-        campaignId={c.id}
-        campaignIsAnonymous={c.is_anonymous || "public"}
-        onSignatureSuccess={() => handleSignSuccess(c.id)}
-      />
+      {!isClosed && (
+        <SignCampaignButtons
+          campaignId={c.id}
+          campaignIsAnonymous={c.is_anonymous || "public"}
+          onSignatureSuccess={() => handleSignSuccess(c.id)}
+        />
+      )}
       <CampaignSignatures
         campaignId={c.id}
       />

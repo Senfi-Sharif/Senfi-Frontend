@@ -10,6 +10,9 @@
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(30, 64, 175, 0.08); /* آبی خیلی کم‌رنگ */
   --ifm-color-red: #e26c6c;
+  --ifm-color-red-melow: #b96c6c;
+  --ifm-color-danger-dark: #b71c1c;
+  --ifm-color-danger-lightest: #d3a4a4;
   --ifm-color-black: #000000;
   --ifm-color-success: #48cf7c;
   --ifm-color-warning: #e09766;
@@ -168,6 +171,17 @@ body, * {
   background: var(--ifm-color-primary) !important;
   color: var(--ifm-color-white) !important;
 }
+.sd {
+  color: var(--ifm-color-primary-lightest-dublicate) ;
+}
+
+.rmdp-deactive {
+  color: var(--ifm-color-primary-lightest-dublicate) ;
+}
+
+.rmdp-day {
+  color: var(--ifm-color-primary-lightest-dublicate);
+}
 
 .rmdp-calendar .rmdp-day.rmdp-today {
   background: var(--ifm-color-primary-lightest) !important;
@@ -266,6 +280,7 @@ body, * {
   margin-bottom: 1.5rem;
   transition: box-shadow 0.2s, transform 0.2s;
   display: block;
+  padding-top: 2.5em;
 }
 
 .campaign-card-hover {
@@ -518,6 +533,22 @@ body, * {
   margin-left: auto;
   margin-right: auto;
   padding: 24px 18px 18px 18px;
+  transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1), transform 0.4s cubic-bezier(0.4,0,0.2,1);
+  opacity: 0;
+  transform: scale(0.95);
+  overflow: visible;
+  z-index: 2;
+}
+
+.new-campaign-form-open {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.new-campaign-form-closing {
+  opacity: 0;
+  transform: scale(0.95);
+  pointer-events: none;
 }
 
 .new-campaign-form input,
@@ -649,7 +680,7 @@ body, * {
   border-radius: 8px;
   border: 1.5px solid var(--ifm-color-primary-lightest);
   background: var(--ifm-color-white);
-  color: var(--ifm-color-primary-light);
+  color: var(--ifm-color-primary-lightest-dublicate);
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
@@ -666,13 +697,14 @@ body, * {
   position: absolute;
   top: 110%;
   right: 0;
-  background: var(--ifm-border-center-down-blue);
+  background: linear-gradient(135deg, var(--ifm-color-primary-darker) 0%, var(--ifm-color-primary-darkest) 100%);
   border: 1px solid var(--ifm-color-primary-lighter);
   border-radius: 10px;
   box-shadow: var(--ifm-shadow-strong);
   padding: 1em 1.2em;
   z-index: 50;
   min-width: 180px;
+  color: var(--ifm-color-black);
   margin-right: 8px;
 }
 [data-theme='light'] .campaigns-status-submenu {
@@ -1138,7 +1170,12 @@ body, * {
 }
 
 .notification-error {
-  background: linear-gradient(135deg, var(--ifm-color-red) 0%, var(--ifm-color-red-dark) 100%);
+  background: var(--ifm-color-red) !important;
+  color: var(--ifm-color-primary-lightest-dublicate) !important;
+}
+
+.notification-error .notification-icon {
+  color: inherit !important;
 }
 
 .notification-warning {
@@ -1776,7 +1813,7 @@ body, * {
 }
 
 .new-campaign-success-message {
-  color: var(--ifm-color-success);
+  color: var(--ifm-color-white);
   font-weight: 600;
   font-size: 1rem;
   margin-top: 1rem;
@@ -2525,7 +2562,7 @@ body, * {
 
 .campaign-signatures-empty-text {
   font-size: 1rem;
-  color: var(--ifm-color-gray-600);
+  color: var(--ifm-color-danger-dark);
 }
 
 .campaign-signature-email {
@@ -3052,4 +3089,142 @@ body, * {
   .profile-campaigns-list {
     grid-template-columns: 1fr;
   }
+}
+
+@media (max-width: 800px) {
+  .header-login-btn-text {
+    display: none !important;
+  }
+  .header-login-btn-icon {
+    font-size: 1em;
+    margin: 0 !important;
+    display: inline;
+    vertical-align: middle;
+  }
+  .header-login-icon-btn {
+    padding: 0.7em 0.7em;
+    min-width: 0;
+    border-radius: 50%;
+    background: var(--ifm-color-primary-lightest);
+    color: var(--ifm-color-primary-lightest-dublicate
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .header-user-section {
+    display: flex !important;
+    align-items: center;
+  }
+  .header-login-button {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+  .header-container {
+    position: relative;
+  }
+  .header-hamburger {
+    position: absolute !important;
+    left: auto;
+    right: 0.7em;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+  }
+  .header-user-section {
+    margin-left: auto;
+    margin-right: 0;
+    padding-right: 2.5em;
+  }
+}
+@media (min-width: 801px) {
+  .header-login-btn-icon {
+    margin-inline-start: 0.5em;
+    font-size: 1em;
+    vertical-align: middle;
+  }
+}
+
+@media (max-width: 700px) {
+  .stats-panel-container {
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1rem 0.3rem;
+  }
+  .stats-panel-item {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0 0 1em 0;
+    box-sizing: border-box;
+  }
+}
+
+
+.approved-campaigns-sort-dropdown {
+  color: var(--ifm-color-primary-lightest-dublicate) !important;
+}
+
+.new-campaign-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.35);
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: var(--ifm-color-primary-darkest);
+  backdrop-filter: blur(2px);
+}
+.new-campaign-loading-spinner {
+  font-size: 2.5rem;
+  margin-bottom: 1.2rem;
+  color: var(--ifm-color-primary);
+}
+
+.new-campaign-form-animated {
+  max-height: 1000px;
+  opacity: 1;
+  transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.4s cubic-bezier(0.4,0,0.2,1);
+  overflow: hidden;
+}
+.new-campaign-form-animated.closing {
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.new-campaign-form-animated.closed {
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+main, .theme-doc-markdown {
+  padding-top: 64px !important;
+  margin-top: 0 !important;
+}
+
+h1, h2, h3, h4, h5, h6, [id] {
+  scroll-margin-top: 72px !important;
+}
+
+:target {
+  scroll-margin-top: 72px !important;
+}
+
+.campaign-meta-closed {
+  color: var(--ifm-color-danger-dark) !important;
+}
+
+.campaign-card-ended-label {
+  display: block !important;
+  opacity: 1 !important;
+  pointer-events: auto;
 }

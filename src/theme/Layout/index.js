@@ -203,6 +203,7 @@ function LayoutContent(props) {
         localStorage.setItem('token', res.token);
         localStorage.setItem('role', res.user?.role || '');
         localStorage.setItem('email', email); // ایمیل را هم ذخیره کن
+        localStorage.setItem('auth_email', email); // ایمیل را برای فرم کمپین هم ذخیره کن
         setIsLoggedIn(true);
         setUserEmail(email);
         setUserRole(res.user?.role || '');
@@ -390,6 +391,7 @@ function LayoutContent(props) {
 }
 
 export default function LayoutWrapper(props) {
+  console.log('LayoutWrapper mount شد', Date.now());
   return (
     <NotificationProvider>
       <LayoutContent {...props} />

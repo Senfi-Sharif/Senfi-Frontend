@@ -22,6 +22,7 @@ const ApprovedCampaigns = () => {
   const [pendingId, setPendingId] = useState<number | null>(null);
   const [pendingLoading, setPendingLoading] = useState(false);
   const [search, setSearch] = useState('');
+  const [sortType, setSortType] = useState<'signatures' | 'deadline' | 'created_at'>('signatures');
 
   // فیلترها
   const [filterOpen, setFilterOpen] = useState(false);
@@ -173,8 +174,25 @@ const ApprovedCampaigns = () => {
       (c.description && c.description.toLowerCase().includes(s))
     );
     }
-    return result;
-  }, [campaigns, userSignatures, filterSigned, filterUnsigned, filterClosed, filterOpenCampaigns, search]);
+    // --- سورت ---
+    let sorted = [...result];
+    if (sortType === 'signatures') {
+      sorted.sort((a, b) => (b.signatures_count || 0) - (a.signatures_count || 0));
+    } else if (sortType === 'deadline') {
+      sorted.sort((a, b) => {
+        const aTime = a.end_datetime ? new Date(a.end_datetime).getTime() : 0;
+        const bTime = b.end_datetime ? new Date(b.end_datetime).getTime() : 0;
+        return aTime - bTime;
+      });
+    } else if (sortType === 'created_at') {
+      sorted.sort((a, b) => {
+        const aTime = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const bTime = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return bTime - aTime;
+      });
+    }
+    return sorted;
+  }, [campaigns, userSignatures, filterSigned, filterUnsigned, filterClosed, filterOpenCampaigns, search, sortType]);
 
   // لیست واحد همه کارزارها
   const allCampaigns = filteredCampaigns;
@@ -202,6 +220,17 @@ const ApprovedCampaigns = () => {
           placeholder="جستجو در عنوان یا متن کارزار..."
           className="approved-campaigns-search-input"
         />
+        <select
+          value={sortType}
+          onChange={e => setSortType(e.target.value as any)}
+          className="approved-campaigns-sort-dropdown"
+          style={{marginRight: '1em', borderRadius: '0.7em', padding: '0.5em 1em', fontSize: '1em', border: '1.5px solid var(--ifm-color-primary-lightest)', background: 'var(--ifm-color-white)', color: 'var(--ifm-color-primary-darkest)'}}
+          title="مرتب‌سازی بر اساس"
+        >
+          <option value="signatures">بیشترین امضا</option>
+          <option value="deadline">نزدیک‌ترین ددلاین</option>
+          <option value="created_at">جدیدترین کارزار</option>
+        </select>
         <div ref={filterRef} className="approved-campaigns-filter-container">
           <button
             onClick={() => setFilterOpen(f => !f)}

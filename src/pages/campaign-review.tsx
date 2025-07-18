@@ -36,6 +36,11 @@ function CampaignCard({ campaign, onApprove, onReject, processing }) {
         <div className="campaign-date">
           {formatDate(campaign.created_at)}
         </div>
+        {campaign.end_datetime && (
+          <div className="campaign-end-date" style={{ color: '#b71c1c', fontWeight: 600, marginTop: 4 }}>
+            🕒 پایان: {formatDate(campaign.end_datetime)}
+          </div>
+        )}
       </div>
       
       <div className={`campaign-type ${campaign.is_anonymous === 'anonymous' ? 'anonymous-type' : 'public-type'}`}>
@@ -211,9 +216,6 @@ function CampaignReviewPanel() {
             { icon: '🌐', label: 'کارزارهای عمومی', value: publicCampaigns },
             { icon: '🔒', label: 'کارزارهای ناشناس', value: anonymousCampaigns },
           ]}
-          // حذف background و border که در sharedStyles نیستند
-          numberColor={statNumber.color}
-          labelColor={statLabel.color}
         />
       )}
       

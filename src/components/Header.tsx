@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthApi } from '../api/auth';
-import { FaBars, FaTimes, FaSun, FaMoon } from 'react-icons/fa';
+import { FaBars, FaTimes, FaSun, FaMoon, FaUser } from 'react-icons/fa';
 
 
 
@@ -90,6 +90,7 @@ export default function Header({
         <nav className="header-nav-section">
           <a href="/tree" className="header-nav-link">شجره‌نامه</a>
           <a href="/publications" className="header-nav-link">نشریه شورا</a>
+          <a href="/sharif-senfi-regulations" className="header-nav-link">آیین‌نامه داخلی شورا</a>
           {isLoggedIn && (
             <a href="/campaigns" className="header-nav-link">کارزارها</a>
           )}
@@ -101,7 +102,7 @@ export default function Header({
         <button className="header-hamburger" onClick={() => setMobileMenuOpen(true)} aria-label="باز کردن منو">
           <FaBars />
         </button>
-        {/* بخش کاربر دسکتاپ */}
+        {/* بخش کاربر دسکتاپ و آیکون موبایل */}
         <div className="header-user-section header-nav-section">
           {/* دکمه دارک مود */}
           <button
@@ -111,7 +112,6 @@ export default function Header({
           >
             {theme === 'dark' ? <FaSun /> : <FaMoon />}
           </button>
-
           {isLoggedIn ? (
             <div className="header-dropdown-wrapper" data-dropdown>
               <button 
@@ -145,9 +145,11 @@ export default function Header({
           ) : (
             <button 
               onClick={onLoginClick}
-              className="header-login-button"
+              className="header-login-button header-login-icon-btn"
+              title="ورود / ثبت‌نام"
             >
-              ورود / ثبت‌نام
+              <span className="header-login-btn-text">ورود / ثبت‌نام</span>
+              <FaUser className="header-login-btn-icon" />
             </button>
           )}
         </div>
@@ -160,14 +162,12 @@ export default function Header({
             <button className="close-btn" onClick={() => setMobileMenuOpen(false)} aria-label="بستن منو"><FaTimes /></button>
             <a href="/tree">شجره‌نامه</a>
             <a href="/publications">نشریه شورا</a>
+            <a href="/sharif-senfi-regulations">آیین‌نامه شورا</a>
             {isLoggedIn && <a href="/campaigns">کارزارها</a>}
             {isAdmin && <a href="/campaign-review">بررسی کارزارها</a>}
-            <button onClick={toggleTheme} className="header-mobile-theme-button">{theme === 'dark' ? <FaSun /> : <FaMoon />} {theme === 'dark' ? 'حالت روشن' : 'حالت تاریک'}</button>
             {isLoggedIn ? (
               <button onClick={onLogout} className="header-mobile-logout-button">خروج</button>
-            ) : (
-              <button onClick={onLoginClick} className="header-mobile-login-button">ورود/ثبت‌نام</button>
-            )}
+            ) : null}
           </div>
         </>
       )}

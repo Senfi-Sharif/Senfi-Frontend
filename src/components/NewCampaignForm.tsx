@@ -9,8 +9,17 @@ import { useAuthApi } from '../api/auth';
 import { FaTimes, FaRegEdit, FaLock, FaGlobe, FaRegClock, FaExclamationTriangle, FaPaperPlane, FaSpinner, FaCheckCircle } from 'react-icons/fa';
 import colors from 'react-multi-date-picker/plugins/colors';
 
+// برای جلوگیری از خطای تایپ‌اسکریپت
+declare global {
+  interface Window {
+    __lastSuccessNotifTime?: number;
+  }
+}
+
 function NewCampaignForm() {
-  const [open, setOpen] = useState(false);
+  const [shouldRender, setShouldRender] = useState(false); // برای حضور در DOM
+  const [visible, setVisible] = useState(false); // برای انیمیشن باز/بسته
+  const [closing, setClosing] = useState(false);
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
@@ -22,7 +31,24 @@ function NewCampaignForm() {
   const { showNotification } = useNotification();
   const authApi = useAuthApi();
   
+  // تابع باز کردن فرم با انیمیشن
+  const handleOpen = () => {
+    setShouldRender(true);
+    setTimeout(() => setVisible(true), 10); // فعال‌سازی انیمیشن باز شدن
+    setClosing(false);
+  };
+  // تابع بستن فرم با انیمیشن
+  const handleClose = () => {
+    setVisible(false);
+    setClosing(true);
+    setTimeout(() => {
+      setShouldRender(false);
+      setClosing(false);
+    }, 500); // مدت زمان transition
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log('handleSubmit اجرا شد', Date.now());
     e.preventDefault();
     if (!title.trim() || !desc.trim()) {
       showNotification('لطفاً تیتر و متن را وارد کنید.', 'warning');
@@ -37,10 +63,10 @@ function NewCampaignForm() {
     try {
       let email = '';
       if (typeof window !== 'undefined') {
-        email = localStorage.getItem('auth_email') || '';
+        email = localStorage.getItem('email') || '';
       }
-      // تبدیل تاریخ جلالی به میلادی (ISO)
-      const end_datetime = moment(endDate?.toDate()).format('YYYY-MM-DDTHH:mm:ss');
+      // اصلاح ساخت end_datetime با تایم‌زون صحیح
+      const end_datetime = moment(endDate?.toDate()).format(); // خروجی: 2024-07-20T14:00:00+03:30
       const res = await authApi.submitCampaign({ 
           title, 
           description: desc, 
@@ -49,15 +75,12 @@ function NewCampaignForm() {
           end_datetime
         });
       if (res.success) {
-        showNotification('کارزار با موفقیت ایجاد شد!', 'success');
+        showNotification('کارزار با موفقیت ایجاد شد!', 'success', 10000);
         setTitle('');
         setDesc('');
         setIsAnonymous(false);
         setEndDate(null);
-        setTimeout(() => {
-          setSuccess(false);
-          setOpen(false);
-        }, 3000);
+        handleClose(); // فرم را با انیمیشن ببند
       } else {
         showNotification(res.message || 'خطا در ثبت کارزار', 'error');
       }
@@ -73,26 +96,16 @@ function NewCampaignForm() {
     <>
       <div className="new-campaign-form-container">
       <button 
-        onClick={() => {
-          setOpen(v => !v);
-          if (open) {
-            setTitle('');
-            setDesc('');
-            setIsAnonymous(false);
-            setEndDate(null);
-            setError('');
-            setSuccess(false);
-          }
-        }}
+        onClick={() => (shouldRender ? handleClose() : handleOpen())}
         className={`new-campaign-toggle-button ${isHovered ? 'new-campaign-toggle-button-hover' : ''}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-          {open ? <><FaTimes /> بستن فرم</> : <><FaRegEdit /> ایجاد کارزار جدید</>}
+          {shouldRender ? <><FaTimes /> بستن فرم</> : <><FaRegEdit /> ایجاد کارزار جدید</>}
       </button>
       </div>
-      {open && (
-        <div className="new-campaign-form">
+      {shouldRender && (
+        <div className={`new-campaign-form new-campaign-form-animated${closing ? ' closing' : ''}${visible ? '' : ' closed'}`}>
             <h3 className="new-campaign-form-title">
               ایجاد کارزار جدید
             </h3>
@@ -170,6 +183,7 @@ function NewCampaignForm() {
                   placeholder="انتخاب تاریخ و ساعت..."
                   minDate={new Date()}
                   required
+                  portal
                 />
               </div>
               
@@ -183,8 +197,13 @@ function NewCampaignForm() {
                 {loading ? <><FaSpinner className="fa-spin" /> در حال ارسال...</> : <><FaPaperPlane /> ارسال به نمایندگان صنف جهت بررسی</>}
               </button>
               
-              {success && <div className="new-campaign-success-message"><FaCheckCircle /> کارزار با موفقیت ثبت شد و جهت بررسی ارسال شد.</div>}
             </form>
+        </div>
+      )}
+      {loading && (
+        <div className="new-campaign-loading-overlay">
+          <FaSpinner className="fa-spin new-campaign-loading-spinner" />
+          <span>در حال ثبت کارزار...</span>
         </div>
       )}
     </>
