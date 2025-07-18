@@ -1,6 +1,5 @@
 // Shared style objects for use across components/pages
 export const container = {
-  direction: 'rtl' as const,
   textAlign: 'right' as const,
   fontFamily: 'inherit',
   maxWidth: '100%',

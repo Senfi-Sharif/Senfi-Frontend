@@ -1,5 +1,4 @@
 import React from 'react';
-import { statsContainer, statItem, statNumber, statLabel } from '../theme/sharedStyles';
 
 type Stat = {
   icon: React.ReactNode;
@@ -10,54 +9,22 @@ type Stat = {
 
 export default function StatsPanel({
   stats,
-  background,
-  border,
-  itemBackground,
-  itemBorder,
-  numberColor,
-  labelColor,
 }: {
   stats: Stat[];
-  background?: string;
-  border?: string;
-  itemBackground?: string;
-  itemBorder?: string;
-  numberColor?: string;
-  labelColor?: string;
 }) {
   return (
-    <div
-      style={{
-        ...statsContainer,
-        background: background || 'var(--ifm-background-color)',
-        border: border || statsContainer.border,
-      }}
-    >
+    <div className="stats-panel-container">
       {stats.map((stat, i) => (
         <div
           key={i}
-          style={{
-            ...statItem,
-            background: itemBackground || 'var(--ifm-background-surface-color, #fff)',
-            border: itemBorder || statItem.border,
-            color: stat.color || numberColor || 'var(--ifm-color-primary)',
-            margin: '0 0.5rem',
-          }}
+          className="stats-panel-item"
         >
           <div
-            style={{
-              ...statNumber,
-              color: stat.color || numberColor || statNumber.color,
-            }}
+            className={`stats-panel-number ${stat.color ? 'stats-panel-number-color' : ''}`}
           >
             {stat.icon} {stat.value}
           </div>
-          <div
-            style={{
-              ...statLabel,
-              color: labelColor || statLabel.color,
-            }}
-          >
+          <div className="stats-panel-label">
             {stat.label}
           </div>
         </div>

@@ -50,16 +50,6 @@ const config: Config = {
       disableSwitch: false,
       respectPrefersColorScheme: true,
     },
-    navbar: {
-      title: 'شورای صنفی دانشجویان دانشگاه صنعتی شریف',
-      logo: { alt: 'My Site Logo', src: 'img/maini_colors.png' },
-      items: [
-        {to: '/tree', label: 'شجره‌نامه', position: 'left'},
-        {to: '/publications', label: 'نشریه شورا', position: 'left'},
-        {to: '/campaigns', label: 'کارزارها', position: 'left'},
-        // دکمه ورود/ثبت‌نام حذف شد
-      ],
-    },
     footer: {
       style: 'dark',
       links: [

@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import { useAuthApi } from '../api/auth';
-import { useColorMode } from '@docusaurus/theme-common';
+import { FaUser, FaEnvelope, FaUserShield, FaSign, FaCheckCircle, FaExclamationCircle, FaRegListAlt } from 'react-icons/fa';
 
 function AdminUserList() {
-  const { colorMode } = useColorMode();
-  const isDark = colorMode === 'dark';
   const authApi = useAuthApi();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,18 +24,17 @@ function AdminUserList() {
     }
     fetchUsers();
   }, []);
-  const cardBg = isDark ? 'rgba(30,34,54,0.98)' : '#fff';
-  const cardBorder = isDark ? '1.5px solid #637eda' : '1px solid #e0e7ff';
-  const textColor = isDark ? 'var(--ifm-font-color-base, #f3f6fa)' : '#222';
   return (
-    <div style={{background: cardBg, border: cardBorder, borderRadius: 12, padding: '1.5em', marginBottom: 32, color: textColor}}>
-      <h2 style={{fontSize: '1.2em', fontWeight: 700, marginBottom: 16}}>لیست کاربران ثبت‌نامی</h2>
-      {loading ? <div>در حال بارگذاری...</div> : error ? <div style={{color:'#e53935'}}>{error}</div> : (
-        <div style={{maxHeight: 400, overflowY: 'auto'}}>
+    <div className="profile-card">
+      <h2 className="profile-admin-title"><FaUserShield style={{marginLeft:8}}/>لیست کاربران ثبت‌نامی</h2>
+      {loading ? <div className="profile-loading"><FaRegListAlt style={{marginLeft:8}}/>در حال بارگذاری...</div> : error ? <div className="profile-error"><FaExclamationCircle style={{marginLeft:8}}/>{error}</div> : (
+        <div className="profile-users-list">
           {users.map((u) => (
-            <div key={u.id} style={{padding: '0.7em 0.5em', borderBottom: '1px solid #bfcbe6', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}} onClick={()=>window.location.href=`/profile-user?id=${u.id}`}>
-              <span style={{fontWeight: 600}}>{u.email}</span>
-              <span style={{fontSize: '0.95em', color: isDark ? '#bfcbe6' : '#888'}}>{u.role}{u.unit ? ` | ${u.unit}` : ''}</span>
+            <div key={u.id} className="profile-user-item" onClick={()=>window.location.href=`/profile-user?id=${u.id}`}
+              tabIndex={0} role="button" aria-label={`نمایش پروفایل ${u.email}`}
+              >
+              <span className="profile-user-email"><FaEnvelope style={{marginLeft:4}}/>{u.email}</span>
+              <span className="profile-user-role"><FaUser style={{marginLeft:4}}/>{u.role}{u.unit ? ` | ${u.unit}` : ''}</span>
             </div>
           ))}
         </div>
@@ -47,82 +44,38 @@ function AdminUserList() {
 }
 
 function ProfileContent({ signedCampaigns, userEmail, userRole, error, handleLogout }) {
-  const { colorMode } = useColorMode();
-  const isDark = colorMode === 'dark';
-  const mainBg = isDark ? 'rgba(20,22,34,0.98)' : '#f9fafd';
-  const mainBorder = isDark ? '1.5px solid #637eda' : 'none';
-  const cardBg = isDark ? 'rgba(30,34,54,0.98)' : '#fff';
-  const cardBorder = isDark ? '1.5px solid #637eda' : 'none';
-  const cardShadow = isDark ? '0 1px 8px #637eda22' : '0 1px 6px #244bb91a';
-  const subCardBg = isDark ? 'rgba(36,40,60,0.98)' : '#f8f9fa';
-  const subCardBorder = isDark ? '1px solid #637eda' : '1px solid #e9ecef';
-  const textColor = isDark ? 'var(--ifm-font-color-base, #f3f6fa)' : '#222';
-  const fadedText = isDark ? '#bfcbe6' : '#888';
   return (
-    <div style={{maxWidth: 800, margin: '2em auto', background: mainBg, border: mainBorder, borderRadius: 16, boxShadow: '0 2px 16px #244bb92a', padding: '2em', color: textColor}}>
-      <h1 style={{fontSize: '1.5em', fontWeight: 700, marginBottom: 20, textAlign: 'center', color: textColor}}>
-        پروفایل کاربر
-      </h1>
+    <div className="profile-main-content">
+      <h1 className="profile-main-title"><FaUser style={{marginLeft:8}}/>پروفایل کاربر</h1>
       {/* فقط برای سوپرادمین و head */}
       {(userRole === 'superadmin' || userRole === 'head') && <AdminUserList />}
       {/* اطلاعات کاربر */}
-      <div style={{background: cardBg, border: cardBorder, borderRadius: 10, padding: '1.5em', marginBottom: 20, boxShadow: cardShadow, color: textColor}}>
-        <h2 style={{fontSize: '1.2em', fontWeight: 600, marginBottom: 12}}>اطلاعات شخصی</h2>
-        <div style={{fontSize: 16, marginBottom: 8}}>
-          <strong>ایمیل:</strong> {userEmail}
-        </div>
-        <div style={{fontSize: 16, marginBottom: 8}}>
-          <strong>نقش:</strong> {userRole}
-        </div>
+      <div className="profile-info-card">
+        <h2 className="profile-info-title"><FaUser style={{marginLeft:8}}/>اطلاعات شخصی</h2>
+        <div className="profile-info-item"><FaEnvelope style={{marginLeft:4}}/><strong>ایمیل:</strong> {userEmail}</div>
+        <div className="profile-info-item"><FaUserShield style={{marginLeft:4}}/><strong>نقش:</strong> {userRole}</div>
         <button 
           onClick={handleLogout}
-          style={{
-            fontSize: 14,
-            background: '#b71c1c',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 6,
-            padding: '0.5em 1em',
-            fontWeight: 600,
-            cursor: 'pointer',
-            marginTop: 8
-          }}
+          className="profile-logout-button"
         >
-          خروج از حساب
+          <FaSign style={{marginLeft:4}}/>خروج از حساب
         </button>
       </div>
       {/* کارزارهای امضاشده */}
-      <div style={{background: cardBg, border: cardBorder, borderRadius: 10, padding: '1.5em', boxShadow: cardShadow, color: textColor}}>
-        <h2 style={{fontSize: '1.2em', fontWeight: 600, marginBottom: 12}}>
-          کارزارهای امضاشده ({signedCampaigns.length} کارزار)
-        </h2>
+      <div className="profile-signed-campaigns-card">
+        <h2 className="profile-campaigns-title"><FaCheckCircle style={{marginLeft:8}}/>کارزارهای امضاشده <span style={{fontWeight:400}}>({signedCampaigns.length} کارزار)</span></h2>
         {error && (
-          <div style={{color: '#b71c1c', fontWeight: 600, marginBottom: 20}}>{error}</div>
+          <div className="profile-campaigns-error"><FaExclamationCircle style={{marginLeft:4}}/>{error}</div>
         )}
         {signedCampaigns.length === 0 ? (
-          <div style={{textAlign: 'center', color: fadedText, padding: '2em'}}>
-            هنوز هیچ کارزاری امضا نکرده‌اید.
-          </div>
+          <div className="profile-campaigns-empty"><FaRegListAlt style={{marginLeft:4}}/>هنوز هیچ کارزاری امضا نکرده‌اید.</div>
         ) : (
-          <div style={{maxHeight: 500, overflowY: 'auto'}}>
+          <div className="profile-campaigns-list">
             {signedCampaigns.map((campaign: any) => (
-              <div key={campaign.campaign_id} style={{
-                background: subCardBg,
-                borderRadius: 8,
-                padding: '1em',
-                marginBottom: 12,
-                border: subCardBorder,
-                color: textColor
-              }}>
-                <div style={{fontWeight: 600, fontSize: 16, marginBottom: 6}}>
-                  {campaign.campaign_title}
-                </div>
-                <div style={{fontSize: 14, color: fadedText, marginBottom: 8}}>
-                  تاریخ امضا: {new Date(campaign.signed_at).toLocaleDateString('fa-IR')}
-                </div>
-                <div style={{fontSize: 13, color: fadedText}}>
-                  نوع امضا: {campaign.is_anonymous === "anonymous" ? "ناشناس" : "عمومی"}
-                </div>
+              <div key={campaign.campaign_id} className="profile-signed-campaign-item">
+                <div className="profile-signed-campaign-title"><FaCheckCircle style={{marginLeft:4}}/>{campaign.campaign_title}</div>
+                <div className="profile-faded">تاریخ امضا: {new Date(campaign.signed_at).toLocaleDateString('fa-IR')}</div>
+                <div className="profile-faded">نوع امضا: {campaign.is_anonymous === "anonymous" ? "ناشناس" : "عمومی"}</div>
               </div>
             ))}
           </div>
@@ -184,7 +137,7 @@ export default function Profile() {
   if (loading) {
     return (
       <Layout title="پروفایل کاربر">
-        <div style={{textAlign: 'center', padding: '2em'}}>در حال بارگذاری...</div>
+        <div className="profile-loading-container">در حال بارگذاری...</div>
       </Layout>
     );
   }
@@ -192,9 +145,9 @@ export default function Profile() {
   if (error && !userEmail) {
     return (
       <Layout title="پروفایل کاربر">
-        <div style={{maxWidth: 600, margin: '2em auto', textAlign: 'center'}}>
-          <div style={{color: '#b71c1c', fontWeight: 600, marginBottom: 20}}>{error}</div>
-          <a href="/" style={{color: '#244bb9', textDecoration: 'none'}}>بازگشت به صفحه اصلی</a>
+        <div className="profile-error-container">
+          <div className="profile-error-message">{error}</div>
+          <a href="/" className="profile-return-link">بازگشت به صفحه اصلی</a>
         </div>
       </Layout>
     );

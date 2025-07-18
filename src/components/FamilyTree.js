@@ -1,13 +1,10 @@
 import React from 'react';
-import { groupedPeriods } from '@site/src/data/council-periods.js';
+import { groupedPeriods } from '../data/council-periods.js';
 import SenfiAccordion from './SenfiAccordion';
-import { useColorMode } from '@docusaurus/theme-common';
 import StatsPanel from './StatsPanel';
 import { container as sharedContainer } from '../theme/sharedStyles';
 
 const FamilyTree = () => {
-  const { colorMode } = useColorMode();
-  const isDark = colorMode === 'dark';
   // محاسبه تعداد کل اعضا
   const totalMembers = groupedPeriods.reduce((acc, group) => 
     acc + group.periods.reduce((sum, period) => {
@@ -23,7 +20,7 @@ const FamilyTree = () => {
   const displayNumber = `+${approximateMembers}`;
 
   return (
-    <div style={sharedContainer}>
+    <div className="family-tree-container">
       <StatsPanel
         stats={[
           { icon: '👥', label: 'تعداد کل اعضا', value: displayNumber },
@@ -47,18 +44,10 @@ const FamilyTree = () => {
             >
               {council.meta.description && (
                 <div
-                  style={{ 
-                    color: isDark ? 'var(--ifm-color-primary-lightest)' : 'var(--ifm-color-primary-dark)',
-                    fontSize: '0.95rem', 
-                    marginBottom: '1rem',
-                    padding: '1rem',
-                    background: isDark ? 'rgba(30,34,54,0.95)' : 'rgba(255,255,255,0.5)',
-                    borderRadius: '0.5rem',
-                    border: isDark ? '1px solid #637eda' : '1px solid var(--ifm-color-primary-lightest)',
-                    lineHeight: '1.6'
-                  }}
-                  dangerouslySetInnerHTML={{ __html: council.meta.description }}
-                />
+                  className="council-description"
+                >
+                  {council.meta.description}
+                </div>
               )}
               {/* Committees List */}
               {council.committees && council.committees.length > 0 && (
@@ -69,7 +58,7 @@ const FamilyTree = () => {
                       <li key={idx} style={{ marginBottom: 2 }}>
                         <span style={{ fontWeight: 500 }}>{committee.title}</span>
                         {committee.members && committee.members.length > 0 && (
-                          <span style={{ color: '#888', fontSize: '0.95em', marginRight: 8 }}>
+                          <span className="committee-count">
                             {' '}({committee.members.length} عضو)
                           </span>
                         )}
@@ -87,7 +76,7 @@ const FamilyTree = () => {
                       <li key={idx} style={{ marginBottom: 2 }}>
                         <span style={{ fontWeight: 500 }}>{unit.title}</span>
                         {unit.members && unit.members.length > 0 && (
-                          <span style={{ color: '#888', fontSize: '0.95em', marginRight: 8 }}>
+                          <span className="unit-count">
                             {' '}({unit.members.length} عضو)
                           </span>
                         )}

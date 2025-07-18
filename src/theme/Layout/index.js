@@ -107,8 +107,6 @@ function LayoutContent(props) {
     return () => clearInterval(interval);
   }, [isLoggedIn, authApi]);
 
-
-
   const handleEmailSubmit = async e => {
     e.preventDefault();
     const value = email.trim();
@@ -285,76 +283,105 @@ function LayoutContent(props) {
 
       {/* BG overlays start */}
       <div
-        className="opacity-10"
-        style={{
-          position: 'fixed',
-          inset: 0,
-          width: '100vw',
-          height: '100vh',
-          zIndex: 0,
-          pointerEvents: 'none',
-        }}
-        aria-hidden="true"
-      />
-      <div
         className="home-bg-logo"
-        style={{
-          position: 'fixed',
-          left: 0,
-          top: 0,
-          width: '100vw',
-          height: '100vh',
-          zIndex: 0,
-          pointerEvents: 'none',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center',
-          backgroundImage: 'url(/img/maini_colors.png)',
-          backgroundSize: 'contain',
-          opacity: .1,
-        }}
         aria-hidden="true"
       />
       {/* BG overlays end */}
 
       {/* کل محتوا میاد روی پس‌زمینه */}
-      <div style={{position: 'relative', zIndex: 1}}> 
+      <div className="layout-content-wrapper"> 
         {props.children}
       </div>
       {/* Modal ورود/ثبت‌نام */}
       <Modal open={modalOpen} onClose={handleClose}>
-        <h2 style={{marginBottom: 18, fontWeight: 800, fontSize: 22}}>ورود / ثبت‌نام</h2>
+        <h2 className="auth-modal-title">ورود / ثبت‌نام</h2>
         {step === 1 && (
-          <form style={{display:'flex', flexDirection:'column', gap:14}} onSubmit={handleEmailSubmit}>
-            <label style={{fontWeight:600, fontSize:16}}>ایمیل دانشگاه شریف:</label>
-            <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="yourname@sharif.edu" style={{fontSize:17, padding:'0.7em 1em', borderRadius:8, border:'1.5px solid #bfcbe6', fontFamily:'inherit', textAlign:'left'}} required pattern="^[^@\s]+@sharif\.edu$" disabled={loading} />
-            {emailError && <div style={{color:'#b71c1c', fontWeight:600, fontSize:15}}>{emailError}</div>}
-            <button type="submit" style={{marginTop:10, fontSize:17, background:'var(--ifm-color-primary)', color:'#fff', border:'none', borderRadius:8, padding:'0.7em 0', fontWeight:700, cursor:'pointer'}} disabled={loading}>{loading ? '...' : 'ادامه'}</button>
+          <form className="auth-form" onSubmit={handleEmailSubmit}>
+            <label className="auth-form-label">ایمیل دانشگاه شریف:</label>
+            <input 
+              type="email" 
+              value={email} 
+              onChange={e=>setEmail(e.target.value)} 
+              placeholder="yourname@sharif.edu" 
+              className="auth-form-input"
+              dir="ltr"
+              required 
+              pattern="^[^@\s]+@sharif\.edu$" 
+              disabled={loading} 
+            />
+            {emailError && <div className="auth-form-error">{emailError}</div>}
+            <button type="submit" className="auth-form-button" disabled={loading}>
+              {loading ? '...' : 'ادامه'}
+            </button>
           </form>
         )}
         {step === 2 && hasAccount === true && (
-          <form style={{display:'flex', flexDirection:'column', gap:14}} onSubmit={handleLoginSubmit}>
-            <label style={{fontWeight:600, fontSize:16}}>رمز عبور:</label>
-            <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="رمز عبور" style={{fontSize:17, padding:'0.7em 1em', borderRadius:8, border:'1.5px solid #bfcbe6', fontFamily:'inherit', textAlign:'left'}} required disabled={loading} />
-            {passwordError && <div style={{color:'#b71c1c', fontWeight:600, fontSize:15}}>{passwordError}</div>}
-            <button type="submit" style={{marginTop:10, fontSize:17, background:'var(--ifm-color-primary)', color:'#fff', border:'none', borderRadius:8, padding:'0.7em 0', fontWeight:700, cursor:'pointer'}} disabled={loading}>{loading ? '...' : 'ورود'}</button>
+          <form className="auth-form" onSubmit={handleLoginSubmit}>
+            <label className="auth-form-label">رمز عبور:</label>
+            <input 
+              type="password" 
+              value={password} 
+              dir="ltr"
+              onChange={e=>setPassword(e.target.value)} 
+              placeholder="رمز عبور" 
+              className="auth-form-input"
+              required 
+              disabled={loading} 
+            />
+            {passwordError && <div className="auth-form-error">{passwordError}</div>}
+            <button type="submit" className="auth-form-button" disabled={loading}>
+              {loading ? '...' : 'ورود'}
+            </button>
           </form>
         )}
         {step === 2 && hasAccount === false && !codeAccepted && (
-          <form style={{display:'flex', flexDirection:'column', gap:14}} onSubmit={handleCodeSubmit}>
-            <label style={{fontWeight:600, fontSize:16}}>کد ۶ رقمی ارسال‌شده به ایمیل:</label>
-            <input type="text" maxLength={6} pattern="[0-9]{6}" value={code} onChange={e=>setCode(e.target.value)} placeholder="کد تایید" style={{fontSize:17, padding:'0.7em 1em', borderRadius:8, border:'1.5px solid #bfcbe6', fontFamily:'inherit', letterSpacing:'0.25em'}} required disabled={loading} />
-            {codeError && <div style={{color:'#b71c1c', fontWeight:600, fontSize:15}}>{codeError}</div>}
-            <button type="submit" style={{marginTop:10, fontSize:17, background:'var(--ifm-color-primary)', color:'#fff', border:'none', borderRadius:8, padding:'0.7em 0', fontWeight:700, cursor:'pointer'}} disabled={loading}>{loading ? '...' : 'تایید کد'}</button>
+          <form className="auth-form" onSubmit={handleCodeSubmit}>
+            <label className="auth-form-label">کد ۶ رقمی ارسال‌شده به ایمیل:</label>
+            <input 
+              type="text" 
+              maxLength={6} 
+              pattern="[0-9]{6}" 
+              value={code} 
+              dir="ltr"
+              onChange={e=>setCode(e.target.value)} 
+              placeholder="کد تایید" 
+              className="auth-form-input auth-form-input-code"
+              required 
+              disabled={loading} 
+            />
+            {codeError && <div className="auth-form-error">{codeError}</div>}
+            <button type="submit" className="auth-form-button" disabled={loading}>
+              {loading ? '...' : 'تایید کد'}
+            </button>
           </form>
         )}
         {step === 2 && hasAccount === false && codeAccepted && (
-          <form style={{display:'flex', flexDirection:'column', gap:14}} onSubmit={handlePasswordSubmit}>
-            <label style={{fontWeight:600, fontSize:16}}>رمز عبور جدید:</label>
-            <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="رمز عبور جدید" style={{fontSize:17, padding:'0.7em 1em', borderRadius:8, border:'1.5px solid #bfcbe6', fontFamily:'inherit', textAlign:'left'}} required disabled={loading} />
-            <label style={{fontWeight:600, fontSize:16}}>تکرار رمز عبور:</label>
-            <input type="password" value={password2} onChange={e=>setPassword2(e.target.value)} placeholder="تکرار رمز عبور" style={{fontSize:17, padding:'0.7em 1em', borderRadius:8, border:'1.5px solid #bfcbe6', fontFamily:'inherit', textAlign:'left'}} required disabled={loading} />
-            {passwordError && <div style={{color:'#b71c1c', fontWeight:600, fontSize:15}}>{passwordError}</div>}
-            <button type="submit" style={{marginTop:10, fontSize:17, background:'var(--ifm-color-primary)', color:'#fff', border:'none', borderRadius:8, padding:'0.7em 0', fontWeight:700, cursor:'pointer'}} disabled={loading}>{loading ? '...' : 'ثبت رمز عبور'}</button>
+          <form className="auth-form" onSubmit={handlePasswordSubmit}>
+            <label className="auth-form-label">رمز عبور جدید:</label>
+            <input 
+              type="password" 
+              value={password} 
+              onChange={e=>setPassword(e.target.value)} 
+              placeholder="رمز عبور جدید" 
+              dir="ltr"
+              className="auth-form-input"
+              required 
+              disabled={loading} 
+            />
+            <label className="auth-form-label" dir="ltr">تکرار رمز عبور:</label>
+            <input 
+              type="password" 
+              value={password2} 
+              onChange={e=>setPassword2(e.target.value)} 
+              placeholder="تکرار رمز عبور" 
+              className="auth-form-input"
+              required 
+              disabled={loading} 
+            />
+            {passwordError && <div className="auth-form-error">{passwordError}</div>}
+            <button type="submit" className="auth-form-button" disabled={loading}>
+              {loading ? '...' : 'ثبت رمز عبور'}
+            </button>
           </form>
         )}
       </Modal>

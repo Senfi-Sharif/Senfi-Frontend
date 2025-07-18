@@ -1,208 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Layout from '@theme/Layout';
 import { useAuthApi } from '../api/auth';
-import { useNotification } from '@site/src/contexts/NotificationContext';
-import ConfirmModal from '@site/src/components/ConfirmModal';
+import { useNotification } from '../contexts/NotificationContext';
+import ConfirmModal from '../components/ConfirmModal';
 import StatsPanel from '../components/StatsPanel';
 import { statsContainer, statItem, statNumber, statLabel } from '../theme/sharedStyles';
 
-// استایل‌های بهبود یافته
-const styles = {
-  container: {
-    maxWidth: 1000,
-    margin: '2rem auto',
-    padding: '0 1rem',
-  },
-  header: {
-    textAlign: 'center' as const,
-    marginBottom: '2rem',
-    padding: '2rem',
-    background: 'linear-gradient(120deg, var(--ifm-color-primary-lightest) 0%, transparent 80%)',
-    borderRadius: '1rem',
-    border: '1px solid var(--ifm-color-primary-lighter)',
-  },
-  headerTitle: {
-    fontSize: '2rem',
-    fontWeight: 700,
-    color: 'var(--ifm-color-primary-darker)',
-    margin: '0 0 0.5rem 0',
-  },
-  headerSubtitle: {
-    fontSize: '1rem',
-    color: 'var(--ifm-color-primary-dark)',
-    opacity: 0.8,
-    margin: 0,
-  },
-  loadingContainer: {
-    textAlign: 'center' as const,
-    padding: '3rem',
-    color: 'var(--ifm-color-primary-dark)',
-    background: 'rgba(255, 255, 255, 0.8)',
-    borderRadius: '1rem',
-    border: '1px solid var(--ifm-color-primary-lighter)',
-  },
-  errorContainer: {
-    color: '#b71c1c',
-    fontWeight: 600,
-    textAlign: 'center' as const,
-    marginBottom: '1.5rem',
-    padding: '1.5rem',
-    background: 'rgba(255, 235, 238, 0.9)',
-    borderRadius: '1rem',
-    border: '1px solid #ffcdd2',
-  },
-  emptyContainer: {
-    textAlign: 'center' as const,
-    color: 'var(--ifm-color-primary-dark)',
-    padding: '3rem',
-    background: 'rgba(255, 255, 255, 0.8)',
-    borderRadius: '1rem',
-    border: '1px solid var(--ifm-color-primary-lighter)',
-  },
-  emptyIcon: {
-    fontSize: '3rem',
-    marginBottom: '1rem',
-    opacity: 0.6,
-  },
-  campaignsContainer: {
-    maxHeight: '70vh',
-    overflowY: 'auto' as const,
-    padding: '0.5rem',
-  },
-  campaignCard: {
-    background: 'rgba(255, 255, 255, 0.9)',
-    borderRadius: '1rem',
-    marginBottom: '1rem',
-    padding: '1.5rem',
-    boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
-    border: '1px solid var(--ifm-color-primary-lightest)',
-    transition: 'all 0.3s ease',
-  },
-  campaignCardHover: {
-    transform: 'translateY(-2px)',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
-  },
-  campaignHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: '1rem',
-    gap: '1rem',
-  },
-  campaignTitle: {
-    fontWeight: 700,
-    fontSize: '1.2rem',
-    margin: 0,
-    color: 'var(--ifm-color-primary-darker)',
-    flex: 1,
-  },
-  campaignDate: {
-    fontSize: '0.9rem',
-    color: 'var(--ifm-color-primary-dark)',
-    opacity: 0.7,
-    whiteSpace: 'nowrap' as const,
-  },
-  campaignType: {
-    fontSize: '0.8rem',
-    padding: '0.4rem 0.8rem',
-    borderRadius: '1rem',
-    fontWeight: 600,
-    marginBottom: '1rem',
-    display: 'inline-block',
-  },
-  publicType: {
-    background: 'rgba(76, 175, 80, 0.1)',
-    color: '#2e7d32',
-    border: '1px solid rgba(76, 175, 80, 0.3)',
-  },
-  anonymousType: {
-    background: 'rgba(255, 152, 0, 0.1)',
-    color: '#f57c00',
-    border: '1px solid rgba(255, 152, 0, 0.3)',
-  },
-  campaignDescription: {
-    fontSize: '1rem',
-    marginBottom: '1rem',
-    lineHeight: 1.6,
-    whiteSpace: 'pre-line',
-    color: 'var(--ifm-color-primary-darkest)',
-  },
-  campaignEmail: {
-    fontSize: '0.9rem',
-    color: 'var(--ifm-color-primary-dark)',
-    marginBottom: '1rem',
-    padding: '0.8rem 1rem',
-    background: 'rgba(255, 255, 255, 0.5)',
-    borderRadius: '0.5rem',
-    border: '1px solid var(--ifm-color-primary-lightest)',
-  },
-  buttonContainer: {
-    display: 'flex',
-    gap: '1rem',
-    justifyContent: 'flex-end',
-    marginTop: '1rem',
-  },
-  approveButton: {
-    fontSize: '0.9rem',
-    background: 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '0.5rem',
-    padding: '0.7rem 1.5rem',
-    fontWeight: 600,
-    cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    boxShadow: '0 2px 8px rgba(76, 175, 80, 0.3)',
-  },
-  approveButtonHover: {
-    transform: 'translateY(-1px)',
-    boxShadow: '0 4px 12px rgba(76, 175, 80, 0.4)',
-  },
-  rejectButton: {
-    fontSize: '0.9rem',
-    background: 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '0.5rem',
-    padding: '0.7rem 1.5rem',
-    fontWeight: 600,
-    cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    boxShadow: '0 2px 8px rgba(244, 67, 54, 0.3)',
-  },
-  rejectButtonHover: {
-    transform: 'translateY(-1px)',
-    boxShadow: '0 4px 12px rgba(244, 67, 54, 0.4)',
-  },
-  accessDenied: {
-    textAlign: 'center' as const,
-    padding: '3rem',
-    color: '#b71c1c',
-    background: 'rgba(255, 255, 255, 0.9)',
-    borderRadius: '1rem',
-    border: '1px solid #ffcdd2',
-    maxWidth: 600,
-    margin: '2rem auto',
-  },
-  accessDeniedTitle: {
-    fontSize: '1.5rem',
-    fontWeight: 700,
-    marginBottom: '1rem',
-  },
-  accessDeniedText: {
-    fontSize: '1rem',
-    marginBottom: '1rem',
-    lineHeight: 1.6,
-  },
-  accessDeniedRole: {
-    fontSize: '0.9rem',
-    color: '#666',
-    marginTop: '1rem',
-    padding: '1rem',
-    background: 'rgba(0, 0, 0, 0.05)',
-    borderRadius: '0.5rem',
-  },
-};
+
 
 // کامپوننت کارت کارزار بهبود یافته
 function CampaignCard({ campaign, onApprove, onReject, processing }) {
@@ -223,58 +27,36 @@ function CampaignCard({ campaign, onApprove, onReject, processing }) {
 
   return (
     <div 
-      style={{
-        ...styles.campaignCard,
-        ...(isHovered && styles.campaignCardHover)
-      }}
+      className={`campaign-card ${isHovered ? 'campaign-card-hover' : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div style={styles.campaignHeader}>
-        <h3 style={styles.campaignTitle}>{campaign.title}</h3>
-        <div style={styles.campaignDate}>
+      <div className="campaign-header">
+        <h3 className="campaign-title">{campaign.title}</h3>
+        <div className="campaign-date">
           {formatDate(campaign.created_at)}
         </div>
       </div>
       
-      <div style={{
-        ...styles.campaignType,
-        ...(campaign.is_anonymous === 'anonymous' ? styles.anonymousType : styles.publicType)
-      }}>
+      <div className={`campaign-type ${campaign.is_anonymous === 'anonymous' ? 'anonymous-type' : 'public-type'}`}>
         {campaign.is_anonymous === 'anonymous' ? '🔒 کارزار ناشناس' : '🌐 کارزار عمومی'}
       </div>
       
-      <div style={styles.campaignDescription}>
+      <div className="campaign-description">
         {campaign.description}
       </div>
       
       {campaign.email && (
-        <div style={styles.campaignEmail}>
+        <div className="campaign-email">
           <strong>📧 ایمیل:</strong> {campaign.email}
         </div>
       )}
       
-      <div style={styles.buttonContainer}>
+      <div className="button-container">
         <button 
           onClick={() => onApprove(campaign)}
           disabled={isProcessing}
-          style={{
-            ...styles.approveButton,
-            opacity: isProcessing ? 0.6 : 1,
-            transform: isProcessing ? 'scale(0.98)' : (isHovered ? 'translateY(-1px)' : 'scale(1)'),
-          }}
-          onMouseEnter={(e) => {
-            if (!isProcessing) {
-              (e.target as HTMLElement).style.transform = 'translateY(-1px)';
-              (e.target as HTMLElement).style.boxShadow = '0 4px 12px rgba(76, 175, 80, 0.4)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!isProcessing) {
-              (e.target as HTMLElement).style.transform = 'scale(1)';
-              (e.target as HTMLElement).style.boxShadow = '0 2px 8px rgba(76, 175, 80, 0.3)';
-            }
-          }}
+          className={`campaign-review-approve-button ${isProcessing ? 'campaign-review-approve-button-processing' : ''}`}
         >
           {isProcessing ? '⏳ در حال پردازش...' : '✅ تأیید'}
         </button>
@@ -282,25 +64,7 @@ function CampaignCard({ campaign, onApprove, onReject, processing }) {
         <button 
           onClick={() => onReject(campaign)}
           disabled={isProcessing}
-          style={{
-            ...styles.rejectButton,
-            opacity: isProcessing ? 0.6 : 1,
-            transform: isProcessing ? 'scale(0.98)' : (isHovered ? 'translateY(-1px)' : 'scale(1)'),
-          }}
-          onMouseEnter={(e) => {
-            if (!isProcessing) {
-              const target = e.target as HTMLElement;
-              target.style.transform = 'translateY(-1px)';
-              target.style.boxShadow = '0 4px 12px rgba(244, 67, 54, 0.4)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!isProcessing) {
-              const target = e.target as HTMLElement;
-              target.style.transform = 'scale(1)';
-              target.style.boxShadow = '0 2px 8px rgba(244, 67, 54, 0.3)';
-            }
-          }}
+          className={`campaign-review-reject-button ${isProcessing ? 'campaign-review-reject-button-processing' : ''}`}
         >
           {isProcessing ? '⏳ در حال پردازش...' : '❌ رد'}
         </button>
@@ -399,12 +163,12 @@ function CampaignReviewPanel() {
   if (!authApi.hasAdminAccess()) {
     const currentRole = authApi.getUserRole();
     return (
-      <div style={styles.accessDenied}>
-        <h3 style={styles.accessDeniedTitle}>🚫 دسترسی محدود</h3>
-        <p style={styles.accessDeniedText}>
+      <div className="campaign-review-access-denied">
+        <h3 className="campaign-review-access-denied-title">🚫 دسترسی محدود</h3>
+        <p className="campaign-review-access-denied-text">
           شما دسترسی لازم برای مشاهده این صفحه را ندارید.
         </p>
-        <div style={styles.accessDeniedRole}>
+        <div className="campaign-review-access-denied-role">
           <strong>نقش فعلی شما:</strong> {currentRole || 'هیچ نقشی'}
           <br />
           <small>این صفحه فقط برای کاربران با نقش superadmin، head یا center_member قابل دسترسی است.</small>
@@ -418,24 +182,24 @@ function CampaignReviewPanel() {
   const anonymousCampaigns = campaigns.filter(c => c.is_anonymous === 'anonymous').length;
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.headerTitle}>بررسی کارزارها</h1>
-        <p style={styles.headerSubtitle}>
+    <div className="campaign-review-container">
+      <div className="campaign-review-header">
+        <h1 className="campaign-review-header-title">بررسی کارزارها</h1>
+        <p className="campaign-review-header-subtitle">
           مدیریت و بررسی کارزارهای ارسال‌شده توسط دانشجویان
         </p>
       </div>
       
       {loading && (
-        <div style={styles.loadingContainer}>
-          <div style={{fontSize: '1.2rem', marginBottom: '1rem'}}>⏳</div>
+        <div className="campaign-review-loading-container">
+          <div className="campaign-review-loading-icon">⏳</div>
           <div>در حال بارگذاری کارزارها...</div>
         </div>
       )}
       
       {error && (
-        <div style={styles.errorContainer}>
-          <div style={{fontSize: '1.2rem', marginBottom: '0.5rem'}}>⚠️</div>
+        <div className="campaign-review-error-container">
+          <div className="campaign-review-error-icon">⚠️</div>
           {error}
         </div>
       )}
@@ -454,47 +218,35 @@ function CampaignReviewPanel() {
       )}
       
       {campaigns.length === 0 && !loading && !error && (
-        <div style={styles.emptyContainer}>
-          <div style={styles.emptyIcon}>🎉</div>
-          <div style={{fontSize: '1.2rem', fontWeight: 600, marginBottom: '0.5rem'}}>
+        <div className="campaign-review-empty-container">
+          <div className="campaign-review-empty-icon">🎉</div>
+          <div className="campaign-review-empty-title">
             هیچ کارزاری در انتظار بررسی وجود ندارد
           </div>
-          <div style={{fontSize: '1rem', opacity: 0.8}}>
+          <div className="campaign-review-empty-subtitle">
             همه کارزارها بررسی شده‌اند!
           </div>
         </div>
       )}
       {/* سرچ بار */}
-      <div style={{margin: '1.5rem 0', textAlign: 'center'}}>
+      <div className="campaign-review-search-container">
         <input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="جستجو در عنوان یا متن کارزار..."
-          style={{
-            width: '100%',
-            maxWidth: 400,
-            padding: '0.8rem 1.2rem',
-            borderRadius: '0.7rem',
-            border: '1.5px solid var(--ifm-color-primary-lightest)',
-            fontSize: '1.1rem',
-            fontFamily: 'inherit',
-            margin: '0 auto',
-            boxShadow: '0 2px 8px rgba(22,51,124,0.06)',
-            outline: 'none',
-            direction: 'rtl',
-          }}
+          className="campaign-review-search-input"
         />
       </div>
-      <div style={styles.campaignsContainer}>
+      <div className="campaign-review-campaigns-container">
         {loading ? (
-          <div style={styles.loadingContainer}>در حال بارگذاری...</div>
+          <div className="campaign-review-loading-container">در حال بارگذاری...</div>
         ) : error ? (
-          <div style={styles.errorContainer}>{error}</div>
+          <div className="campaign-review-error-container">{error}</div>
         ) : campaigns.length === 0 ? null : (
           filteredCampaigns.length === 0 ? (
-            <div style={styles.emptyContainer}>
-              <div style={styles.emptyIcon}>📭</div>
+            <div className="campaign-review-empty-container">
+              <div className="campaign-review-empty-icon">📭</div>
               <div>هیچ کارزاری مطابق جستجو یافت نشد</div>
             </div>
           ) : (

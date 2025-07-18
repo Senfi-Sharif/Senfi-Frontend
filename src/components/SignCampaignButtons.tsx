@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthApi } from '../api/auth';
-import { useNotification } from '@site/src/contexts/NotificationContext';
+import { useNotification } from '../contexts/NotificationContext';
+import { FaCheckCircle } from 'react-icons/fa';
 
 interface SignCampaignButtonsProps {
   campaignId: number;
@@ -59,46 +60,23 @@ export default function SignCampaignButtons({
 
   if (hasSigned) {
     return (
-      <div style={{
-        padding: '1rem',
-        background: 'rgba(76, 175, 80, 0.1)',
-        borderRadius: '0.5rem',
-        border: '1px solid #4caf50',
-        textAlign: 'center',
-        color: '#2e7d32',
-        fontWeight: 600
-      }}>
-        ✅ شما این کارزار را امضا کرده‌اید
+      <div className="sign-campaign-success">
+        <FaCheckCircle /> شما این کارزار را امضا کرده‌اید
       </div>
     );
   }
 
   return (
-    <div style={{ marginTop: '1rem' }}>
+    <div className="sign-campaign-buttons-wrapper">
       {error && (
-        <div style={{
-          padding: '0.75rem',
-          marginBottom: '1rem',
-          background: 'rgba(244, 67, 54, 0.1)',
-          borderRadius: '0.5rem',
-          border: '1px solid #f44336',
-          color: '#d32f2f',
-          fontSize: '0.9rem'
-        }}>
-          {error}
-        </div>
+        <div className="sign-campaign-error">{error}</div>
       )}
-      
-      <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+      <div className="sign-campaign-buttons">
         {isAnonymous && (
           <button
             onClick={() => handleSign(true)}
             disabled={loading}
-            style={{
-              ...styles.signButton,
-              ...styles.anonymousButton,
-              ...(loading && styles.disabledButton)
-            }}
+            className={`sign-campaign-button sign-campaign-anonymous${loading ? ' sign-campaign-disabled' : ''}`}
           >
             {loading ? 'در حال ثبت...' : 'امضای ناشناس'}
           </button>
@@ -107,11 +85,7 @@ export default function SignCampaignButtons({
         <button
           onClick={() => handleSign(false)}
           disabled={loading}
-          style={{
-            ...styles.signButton,
-            ...styles.publicButton,
-            ...(loading && styles.disabledButton)
-          }}
+          className={`sign-campaign-button sign-campaign-public${loading ? ' sign-campaign-disabled' : ''}`}
         >
           {loading ? 'در حال ثبت...' : 'امضای عمومی'}
         </button>
@@ -119,31 +93,3 @@ export default function SignCampaignButtons({
     </div>
   );
 }
-
-const styles = {
-  signButton: {
-    padding: '0.75rem 1.5rem',
-    borderRadius: '0.5rem',
-    border: 'none',
-    fontSize: '1rem',
-    fontWeight: 600,
-    cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    minWidth: '140px',
-  },
-  anonymousButton: {
-    background: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
-    color: '#fff',
-    boxShadow: '0 2px 8px rgba(255, 152, 0, 0.3)',
-  },
-  publicButton: {
-    background: 'linear-gradient(135deg, var(--ifm-color-primary) 0%, var(--ifm-color-primary-dark) 100%)',
-    color: '#fff',
-    boxShadow: '0 2px 8px rgba(22, 51, 124, 0.3)',
-  },
-  disabledButton: {
-    opacity: 0.6,
-    cursor: 'not-allowed',
-    transform: 'none !important',
-  },
-}; 

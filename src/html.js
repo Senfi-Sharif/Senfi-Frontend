@@ -1,6 +1,6 @@
 export default function Html(props) {
   return (
-    <html {...props.htmlAttributes}>
+    <html {...props.htmlAttributes} >
       <head {...props.headAttributes}>
         <script dangerouslySetInnerHTML={{
           __html: `

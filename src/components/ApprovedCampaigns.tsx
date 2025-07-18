@@ -5,7 +5,8 @@ import CampaignSignatures from './CampaignSignatures';
 import SignCampaignButtons from './SignCampaignButtons';
 import ConfirmModal from './ConfirmModal';
 import CampaignCard from './CampaignCard';
-import { useColorMode } from '@docusaurus/theme-common';
+import { useRef } from 'react';
+import { FaClipboardList, FaHourglass, FaExclamationTriangle, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 const ApprovedCampaigns = () => {
   const [campaigns, setCampaigns] = useState([]);
@@ -21,12 +22,31 @@ const ApprovedCampaigns = () => {
   const [pendingId, setPendingId] = useState<number | null>(null);
   const [pendingLoading, setPendingLoading] = useState(false);
   const [search, setSearch] = useState('');
-  const { colorMode } = useColorMode();
-  const isDark = colorMode === 'dark';
-  const containerBg = isDark ? 'rgba(24,26,38,0.98)' : 'rgba(255,255,255,0.95)';
-  const containerBorder = isDark ? '1.5px solid #637eda' : '1px solid #e0e7ff';
-  const innerBoxBg = isDark ? 'rgba(30,34,54,0.95)' : 'rgba(245,245,245,0.98)';
-  const innerBoxBorder = isDark ? '1px solid #637eda' : '1px solid #e0e7ff';
+
+  // فیلترها
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [filterSigned, setFilterSigned] = useState(true); // امضا شده
+  const [filterUnsigned, setFilterUnsigned] = useState(true); // امضا نشده
+  const [filterClosed, setFilterClosed] = useState(true); // کارزارهای بسته شده
+  const [filterOpenCampaigns, setFilterOpenCampaigns] = useState(true); // کارزارهای باز
+  const [statusFilterOpen, setStatusFilterOpen] = useState(false); // ساب‌منوی وضعیت کارزارها
+  const [signatureFilterOpen, setSignatureFilterOpen] = useState(false); // ساب‌منوی امضا شده
+  const filterRef = useRef<HTMLDivElement>(null);
+
+  // بستن منو با کلیک بیرون
+  React.useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+        setFilterOpen(false);
+      }
+    }
+    if (filterOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [filterOpen]);
 
   React.useEffect(() => {
     setLoading(true);
@@ -124,24 +144,46 @@ const ApprovedCampaigns = () => {
     });
   };
 
-  // فیلتر بر اساس سرچ
+  // فیلتر نهایی
   const filteredCampaigns = useMemo(() => {
-    if (!search.trim()) return campaigns;
+    let result = campaigns;
+    // فیلتر امضا شده/نشده
+    if (!filterSigned || !filterUnsigned) {
+      result = result.filter((c: any) => {
+        const hasSigned = !!userSignatures[c.id]?.has_signed;
+        if (filterSigned && hasSigned) return true;
+        if (filterUnsigned && !hasSigned) return true;
+        return false;
+      });
+    }
+    // فیلتر باز/بسته بودن کارزار
+    const now = new Date();
+    if (!filterClosed || !filterOpenCampaigns) {
+      result = result.filter((c: any) => {
+        const isClosed = c.end_datetime && new Date(c.end_datetime) < now;
+        if (filterClosed && isClosed) return true;
+        if (filterOpenCampaigns && !isClosed) return true;
+        return false;
+      });
+    }
+    if (search.trim()) {
     const s = search.trim().toLowerCase();
-    return campaigns.filter((c: any) =>
+      result = result.filter((c: any) =>
       (c.title && c.title.toLowerCase().includes(s)) ||
       (c.description && c.description.toLowerCase().includes(s))
     );
-  }, [campaigns, search]);
+    }
+    return result;
+  }, [campaigns, userSignatures, filterSigned, filterUnsigned, filterClosed, filterOpenCampaigns, search]);
 
-  const unsignedCampaigns = filteredCampaigns.filter((c: any) => !userSignatures[c.id]?.has_signed);
-  const signedCampaigns = filteredCampaigns.filter((c: any) => userSignatures[c.id]?.has_signed);
+  // لیست واحد همه کارزارها
+  const allCampaigns = filteredCampaigns;
 
   const allChecked = campaigns.length === 0 || campaigns.every((c: any) => userSignatures.hasOwnProperty(c.id));
   if (!allChecked) {
     return (
       <div>
-        <div style={{fontSize: '1.2rem', marginBottom: '1rem'}}>⏳</div>
+        <div className="approved-campaigns-checking-icon">⏳</div>
         <div>در حال بررسی وضعیت امضاها...</div>
       </div>
     );
@@ -150,151 +192,108 @@ const ApprovedCampaigns = () => {
   return (
     <div
       className="approved-campaigns-container"
-      style={{
-        borderRadius: 18,
-        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-        padding: 32,
-        marginBottom: 32,
-        // ...other styles
-      }}
     >
-      {/* سرچ بار */}
-      <div style={{margin: '1.5rem 0', textAlign: 'center'}}>
+      {/* سرچ بار و فیلتر */}
+      <div className="approved-campaigns-search-container">
         <input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="جستجو در عنوان یا متن کارزار..."
-          style={{
-            width: '100%',
-            maxWidth: 400,
-            padding: '0.8rem 1.2rem',
-            borderRadius: '0.7rem',
-            border: '1.5px solid var(--ifm-color-primary-lightest)',
-            fontSize: '1.1rem',
-            fontFamily: 'inherit',
-            margin: '0 auto',
-            boxShadow: '0 2px 8px rgba(22,51,124,0.06)',
-            outline: 'none',
-            direction: 'rtl',
-          }}
+          className="approved-campaigns-search-input"
         />
+        <div ref={filterRef} className="approved-campaigns-filter-container">
+          <button
+            onClick={() => setFilterOpen(f => !f)}
+            className="campaigns-filter-btn"
+          >
+            <span>فیلتر</span>
+            <span className="approved-campaigns-filter-icon">{filterOpen ? <FaChevronUp /> : <FaChevronDown />}</span>
+          </button>
+          {filterOpen && (
+            <div className="campaigns-filter-dropdown">
+              <div className="approved-campaigns-filter-submenu-container">
+                <button
+                  type="button"
+                  className="campaigns-filter-btn approved-campaigns-filter-submenu-btn"
+                  onClick={() => setStatusFilterOpen(v => !v)}
+                >
+                  <span>وضعیت کارزارها</span>
+                  <span className="approved-campaigns-filter-submenu-icon">{statusFilterOpen ? <FaChevronUp /> : <FaChevronDown />}</span>
+                </button>
+                {statusFilterOpen && (
+                  <div className="campaigns-status-submenu">
+                    <label>
+                      <input type="checkbox" checked={filterClosed} onChange={e => setFilterClosed(e.target.checked)} />
+                      <span>کارزارهای بسته شده</span>
+                    </label>
+                    <label>
+                      <input type="checkbox" checked={filterOpenCampaigns} onChange={e => setFilterOpenCampaigns(e.target.checked)} />
+                      <span>کارزارهای باز</span>
+                    </label>
+                  </div>
+                )}
+              </div>
+              <div className="approved-campaigns-filter-submenu-container">
+                <button
+                  type="button"
+                  className="campaigns-filter-btn approved-campaigns-filter-submenu-btn"
+                  onClick={() => setSignatureFilterOpen(v => !v)}
+                >
+                  <span>وضعیت امضای من</span>
+                  <span className="approved-campaigns-filter-submenu-icon">{signatureFilterOpen ? <FaChevronUp /> : <FaChevronDown />}</span>
+                </button>
+                {signatureFilterOpen && (
+                  <div className="campaigns-status-submenu">
+                    <label>
+                      <input type="checkbox" checked={filterSigned} onChange={e => setFilterSigned(e.target.checked)} />
+                      <span>امضا شده</span>
+                    </label>
+                    <label>
+                      <input type="checkbox" checked={filterUnsigned} onChange={e => setFilterUnsigned(e.target.checked)} />
+                      <span>امضا نشده</span>
+                    </label>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-      <h2 style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>
-        📋 کارزارهای تاییدشده
-        {total > 0 && <span style={{fontSize: '0.8em', color: 'var(--ifm-color-primary-dark)', fontWeight: 'normal'}}> ({total} کارزار)</span>}
+      <h2 className="approved-campaigns-title">
+        <FaClipboardList /> همه کارزارها
+        {total > 0 && <span className="approved-campaigns-count"> ({total} کارزار)</span>}
       </h2>
       {loading && (
         <div>
-          <div style={{fontSize: '1.2rem', marginBottom: '1rem'}}>⏳</div>
+          <div className="approved-campaigns-loading-icon">⏳</div>
           <div>در حال بارگذاری کارزارها...</div>
         </div>
       )}
       {error && (
         <div>
-          <div style={{fontSize: '1.2rem', marginBottom: '0.5rem'}}>⚠️</div>
+          <div className="approved-campaigns-error-icon">⚠️</div>
           {error}
         </div>
       )}
-      {campaigns.length === 0 && !loading && (
-        <div>
-          <div style={{fontSize: '1.2rem', fontWeight: 600, marginBottom: '0.5rem'}}>
-            هنوز کارزاری تایید نشده است
-          </div>
-          <div style={{fontSize: '1rem', opacity: 0.8}}>
-            کارزارهای ارسال‌شده پس از بررسی نمایندگان صنف در اینجا نمایش داده می‌شوند
-          </div>
+      {allCampaigns.length === 0 && !loading && (
+        <div className="approved-campaigns-empty-container">
+          <div className="approved-campaigns-empty-icon">📋</div>
+          <div>هیچ کارزاری وجود ندارد</div>
         </div>
       )}
-      {/* Layout برای دسکتاپ */}
-      <div className="desktop-layout" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem'}}>
-        {/* بخش کارزارهای امضا نشده */}
-        <div style={{padding: '1rem', borderRadius: '8px', background: innerBoxBg, border: innerBoxBorder}}>
-          <h3 style={{fontSize: '1.2rem', marginBottom: '0.5rem'}}>
-            📝 کارزارهای امضا نشده ({unsignedCampaigns.length})
-          </h3>
-          <div style={{direction: 'rtl'}}>
-            {unsignedCampaigns.map((c: any) => (
-              <CampaignCard key={c.id} c={c} userRole={authApi.getUserRole()} handleSetPending={handleSetPending} handleSignSuccess={handleSignSuccess} />
-            ))}
-            {unsignedCampaigns.length === 0 && (
-              <div style={{textAlign: 'center', margin: '2rem auto'}}>
-                <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>🎉</div>
-                <div>همه کارزارها را امضا کرده‌اید!</div>
-              </div>
-            )}
-          </div>
-        </div>
-        {/* بخش کارزارهای امضا شده */}
-        <div style={{padding: '1rem', borderRadius: '8px', background: innerBoxBg, border: innerBoxBorder}}>
-          <h3 style={{fontSize: '1.2rem', marginBottom: '0.5rem'}}>
-            ✅ کارزارهای امضا شده ({signedCampaigns.length})
-          </h3>
-          <div style={{direction: 'rtl'}}>
-            {signedCampaigns.map((c: any) => (
-              <CampaignCard key={c.id} c={c} isSigned={true} userRole={authApi.getUserRole()} handleSetPending={handleSetPending} handleSignSuccess={handleSignSuccess} />
-            ))}
-            {signedCampaigns.length === 0 && (
               <div>
-                <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📋</div>
-                <div>هنوز هیچ کارزاری امضا نکرده‌اید</div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-      {/* Layout برای موبایل */}
-      <div className="mobile-layout" style={{display: 'block'}}>
-        {/* کارزارهای امضا نشده (بالا) */}
-        <div style={{marginBottom: '2rem'}}>
-          <div style={{padding: '1rem', borderRadius: '8px', background: innerBoxBg, border: innerBoxBorder}}>
-            <h3 style={{fontSize: '1.2rem', marginBottom: '0.5rem'}}>
-              📝 کارزارهای امضا نشده ({unsignedCampaigns.length})
-            </h3>
-            <div>
-              {unsignedCampaigns.map((c: any) => (
-                <CampaignCard key={c.id} c={c} userRole={authApi.getUserRole()} handleSetPending={handleSetPending} handleSignSuccess={handleSignSuccess} />
+        {allCampaigns.map((c: any) => (
+          <CampaignCard
+            key={c.id}
+            c={c}
+            isSigned={!!userSignatures[c.id]?.has_signed}
+            userRole={authApi.getUserRole()}
+            handleSetPending={handleSetPending}
+            handleSignSuccess={handleSignSuccess}
+          />
               ))}
-              {unsignedCampaigns.length === 0 && (
-                <div>
-                  <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>🎉</div>
-                  <div>همه کارزارها را امضا کرده‌اید!</div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-        {/* کارزارهای امضا شده (پایین) */}
-        <div>
-          <div style={{padding: '1rem', borderRadius: '8px', background: innerBoxBg, border: innerBoxBorder}}>
-            <h3 style={{fontSize: '1.2rem', marginBottom: '0.5rem'}}>
-              ✅ کارزارهای امضا شده ({signedCampaigns.length})
-            </h3>
-            <div>
-              {signedCampaigns.map((c: any) => (
-                <CampaignCard key={c.id} c={c} isSigned={true} userRole={authApi.getUserRole()} handleSetPending={handleSetPending} handleSignSuccess={handleSignSuccess} />
-              ))}
-              {signedCampaigns.length === 0 && (
-                <div>
-                  <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📋</div>
-                  <div>هنوز هیچ کارزاری امضا نکرده‌اید</div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
       </div>
-      {/* CSS برای responsive */}
-      <style>{`
-        @media (max-width: 768px) {
-          .desktop-layout { display: none !important; }
-          .mobile-layout { display: block !important; }
-        }
-        @media (min-width: 769px) {
-          .desktop-layout { display: grid !important; }
-          .mobile-layout { display: none !important; }
-        }
-      `}</style>
       <ConfirmModal
         open={confirmOpen}
         title="بازگرداندن کارزار به حالت بررسی"
