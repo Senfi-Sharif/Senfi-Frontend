@@ -37,6 +37,18 @@ function LayoutContent(props) {
 
   const authApi = useAuthApi();
 
+  // Initialize theme early to prevent flash
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme');
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+      
+      // Set theme immediately
+      document.documentElement.setAttribute('data-theme', initialTheme);
+    }
+  }, []);
+
   // مقداردهی اولیه و sync با SecureTokenManager
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -136,6 +148,10 @@ function LayoutContent(props) {
   const handleEmailSubmit = async e => {
     e.preventDefault();
     const value = email.trim();
+    if (!value) {
+      setEmailError('ایمیل الزامی است');
+      return;
+    }
     if (!/^[^@\s]+@sharif\.edu$/.test(value)) {
       setEmailError('ایمیل باید با @sharif.edu تمام شود.');
       return;
@@ -164,7 +180,12 @@ function LayoutContent(props) {
 
   const handleCodeSubmit = async e => {
     e.preventDefault();
-    if (!/^[0-9]{6}$/.test(code)) {
+    const value = code.trim();
+    if (!value) {
+      setCodeError('کد تایید الزامی است');
+      return;
+    }
+    if (!/^[0-9]{6}$/.test(value)) {
       setCodeError('کد باید ۶ رقم باشد.');
       return;
     }
@@ -214,9 +235,8 @@ function LayoutContent(props) {
 
   const handleLoginSubmit = async e => {
     e.preventDefault();
-    const passwordValidation = validatePassword(password);
-    if (!passwordValidation.isValid) {
-      setPasswordError(passwordValidation.errors.join(' '));
+    if (!password || password.trim() === '') {
+      setPasswordError('رمز عبور الزامی است');
       return;
     }
     setPasswordError('');
@@ -269,6 +289,9 @@ function LayoutContent(props) {
     setPassword('');
     setPassword2('');
     setPasswordError('');
+    setFaculty('');
+    setDormitory('خوابگاهی نیستم');
+    setInfoError('');
     setLoading(false);
   };
 
@@ -342,7 +365,6 @@ function LayoutContent(props) {
               placeholder="yourname@sharif.edu" 
               className="auth-form-input"
               dir="ltr"
-              required 
               pattern="^[^@\s]+@sharif\.edu$" 
               disabled={loading} 
             />
@@ -362,7 +384,6 @@ function LayoutContent(props) {
               onChange={e=>setPassword(e.target.value)} 
               placeholder="رمز عبور" 
               className="auth-form-input"
-              required 
               disabled={loading} 
             />
             {passwordError && <div className="auth-form-error">{passwordError}</div>}
@@ -383,7 +404,6 @@ function LayoutContent(props) {
               onChange={e=>setCode(e.target.value)} 
               placeholder="کد تایید" 
               className="auth-form-input auth-form-input-code"
-              required 
               disabled={loading} 
             />
             {codeError && <div className="auth-form-error">{codeError}</div>}
@@ -399,16 +419,20 @@ function LayoutContent(props) {
               setInfoError("لطفاً دانشکده را انتخاب کنید.");
               return;
             }
+            if (!dormitory) {
+              setInfoError("لطفاً خوابگاه را انتخاب کنید.");
+              return;
+            }
             setInfoError("");
             setStep(3); // برو به فرم رمز عبور
           }}>
             <label className="auth-form-label">دانشکده:</label>
-            <select className="auth-form-input" value={faculty} onChange={e => setFaculty(e.target.value)} required>
+            <select className="auth-form-input" value={faculty} onChange={e => setFaculty(e.target.value)}>
               <option value="">انتخاب کنید...</option>
               {FACULTY_CHOICES.map(f => <option key={f} value={f}>{f}</option>)}
             </select>
             <label className="auth-form-label">خوابگاه:</label>
-            <select className="auth-form-input" value={dormitory} onChange={e => setDormitory(e.target.value)} required>
+            <select className="auth-form-input" value={dormitory} onChange={e => setDormitory(e.target.value)}>
               {DORMITORY_CHOICES.map(d => <option key={d} value={d}>{d}</option>)}
             </select>
             {infoError && <div className="auth-form-error">{infoError}</div>}
@@ -418,8 +442,17 @@ function LayoutContent(props) {
         {step === 3 && hasAccount === false && codeAccepted && (
           <form className="auth-form" onSubmit={async e => {
             e.preventDefault();
-            if (password.length < 6) {
-              setPasswordError('رمز عبور باید حداقل ۶ کاراکتر باشد.');
+            if (!password || password.trim() === '') {
+              setPasswordError('رمز عبور الزامی است');
+              return;
+            }
+            if (!password2 || password2.trim() === '') {
+              setPasswordError('تکرار رمز عبور الزامی است');
+              return;
+            }
+            const passwordValidation = validatePassword(password);
+            if (!passwordValidation.isValid) {
+              setPasswordError(passwordValidation.errors.join(' '));
               return;
             }
             if (password !== password2) {
@@ -450,7 +483,6 @@ function LayoutContent(props) {
               onChange={e => setPassword(e.target.value)}
               placeholder="رمز عبور"
               className="auth-form-input"
-              required
             />
             <label className="auth-form-label">تکرار رمز عبور:</label>
             <input
@@ -460,7 +492,6 @@ function LayoutContent(props) {
               onChange={e => setPassword2(e.target.value)}
               placeholder="تکرار رمز عبور"
               className="auth-form-input"
-              required
             />
             {passwordError && <div className="auth-form-error">{passwordError}</div>}
             <button type="submit" className="auth-form-button" disabled={loading}>

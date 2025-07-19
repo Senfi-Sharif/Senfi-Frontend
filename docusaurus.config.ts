@@ -51,7 +51,7 @@ const config: Config = {
     colorMode: {
       defaultMode: 'light',
       disableSwitch: false,
-      respectPrefersColorScheme: true,
+      respectPrefersColorScheme: false,
     },
     footer: {
       style: 'dark',

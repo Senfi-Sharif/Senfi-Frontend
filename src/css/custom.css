@@ -2,6 +2,7 @@
   --ifm-color-primary: #1e40af;              /* اصلی شورا - آبی زیباتر */
   --ifm-color-primary-dark: #1e3a8a;         /* دارک‌تر شورای صنفی */
   --ifm-color-primary-darker: #96accf;       /* دارک‌ترین */
+  --ifm-color-primary-darker-darkest-dublicate: var(--ifm-color-primary-darkest);
   --ifm-color-primary-darkest: #0f172a;      /* نزدیک به مشکی، برای کامپوننت‌های خالص دارک */
   --ifm-color-primary-light: #3b82f6;        /* روشن‌تر ( complementary )  */
   --ifm-color-primary-lighter: #60a5fa;      /* خیلی روشن */
@@ -71,6 +72,7 @@
   --ifm-color-primary: #60a5fa;              /* آبی خیلی روشن لوگو، بهتر دیده می‌شه */
   --ifm-color-primary-dark: #3b82f6;         /* آبی متوسط لوگو */
   --ifm-color-primary-darker: #1e293b;       /* رنگ مرجع لوگو */
+  --ifm-color-primary-darker-darkest-dublicate: #96accf;
   --ifm-color-primary-darkest: #1e293b;      /* آبی ـ مشکی */
   --ifm-color-primary-light: #93c5fd;        /* پس‌زمینه ـ روشن‌ترین */
   --ifm-color-primary-lighter: #dbeafe;      /* خیلی روشن */
@@ -2526,19 +2528,20 @@ body, * {
 }
 
 .home-quick-link-card {
-  background: var(--ifm-background-surface-color-gradient);
+  background: var(--ifm-color-primary-darker);
   padding: 2rem;
   border-radius: 1rem;
   text-align: center;
   text-decoration: none;
-  color: var(--ifm-font-color-base);
+  color: var(--ifm-color-black);
   transition: all 0.3s ease;
   border: 1px solid var(--ifm-color-primary-lightest);
 }
 
 .home-quick-link-card:hover {
-  background: var(--ifm-color-primary);
+  background: var(--ifm-color-primary-darker-darkest-dublicate);
   color: var(--ifm-color-white);
+
   transform: translateY(-3px);
 }
 
@@ -2551,13 +2554,11 @@ body, * {
   font-size: 1.2rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: var(--ifm-font-color-base);
 }
 
 .home-quick-link-description {
   font-size: 0.9rem;
   opacity: 0.8;
-  color: var(--ifm-font-color-secondary);
 }
 
 /* CampaignSignatures Component Styles */
@@ -3271,4 +3272,13 @@ h1, h2, h3, h4, h5, h6, [id] {
     margin-left: 0.3em;
     gap: 0.3em;
   }
+}
+
+/* Sidebar Table of Contents Styling */
+.table-of-contents.table-of-contents__left-border {
+  background-color: var(--ifm-color-white);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 1rem 0;
 }

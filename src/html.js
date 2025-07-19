@@ -7,6 +7,18 @@ export default function Html(props) {
             if (typeof window !== 'undefined' && typeof window.gtag !== 'function') {
               window.gtag = function() {};
             }
+            
+            // Initialize theme from localStorage
+            (function() {
+              try {
+                var savedTheme = localStorage.getItem('theme');
+                if (savedTheme) {
+                  document.documentElement.setAttribute('data-theme', savedTheme);
+                }
+              } catch (e) {
+                // Fallback silently
+              }
+            })();
           `
         }} />
         {props.headTags}
@@ -15,6 +27,7 @@ export default function Html(props) {
         {props.preBodyTags}
         <div id="__docusaurus">{props.children}</div>
         {props.postBodyTags}
+
       </body>
     </html>
   );

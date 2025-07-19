@@ -289,10 +289,6 @@ NODE_ENV=production
 - Code style guidelines must be followed
 - Security review for sensitive changes
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 🙏 Acknowledgments
 
 - **Sharif University of Technology** for supporting the student council

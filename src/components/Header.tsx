@@ -27,8 +27,15 @@ export default function Header({
 
   useEffect(() => {
     setIsAdmin(authApi.hasAdminAccess());
-    const currentTheme = document.documentElement.getAttribute('data-theme') as 'dark' | 'light';
-    setTheme(currentTheme);
+    
+    // Load theme from localStorage or use system preference
+    const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | null;
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+      
+      // Set initial theme
+    document.documentElement.setAttribute('data-theme', initialTheme);
+    setTheme(initialTheme);
 
     const observer = new MutationObserver((mutationsList) => {
       for(const mutation of mutationsList) {
@@ -51,9 +58,10 @@ export default function Header({
     setDropdownOpen(!dropdownOpen);
   };
 
-  const toggleTheme = () => {
+    const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
     setTheme(newTheme);
   };
 

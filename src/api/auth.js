@@ -119,7 +119,22 @@ export function useAuthApi() {
     } catch (err) {
       throw new Error('ارتباط با سرور برقرار نشد');
     }
-    return await processResponse(res);
+    
+    // Handle login errors without redirecting
+    const data = await safeJson(res);
+    if (!res.ok) {
+      // Translate common error messages to Persian
+      let errorMessage = data?.detail || 'خطا در ورود';
+      if (errorMessage.includes('Invalid credentials') || errorMessage.includes('invalid credentials')) {
+        errorMessage = 'ایمیل یا رمز عبور اشتباه است';
+      } else if (errorMessage.includes('User not found')) {
+        errorMessage = 'کاربری با این ایمیل یافت نشد';
+      } else if (errorMessage.includes('Account disabled')) {
+        errorMessage = 'حساب کاربری غیرفعال است';
+      }
+      throw new Error(errorMessage);
+    }
+    return data;
   }
 
   function decodeJWT(token) {
