@@ -68,7 +68,7 @@ const config: Config = {
           { label: 'stu.senfi@sharif.edu', href: 'mailto:stu.senfi@sharif.edu' },
         ]},
       ],
-      copyright: `کپی‌رایت © ${new Date().getFullYear()} آریا ترابی. ساخته‌شده با داکوساروس.`,
+      copyright: `کپی‌رایت © ${new Date().getFullYear()} آریا ترابی. ساخته‌شده با داکوساروس.<br/>باتشکر از امیرحسین محمدزاده`,
     },
     prism: {
       theme: prismThemes.github,
