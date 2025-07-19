@@ -7,6 +7,28 @@ import StatsPanel from '../components/StatsPanel';
 import { useEffect, useState } from 'react';
 import { FaUsers, FaRegCalendarAlt, FaBuilding } from 'react-icons/fa';
 
+// Import DOMPurify with proper fallback
+let DOMPurify: any = null;
+if (typeof window !== 'undefined') {
+  try {
+    DOMPurify = require('dompurify');
+  } catch (error) {
+    console.warn('DOMPurify not available, using fallback sanitization');
+  }
+}
+
+// Fallback sanitization function
+function sanitizeHTML(html: string): string {
+  if (DOMPurify) {
+    return DOMPurify.sanitize(html);
+  }
+  return html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+\s*=/gi, '');
+}
+
 function TreeContent() {
   // محاسبه تعداد کل اعضا
   const totalMembers = groupedPeriods.reduce((acc, group) => 
@@ -45,7 +67,7 @@ function TreeContent() {
                   {council.meta.description && (
                     <div
                       className="council-description"
-                      dangerouslySetInnerHTML={{ __html: council.meta.description }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHTML(council.meta.description) }}
                     />
                   )}
                   {/* Committees List - کارت ستونی */}

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useAuthApi } from '../api/auth';
 import { useNotification } from '../contexts/NotificationContext';
 import CampaignSignatures from './CampaignSignatures';
@@ -7,6 +7,7 @@ import ConfirmModal from './ConfirmModal';
 import CampaignCard from './CampaignCard';
 import { useRef } from 'react';
 import { FaClipboardList, FaHourglass, FaExclamationTriangle, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import '../css/approvedCampaigns.css';
 
 const ApprovedCampaigns = () => {
   const [campaigns, setCampaigns] = useState([]);
@@ -33,6 +34,32 @@ const ApprovedCampaigns = () => {
   const [statusFilterOpen, setStatusFilterOpen] = useState(false); // ساب‌منوی وضعیت کارزارها
   const [signatureFilterOpen, setSignatureFilterOpen] = useState(false); // ساب‌منوی امضا شده
   const filterRef = useRef<HTMLDivElement>(null);
+
+  // تعریف refها و stateهای اندازه برای هر دکمه و dropdown
+  const labelButtonRef = useRef<HTMLButtonElement>(null);
+  const [labelDropdownWidth, setLabelDropdownWidth] = useState<number>(0);
+  const signButtonRef = useRef<HTMLButtonElement>(null);
+  const [signDropdownWidth, setSignDropdownWidth] = useState<number>(0);
+  const statusButtonRef = useRef<HTMLButtonElement>(null);
+  const [statusDropdownWidth, setStatusDropdownWidth] = useState<number>(0);
+  // اندازه‌گیری داینامیک بعد از mount و هر بار resize
+  useEffect(() => {
+    function updateWidths() {
+      if (labelButtonRef.current) setLabelDropdownWidth(labelButtonRef.current.offsetWidth);
+      if (signButtonRef.current) setSignDropdownWidth(signButtonRef.current.offsetWidth);
+      if (statusButtonRef.current) setStatusDropdownWidth(statusButtonRef.current.offsetWidth);
+    }
+    updateWidths();
+    window.addEventListener('resize', updateWidths);
+    return () => window.removeEventListener('resize', updateWidths);
+  }, []);
+
+  const FACULTY_CHOICES = [
+    "فیزیک", "صنایع", "کامپیوتر", "برق", "عمران", "مواد", "مهندسی شیمی و نفت", "ریاضی", "هوافضا", "انرژی", "مدیریت و اقتصاد", "شیمی", "مکانیک"
+  ];
+  const DORMITORY_CHOICES = [
+    "احمدی روشن", "طرشت ۲", "طرشت ۳"
+  ];
 
   // بستن منو با کلیک بیرون
   React.useEffect(() => {
@@ -69,7 +96,6 @@ const ApprovedCampaigns = () => {
         setLoading(false);
       })
       .catch(err => {
-        console.error('Error fetching approved campaigns:', err);
         showNotification(err.message || 'خطا در دریافت لیست کارزارها', 'error');
         setLoading(false);
       });
@@ -101,13 +127,10 @@ const ApprovedCampaigns = () => {
 
   // بعد از بازگرداندن به بررسی فقط امضای همان کارزار را آپدیت کن
   const confirmSetPending = useCallback(async () => {
-    console.log('confirmSetPending called', { pendingId, pendingLoading });
     if (!pendingId || pendingLoading) return;
     setPendingLoading(true);
     try {
-      console.log('Calling updateCampaignStatus', pendingId);
       await authApi.updateCampaignStatus(pendingId, undefined, 'pending');
-      console.log('updateCampaignStatus finished', pendingId);
       showNotification('کارزار به حالت بررسی بازگردانده شد.', 'success');
       setRefresh(r => r + 1); // رفرش لیست بعد از تغییر وضعیت
       // فقط امضای همین کارزار را چک کن
@@ -115,10 +138,9 @@ const ApprovedCampaigns = () => {
         const sig = await authApi.checkUserSignature(pendingId);
         setUserSignatures(prev => ({ ...prev, [pendingId]: sig }));
       } catch (err) {
-        console.log('Error checking signature after setPending', err);
+        // Silent error handling
       }
     } catch (err: any) {
-      console.log('Error in updateCampaignStatus', err);
       showNotification(err.message || 'خطا در بازگرداندن کارزار به حالت بررسی', 'error');
     } finally {
       setPendingLoading(false);
@@ -145,9 +167,117 @@ const ApprovedCampaigns = () => {
     });
   };
 
+  // لیبل‌های قابل مشاهده فقط از campaigns دریافتی
+  const visibleLabels = useMemo(() => {
+    const set = new Set<string>();
+    (campaigns || []).forEach((c: any) => {
+      if (c.label) set.add(c.label);
+    });
+    return Array.from(set);
+  }, [campaigns]);
+  
+  // همه لیبل‌های ممکن برای فیلتر
+  const ALL_POSSIBLE_LABELS = [
+    "مسائل دانشگاهی",
+    "فیزیک", "صنایع", "کامپیوتر", "برق", "عمران", "مواد", 
+    "مهندسی شیمی و نفت", "ریاضی", "هوافضا", "انرژی", 
+    "مدیریت و اقتصاد", "شیمی", "مکانیک",
+    "احمدی روشن", "طرشت ۲", "طرشت ۳", "خوابگاهی نیستم"
+  ];
+  
+  // ترکیب لیبل‌های موجود و لیبل‌های ممکن
+  const ALL_LABELS = useMemo(() => {
+    const combined = new Set([...visibleLabels, ...ALL_POSSIBLE_LABELS]);
+    return Array.from(combined).sort();
+  }, [visibleLabels]);
+  const [labelFilter, setLabelFilter] = useState<string[]>(ALL_LABELS);
+  useEffect(() => { setLabelFilter(ALL_LABELS); }, [JSON.stringify(ALL_LABELS)]);
+  const [labelDropdownOpen, setLabelDropdownOpen] = useState(false);
+  const labelDropdownRef = useRef<HTMLDivElement>(null);
+
+  // بستن منو با کلیک بیرون
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (labelDropdownRef.current && !labelDropdownRef.current.contains(event.target as Node)) {
+        setLabelDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // هندل تغییر چک‌باکس
+  const handleLabelCheckbox = (label: string) => {
+    setLabelFilter(prev =>
+      prev.includes(label)
+        ? prev.filter(l => l !== label)
+        : [...prev, label]
+    );
+  };
+
+  // متن خلاصه انتخاب‌شده‌ها
+  const labelSummary = labelFilter.length === ALL_LABELS.length
+    ? 'همه موضوعات'
+    : labelFilter.length === 0
+      ? 'هیچ موضوعی انتخاب نشده'
+      : labelFilter.length <= 2
+        ? labelFilter.join('، ')
+        : `${labelFilter.length} موضوع انتخاب شده`;
+
+  // فیلتر امضا شده/نشده
+  const SIGN_FILTERS = [
+    { key: 'signed', label: 'امضا شده', value: filterSigned },
+    { key: 'unsigned', label: 'امضا نشده', value: filterUnsigned },
+  ];
+  const [signFilter, setSignFilter] = useState<string[]>(['signed', 'unsigned']);
+  const [signDropdownOpen, setSignDropdownOpen] = useState(false);
+  const signDropdownRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (signDropdownRef.current && !signDropdownRef.current.contains(event.target as Node)) {
+        setSignDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+  // sync with old checkboxes for backward compatibility
+  useEffect(() => {
+    setFilterSigned(signFilter.includes('signed'));
+    setFilterUnsigned(signFilter.includes('unsigned'));
+  }, [signFilter]);
+  const signSummary = signFilter.length === 2 ? 'همه وضعیت‌ها' : signFilter.length === 0 ? 'هیچ' : signFilter.map(f => SIGN_FILTERS.find(x => x.key === f)?.label).join('، ');
+
+  // فیلتر باز/بسته
+  const STATUS_FILTERS = [
+    { key: 'open', label: 'باز', value: filterOpenCampaigns },
+    { key: 'closed', label: 'بسته', value: filterClosed },
+  ];
+  const [statusFilter, setStatusFilter] = useState<string[]>(['open', 'closed']);
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
+  const statusDropdownRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (statusDropdownRef.current && !statusDropdownRef.current.contains(event.target as Node)) {
+        setStatusDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+  useEffect(() => {
+    setFilterOpenCampaigns(statusFilter.includes('open'));
+    setFilterClosed(statusFilter.includes('closed'));
+  }, [statusFilter]);
+  const statusSummary = statusFilter.length === 2 ? 'همه وضعیت‌ها' : statusFilter.length === 0 ? 'هیچ' : statusFilter.map(f => STATUS_FILTERS.find(x => x.key === f)?.label).join('، ');
+
   // فیلتر نهایی
   const filteredCampaigns = useMemo(() => {
     let result = campaigns;
+    // فیلتر بر اساس لیبل
+    if (labelFilter.length > 0) {
+      result = result.filter((c: any) => labelFilter.includes(c.label));
+    }
     // فیلتر امضا شده/نشده
     if (!filterSigned || !filterUnsigned) {
       result = result.filter((c: any) => {
@@ -192,7 +322,7 @@ const ApprovedCampaigns = () => {
       });
     }
     return sorted;
-  }, [campaigns, userSignatures, filterSigned, filterUnsigned, filterClosed, filterOpenCampaigns, search, sortType]);
+  }, [campaigns, userSignatures, filterSigned, filterUnsigned, filterClosed, filterOpenCampaigns, search, sortType, labelFilter]);
 
   // لیست واحد همه کارزارها
   const allCampaigns = filteredCampaigns;
@@ -208,86 +338,150 @@ const ApprovedCampaigns = () => {
   }
 
   return (
-    <div
-      className="approved-campaigns-container"
-    >
-      {/* سرچ بار و فیلتر */}
-      <div className="approved-campaigns-search-container">
-        <input
-          type="text"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="جستجو در عنوان یا متن کارزار..."
-          className="approved-campaigns-search-input"
-        />
+    <div className="approved-campaigns-container">
+      {/* فیلتر لیبل به صورت دراپ‌داون مولتی‌سِلکت */}
+      <div className="filters-container">
+        {/* فیلتر لیبل */}
+        {ALL_LABELS.length > 0 && (
+          <div ref={labelDropdownRef} className="dropdown-container">
+            <button
+              ref={labelButtonRef}
+              type="button"
+              onClick={() => setLabelDropdownOpen(v => !v)}
+              className={`dropdown-button ${labelDropdownOpen ? 'active' : ''}`}
+              title={labelSummary}
+            >
+              <span className="dropdown-button-text">{labelSummary}</span>
+              <span className="dropdown-arrow">
+                {labelDropdownOpen ? '▲' : '▼'}
+              </span>
+            </button>
+            {labelDropdownOpen && (
+              <div 
+                className="dropdown-menu"
+                style={{
+                  minWidth: labelDropdownWidth || 120,
+                  width: labelDropdownWidth || 'auto',
+                }}
+              >
+                {ALL_LABELS.map(l => (
+                  <label key={l} className="dropdown-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={labelFilter.includes(l)}
+                      onChange={() => handleLabelCheckbox(l)}
+                      className="dropdown-checkbox"
+                    />
+                    {l}
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        {/* بقیه فیلترها و سرچ */}
+        {/* سورت */}
         <select
           value={sortType}
           onChange={e => setSortType(e.target.value as any)}
-          className="approved-campaigns-sort-dropdown"
-          style={{marginRight: '1em', borderRadius: '0.7em', padding: '0.5em 1em', fontSize: '1em', border: '1.5px solid var(--ifm-color-primary-lightest)', background: 'var(--ifm-color-white)', color: 'var(--ifm-color-primary-darkest)'}}
-          title="مرتب‌سازی بر اساس"
+          className="sort-select"
+          title={(() => {
+            switch(sortType) {
+              case 'created_at': return 'جدیدترین';
+              case 'signatures': return 'بیشترین امضا';
+              case 'deadline': return 'نزدیک‌ترین ددلاین';
+              default: return '';
+            }
+          })()}
         >
+          <option value="created_at">جدیدترین</option>
           <option value="signatures">بیشترین امضا</option>
           <option value="deadline">نزدیک‌ترین ددلاین</option>
-          <option value="created_at">جدیدترین کارزار</option>
         </select>
-        <div ref={filterRef} className="approved-campaigns-filter-container">
+        {/* فیلتر امضا شده/نشده به صورت دراپ‌داون */}
+        <div ref={signDropdownRef} className="dropdown-container">
           <button
-            onClick={() => setFilterOpen(f => !f)}
-            className="campaigns-filter-btn"
+            ref={signButtonRef}
+            type="button"
+            onClick={() => setSignDropdownOpen(v => !v)}
+            className={`dropdown-button ${signDropdownOpen ? 'active' : ''}`}
+            title={signSummary}
           >
-            <span>فیلتر</span>
-            <span className="approved-campaigns-filter-icon">{filterOpen ? <FaChevronUp /> : <FaChevronDown />}</span>
+            <span className="dropdown-button-text">{signSummary}</span>
+            <span className="dropdown-arrow">{signDropdownOpen ? '▲' : '▼'}</span>
           </button>
-          {filterOpen && (
-            <div className="campaigns-filter-dropdown">
-              <div className="approved-campaigns-filter-submenu-container">
-                <button
-                  type="button"
-                  className="campaigns-filter-btn approved-campaigns-filter-submenu-btn"
-                  onClick={() => setStatusFilterOpen(v => !v)}
-                >
-                  <span>وضعیت کارزارها</span>
-                  <span className="approved-campaigns-filter-submenu-icon">{statusFilterOpen ? <FaChevronUp /> : <FaChevronDown />}</span>
-                </button>
-                {statusFilterOpen && (
-                  <div className="campaigns-status-submenu">
-                    <label>
-                      <input type="checkbox" checked={filterClosed} onChange={e => setFilterClosed(e.target.checked)} />
-                      <span>کارزارهای بسته شده</span>
-                    </label>
-                    <label>
-                      <input type="checkbox" checked={filterOpenCampaigns} onChange={e => setFilterOpenCampaigns(e.target.checked)} />
-                      <span>کارزارهای باز</span>
-                    </label>
-                  </div>
-                )}
-              </div>
-              <div className="approved-campaigns-filter-submenu-container">
-                <button
-                  type="button"
-                  className="campaigns-filter-btn approved-campaigns-filter-submenu-btn"
-                  onClick={() => setSignatureFilterOpen(v => !v)}
-                >
-                  <span>وضعیت امضای من</span>
-                  <span className="approved-campaigns-filter-submenu-icon">{signatureFilterOpen ? <FaChevronUp /> : <FaChevronDown />}</span>
-                </button>
-                {signatureFilterOpen && (
-                  <div className="campaigns-status-submenu">
-                    <label>
-                      <input type="checkbox" checked={filterSigned} onChange={e => setFilterSigned(e.target.checked)} />
-                      <span>امضا شده</span>
-                    </label>
-                    <label>
-                      <input type="checkbox" checked={filterUnsigned} onChange={e => setFilterUnsigned(e.target.checked)} />
-                      <span>امضا نشده</span>
-                    </label>
-                  </div>
-                )}
-              </div>
+          {signDropdownOpen && (
+            <div 
+              className="dropdown-menu"
+              style={{
+                minWidth: signDropdownWidth || 120,
+                width: signDropdownWidth || 'auto',
+                maxWidth: 220,
+                maxHeight: 200,
+              }}
+            >
+              {SIGN_FILTERS.map(f => (
+                <label key={f.key} className="dropdown-checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={signFilter.includes(f.key)}
+                    onChange={() => setSignFilter(prev => prev.includes(f.key) ? prev.filter(x => x !== f.key) : [...prev, f.key])}
+                    className="dropdown-checkbox"
+                  />
+                  {f.label}
+                </label>
+              ))}
             </div>
           )}
         </div>
+        {/* فیلتر باز/بسته به صورت دراپ‌داون */}
+        <div ref={statusDropdownRef} className="dropdown-container">
+          <button
+            ref={statusButtonRef}
+            type="button"
+            onClick={() => setStatusDropdownOpen(v => !v)}
+            className={`dropdown-button ${statusDropdownOpen ? 'active' : ''}`}
+            title={statusSummary}
+          >
+            <span className="dropdown-button-text">{statusSummary}</span>
+            <span className="dropdown-arrow">{statusDropdownOpen ? '▲' : '▼'}</span>
+          </button>
+          {statusDropdownOpen && (
+            <div 
+              className="dropdown-menu"
+              style={{
+                minWidth: statusDropdownWidth || 120,
+                width: statusDropdownWidth || 'auto',
+                maxWidth: 220,
+                maxHeight: 200,
+              }}
+            >
+              {STATUS_FILTERS.map(f => (
+                <label key={f.key} className="dropdown-checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={statusFilter.includes(f.key)}
+                    onChange={() => setStatusFilter(prev => prev.includes(f.key) ? prev.filter(x => x !== f.key) : [...prev, f.key])}
+                    className="dropdown-checkbox"
+                  />
+                  {f.label}
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+        {/* سرچ بار آخر ردیف */}
+        <input
+          type="text"
+          placeholder="جستجو..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="search-input"
+          style={{
+            minWidth: 140,
+            order: 10,
+          }}
+        />
       </div>
       <h2 className="approved-campaigns-title">
         <FaClipboardList /> همه کارزارها

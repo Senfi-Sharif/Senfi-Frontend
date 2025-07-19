@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import { useAuthApi } from '../api/auth';
 import { FaUser, FaEnvelope, FaUserShield, FaSign, FaCheckCircle, FaExclamationCircle, FaRegListAlt } from 'react-icons/fa';
+import { SecureTokenManager } from '../utils/security';
 
 function AdminUserList() {
   const authApi = useAuthApi();
@@ -16,7 +17,6 @@ function AdminUserList() {
         setUsers(users);
         setError('');
       } catch (err) {
-        console.error('DEBUG: error fetching users:', err);
         setError('خطا در دریافت لیست کاربران');
       } finally {
         setLoading(false);
@@ -97,8 +97,8 @@ export default function Profile() {
   useEffect(() => {
     // بررسی لاگین بودن کاربر
     if (typeof window !== 'undefined') {
-      const email = localStorage.getItem('email');
-      const role = localStorage.getItem('role');
+      const email = SecureTokenManager.getEmail();
+      const role = SecureTokenManager.getRole();
       if (!email) {
         setError('برای مشاهده پروفایل ابتدا وارد شوید');
         setLoading(false);
@@ -127,9 +127,7 @@ export default function Profile() {
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('token');
-      localStorage.removeItem('email');
-      localStorage.removeItem('role');
+      SecureTokenManager.clearAuth();
       window.location.href = '/';
     }
   };

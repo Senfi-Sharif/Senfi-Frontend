@@ -1,4 +1,5 @@
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import { SecureTokenManager } from '../utils/security';
 
 export function useAuthApi() {
   const { siteConfig } = useDocusaurusContext();
@@ -13,9 +14,7 @@ export function useAuthApi() {
   }
 
   function handleNoCredentials() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('email');
-    localStorage.removeItem('role');
+    SecureTokenManager.clearAuth();
     window.dispatchEvent(new CustomEvent('auth:logout'));
     window.location.href = '/';
   }
@@ -29,6 +28,25 @@ export function useAuthApi() {
       throw new Error(data?.detail || 'خطا در ارتباط با سرور');
     }
     return data;
+  }
+
+  async function checkTokenBeforeRequest() {
+    const token = SecureTokenManager.getToken();
+    if (!token) return;
+    
+    // اگر توکن منقضی شده، کاربر را خارج کن
+    if (isTokenExpired(token)) {
+      handleNoCredentials();
+      return;
+    }
+    
+    // اگر توکن در حال انقضا است (کمتر از 30 دقیقه)، به کاربر هشدار بده
+    if (isTokenExpiringSoon(token, 30)) {
+      // می‌توانیم اینجا یک notification به کاربر نشان دهیم
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('token:expiring-soon'));
+      }
+    }
   }
 
   async function checkEmailExists(email) {
@@ -76,13 +94,13 @@ export function useAuthApi() {
     return data.valid;
   }
 
-  async function register(email, password) {
+  async function register(email, password, faculty, dormitory) {
     let res;
     try {
       res = await fetch(`${API_BASE}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, faculty, dormitory }),
       });
     } catch (err) {
       throw new Error('ارتباط با سرور برقرار نشد');
@@ -117,9 +135,60 @@ export function useAuthApi() {
     }
   }
 
+  function isTokenExpiringSoon(token, minutesBeforeExpiry = 30) {
+    try {
+      const decoded = decodeJWT(token);
+      if (!decoded || !decoded.exp) return false;
+      
+      const expiryTime = decoded.exp * 1000; // Convert to milliseconds
+      const currentTime = Date.now();
+      const timeUntilExpiry = expiryTime - currentTime;
+      const minutesUntilExpiry = timeUntilExpiry / (1000 * 60);
+      
+
+      
+      return minutesUntilExpiry <= minutesBeforeExpiry;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function isTokenExpired(token) {
+    try {
+      const decoded = decodeJWT(token);
+      if (!decoded || !decoded.exp) return true;
+      
+      const expiryTime = decoded.exp * 1000; // Convert to milliseconds
+      const currentTime = Date.now();
+      
+      return currentTime >= expiryTime;
+    } catch (err) {
+      return true;
+    }
+  }
+
+  function clearOldTokens() {
+    // پاک کردن توکن‌های منقضی شده
+    const token = SecureTokenManager.getToken();
+    if (token) {
+      const decoded = decodeJWT(token);
+      if (decoded && decoded.exp) {
+        const expiryTime = decoded.exp * 1000;
+        const currentTime = Date.now();
+        
+        // اگر توکن منقضی شده، پاکش کن
+        if (currentTime >= expiryTime) {
+          SecureTokenManager.clearAuth();
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   function getUserRole() {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem('role') || null;
+    return SecureTokenManager.getRole() || null;
   }
 
   function hasAdminAccess() {
@@ -128,7 +197,8 @@ export function useAuthApi() {
   }
 
   async function getPendingCampaigns() {
-    const token = localStorage.getItem('token');
+    await checkTokenBeforeRequest();
+    const token = SecureTokenManager.getToken();
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
@@ -146,7 +216,7 @@ export function useAuthApi() {
   }
 
   async function updateCampaignStatus(campaignId, approved, status) {
-    const token = localStorage.getItem('token');
+    const token = SecureTokenManager.getToken();
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
@@ -165,11 +235,14 @@ export function useAuthApi() {
   }
 
   async function getApprovedCampaigns() {
+    const token = SecureTokenManager.getToken();
+    let headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
     let res;
     try {
       res = await fetch(`${API_BASE}/api/campaigns/approved`, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
       });
     } catch (err) {
       throw new Error('ارتباط با سرور برقرار نشد');
@@ -182,7 +255,7 @@ export function useAuthApi() {
   }
 
   async function signCampaign(campaignId, isAnonymous = false) {
-    const token = localStorage.getItem('token');
+    const token = SecureTokenManager.getToken();
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
@@ -218,7 +291,7 @@ export function useAuthApi() {
   }
 
   async function getUserSignedCampaigns() {
-    const token = localStorage.getItem('token');
+    const token = SecureTokenManager.getToken();
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
@@ -240,7 +313,7 @@ export function useAuthApi() {
   }
 
   async function checkUserSignature(campaignId) {
-    const token = localStorage.getItem('token');
+    const token = SecureTokenManager.getToken();
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
@@ -262,7 +335,7 @@ export function useAuthApi() {
   }
 
   async function validateToken() {
-    const token = localStorage.getItem('token');
+    const token = SecureTokenManager.getToken();
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
@@ -284,7 +357,7 @@ export function useAuthApi() {
   }
 
   async function getUser(userId) {
-    const token = localStorage.getItem('token');
+    const token = SecureTokenManager.getToken();
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
@@ -302,7 +375,7 @@ export function useAuthApi() {
   }
 
   async function updateUserRole(userId, newRole) {
-    const token = localStorage.getItem('token');
+    const token = SecureTokenManager.getToken();
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
@@ -320,8 +393,8 @@ export function useAuthApi() {
     return await processResponse(res);
   }
 
-  async function submitCampaign({ title, description, email, is_anonymous, end_datetime }) {
-    const token = localStorage.getItem('token');
+  async function submitCampaign({ title, description, email, is_anonymous, end_datetime, label }) {
+    const token = SecureTokenManager.getToken();
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
@@ -331,16 +404,16 @@ export function useAuthApi() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ title, description, email, is_anonymous, end_datetime })
+        body: JSON.stringify({ title, description, email, is_anonymous, end_datetime, label }),
       });
     } catch (err) {
       throw new Error('ارتباط با سرور برقرار نشد');
     }
-    return await res.json();
+    return await processResponse(res);
   }
 
   async function getUsers() {
-    const token = localStorage.getItem('token');
+    const token = SecureTokenManager.getToken();
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
@@ -364,6 +437,9 @@ export function useAuthApi() {
     register,
     login,
     decodeJWT,
+    isTokenExpired,
+    isTokenExpiringSoon,
+    clearOldTokens,
     getUserRole,
     hasAdminAccess,
     getPendingCampaigns,

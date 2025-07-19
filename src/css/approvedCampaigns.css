@@ -1,0 +1,200 @@
+/* ApprovedCampaigns Component Styles */
+
+.approved-campaigns-container {
+  /* Container styles */
+}
+
+.approved-campaigns-checking-icon {
+  /* Loading icon styles */
+}
+
+.filters-container {
+  margin-bottom: 1.2em;
+  display: flex;
+  align-items: center;
+  gap: 1.5em;
+  flex-wrap: wrap;
+  border: 1.5px solid var(--ifm-color-primary-lightest-dublicate, #e0e7ff);
+  border-radius: 1.2em;
+  padding: 1em 1.5em;
+  box-sizing: border-box;
+  overflow-y: visible;
+  position: relative;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .filters-container {
+    gap: 1em;
+    padding: 0.8em 1em;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .dropdown-container {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .dropdown-button {
+    width: 100%;
+    min-width: auto;
+    justify-content: space-between;
+  }
+  
+  .sort-select {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .search-input {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .filters-container {
+    gap: 0.8em;
+    padding: 0.6em 0.8em;
+  }
+  
+  .dropdown-button {
+    padding: 0.4em 0.8em;
+    font-size: 0.95em;
+  }
+  
+  .sort-select {
+    padding: 0.4em 0.8em;
+    font-size: 0.95em;
+  }
+  
+  .search-input {
+    padding: 0.4em 0.8em;
+    font-size: 0.95em;
+  }
+}
+
+.dropdown-container {
+  position: relative;
+  min-width: 120px;
+  width: auto;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.dropdown-button {
+  padding: 0.35em 1em;
+  border-radius: 1em;
+  font-size: 1em;
+  border: 1.5px solid var(--ifm-color-primary-lightest-dublicate, #e0e7ff);
+  background: var(--ifm-background-color);
+  min-width: 120px;
+  width: auto;
+  text-align: right;
+  cursor: pointer;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1em;
+  color: var(--ifm-font-color-base, #222);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-button.active {
+  box-shadow: 0 2px 12px rgba(30,64,175,0.10);
+}
+
+.dropdown-button-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
+  flex: 1;
+}
+
+.dropdown-arrow {
+  font-size: 1.2em;
+  color: var(--ifm-color-primary, #1e40af);
+  margin-right: 6px;
+  position: relative;
+  z-index: 10001;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  z-index: 9999;
+  background: var(--ifm-color-primary-lightest);
+  border: 1.5px solid var(--ifm-color-primary-lightest-dublicate, #e0e7ff);
+  border-radius: 1em;
+  box-shadow: 0 4px 16px rgba(30,64,175,0.13);
+  padding: 0.5em 0.7em;
+  min-width: 120px;
+  width: auto;
+  max-width: 320px;
+  max-height: 320px;
+  overflow-y: auto;
+  margin-top: 2px;
+  color: var(--ifm-font-color-base, #222);
+}
+
+.dropdown-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.98em;
+  padding: 0.25em 0;
+}
+
+.dropdown-checkbox {
+  accent-color: var(--ifm-color-primary, #1e40af);
+  width: 18px;
+  height: 18px;
+  margin-left: 4px;
+  background: var(--ifm-background-color, #fff);
+}
+
+.sort-select {
+  padding: 0.35em 1em;
+  border-radius: 1em;
+  font-size: 1em;
+  border: 1.5px solid var(--ifm-color-primary-lightest-dublicate, #e0e7ff);
+  background: var(--ifm-background-color, #fff);
+  color: var(--ifm-font-color-base, #222);
+  min-width: 120px;
+  width: auto;
+  margin-right: 0;
+  box-shadow: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+}
+
+.search-input {
+  padding: 0.35em 1em;
+  border-radius: 1em;
+  font-size: 1em;
+  border: 1.5px solid var(--ifm-color-primary-lightest-dublicate, #e0e7ff);
+  background: var(--ifm-background-color);
+  color: var(--ifm-font-color-base, #222);
+  min-width: 200px;
+  width: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: var(--ifm-color-emphasis-600, #666);
+  opacity: 0.7;
+} 

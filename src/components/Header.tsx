@@ -17,7 +17,7 @@ export default function Header({
   userEmail, 
   userRole, 
   onLoginClick, 
-  onLogout 
+  onLogout
 }: HeaderProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);

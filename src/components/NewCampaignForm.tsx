@@ -8,6 +8,7 @@ import moment from 'moment';
 import { useAuthApi } from '../api/auth';
 import { FaTimes, FaRegEdit, FaLock, FaGlobe, FaRegClock, FaExclamationTriangle, FaPaperPlane, FaSpinner, FaCheckCircle } from 'react-icons/fa';
 import colors from 'react-multi-date-picker/plugins/colors';
+import { sanitizeInput, SecureTokenManager } from '../utils/security';
 
 // برای جلوگیری از خطای تایپ‌اسکریپت
 declare global {
@@ -28,6 +29,7 @@ function NewCampaignForm() {
   const [loading, setLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [endDate, setEndDate] = useState<any>(null);
+  const [label, setLabel] = useState("مسائل دانشگاهی");
   const { showNotification } = useNotification();
   const authApi = useAuthApi();
   
@@ -48,7 +50,6 @@ function NewCampaignForm() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log('handleSubmit اجرا شد', Date.now());
     e.preventDefault();
     if (!title.trim() || !desc.trim()) {
       showNotification('لطفاً تیتر و متن را وارد کنید.', 'warning');
@@ -61,18 +62,16 @@ function NewCampaignForm() {
     setError('');
     setLoading(true);
     try {
-      let email = '';
-      if (typeof window !== 'undefined') {
-        email = localStorage.getItem('email') || '';
-      }
+      let email = SecureTokenManager.getEmail() || '';
       // اصلاح ساخت end_datetime با تایم‌زون صحیح
       const end_datetime = moment(endDate?.toDate()).format(); // خروجی: 2024-07-20T14:00:00+03:30
       const res = await authApi.submitCampaign({ 
-          title, 
-          description: desc, 
+          title: sanitizeInput(title, 200), 
+          description: sanitizeInput(desc, 2000), 
           email: email || '',
           is_anonymous: isAnonymous ? "anonymous" : "public",
-          end_datetime
+          end_datetime,
+          label: sanitizeInput(label, 50)
         });
       if (res.success) {
         showNotification('کارزار با موفقیت ایجاد شد!', 'success', 10000);
@@ -85,13 +84,42 @@ function NewCampaignForm() {
         showNotification(res.message || 'خطا در ثبت کارزار', 'error');
       }
     } catch (err) {
-      console.error('Error in handleSubmit:', err);
-      showNotification('خطا در ارتباط با سرور', 'error');
+      // Extract the actual error message from the response
+      let errorMessage = 'خطا در ارتباط با سرور';
+      if (err && typeof err === 'object' && 'message' in err) {
+        errorMessage = err.message;
+      } else if (err && typeof err === 'string') {
+        errorMessage = err;
+      }
+      showNotification(errorMessage, 'error');
     } finally {
       setLoading(false);
     }
   };
   
+  const FACULTY_CHOICES = [
+    "فیزیک", "صنایع", "کامپیوتر", "برق", "عمران", "مواد", "مهندسی شیمی و نفت", "ریاضی", "هوافضا", "انرژی", "مدیریت و اقتصاد", "شیمی", "مکانیک"
+  ];
+  const DORMITORY_CHOICES = [
+    "احمدی روشن", "طرشت ۲", "طرشت ۳"
+  ];
+  // نقش و اطلاعات کاربر از SecureTokenManager
+  let userRole = SecureTokenManager.getRole() || '';
+  let userFaculty = '';
+  let userDormitory = '';
+  // Note: faculty and dormitory are stored in localStorage for now
+  if (typeof window !== 'undefined') {
+    userFaculty = localStorage.getItem('faculty') || '';
+    userDormitory = localStorage.getItem('dormitory') || '';
+  }
+
+  let labelChoices = ["مسائل دانشگاهی", ...FACULTY_CHOICES, ...DORMITORY_CHOICES];
+  if (!['superadmin', 'head', 'center_member'].includes(userRole)) {
+    labelChoices = ["مسائل دانشگاهی"];
+    if (userFaculty && FACULTY_CHOICES.includes(userFaculty)) labelChoices.push(userFaculty);
+    if (userDormitory && DORMITORY_CHOICES.includes(userDormitory)) labelChoices.push(userDormitory);
+  }
+
   return (
     <>
       <div className="new-campaign-form-container">
@@ -185,6 +213,13 @@ function NewCampaignForm() {
                   required
                   portal
                 />
+              </div>
+
+              <div className="new-campaign-form-group">
+                <label>برچسب کارزار (دانشکده/خوابگاه/مسائل دانشگاهی):</label>
+                <select value={label} onChange={e => setLabel(e.target.value)} className="new-campaign-date-picker" required>
+                  {labelChoices.map(l => <option key={l} value={l}>{l}</option>)}
+                </select>
               </div>
               
               {error && <div className="new-campaign-error-message"><FaExclamationTriangle /> {error}</div>}

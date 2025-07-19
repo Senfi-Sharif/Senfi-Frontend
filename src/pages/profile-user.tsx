@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '@theme/Layout';
 import { useAuthApi } from '../api/auth';
+import { SecureTokenManager } from '../utils/security';
 
 function getQueryParam(name: string) {
   if (typeof window === 'undefined') return null;
@@ -55,7 +56,7 @@ export default function ProfileUser() {
   const [myRole, setMyRole] = useState('');
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setMyRole(localStorage.getItem('role') || '');
+      setMyRole(SecureTokenManager.getRole() || '');
     }
   }, []);
   useEffect(() => {

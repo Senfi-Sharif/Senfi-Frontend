@@ -20,6 +20,7 @@
     "@docusaurus/preset-classic": "3.8.1",
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",
+    "dompurify": "^3.2.6",
     "dotenv": "^16.4.5",
     "express": "^5.1.0",
     "http-proxy-middleware": "^3.0.5",
@@ -36,6 +37,7 @@
     "@docusaurus/module-type-aliases": "3.8.1",
     "@docusaurus/tsconfig": "3.8.1",
     "@docusaurus/types": "3.8.1",
+    "@types/dompurify": "^3.0.5",
     "docusaurus-plugin-typedoc": "^1.4.0",
     "typescript": "~5.6.2"
   },
@@ -53,6 +55,5 @@
   },
   "engines": {
     "node": ">=18.0"
-  },
-  "proxy": "http://localhost:8000"
+  }
 }

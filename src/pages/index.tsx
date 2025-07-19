@@ -123,8 +123,22 @@ function QuickLinksSection() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token');
+      // Use SecureTokenManager instead of localStorage
+      const { SecureTokenManager } = require('../utils/security');
+      const token = SecureTokenManager.getToken();
       setIsLoggedIn(Boolean(token));
+      
+      // Listen for auth login/logout events
+      const handleAuthLogin = () => setIsLoggedIn(true);
+      const handleAuthLogout = () => setIsLoggedIn(false);
+      
+      window.addEventListener('auth:login', handleAuthLogin);
+      window.addEventListener('auth:logout', handleAuthLogout);
+      
+      return () => {
+        window.removeEventListener('auth:login', handleAuthLogin);
+        window.removeEventListener('auth:logout', handleAuthLogout);
+      };
     }
   }, []);
 
@@ -199,6 +213,7 @@ function useIsDarkMode() {
 // صفحه اصلی
 export default function Home() {
   const isDark = useIsDarkMode();
+  
   return (
     <Layout description="شورای صنفی دانشجویان دانشگاه صنعتی شریف - نماینده رسمی دانشجویان در امور صنفی و رفاهی">
       <HeroSection />

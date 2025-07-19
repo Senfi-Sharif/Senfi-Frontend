@@ -6,11 +6,12 @@ import ApprovedCampaigns from '../components/ApprovedCampaigns';
 import NewCampaignForm from '../components/NewCampaignForm';
 import styles from '../css/campaignsStyles';
 import { FaLock } from 'react-icons/fa';
+import { SecureTokenManager } from '../utils/security';
 
 // تابع بررسی لاگین
 function isLoggedIn() {
   if (typeof window === 'undefined') return false;
-  return Boolean(localStorage.getItem('token'));
+  return Boolean(SecureTokenManager.getToken());
 }
 
 function HeaderBanner() {

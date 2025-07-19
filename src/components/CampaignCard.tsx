@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import SignCampaignButtons from './SignCampaignButtons';
 import CampaignSignatures from './CampaignSignatures';
 import styles, { campaignCardClosed, campaignCardEndedLabel } from '../css/campaignsStyles';
-import { FaEnvelope, FaRegCalendarAlt, FaRegClock } from 'react-icons/fa';
+import { FaEnvelope, FaRegCalendarAlt, FaRegClock, FaTag } from 'react-icons/fa';
 
 function formatDate(dateString: string) {
   const d = new Date(dateString);
@@ -32,6 +32,13 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ c, isSigned = false, userRo
       {/* برچسب پایان یافته */}
       {isClosed && (
         <div className="campaign-card-ended-label" style={campaignCardEndedLabel}>این کارزار به پایان رسیده است</div>
+      )}
+      {/* برچسب موضوع کارزار */}
+      {c.label && (
+        <div className="campaign-label-badge">
+          <FaTag style={{marginLeft: 6, marginBottom: -2, color: '#1e40af', opacity: 0.85}} />
+          {c.label}
+        </div>
       )}
       {/* Title row: remove inline sign status */}
       <div className="campaign-title">{c.title}</div>

@@ -21,7 +21,7 @@ const config: Config = {
     localeConfigs: { fa: { label: 'فارسی', direction: 'rtl' } },
   },
   customFields: {
-    apiUrl: process.env.REACT_APP_API_BASE,
+    apiUrl: process.env.REACT_APP_API_BASE || 'https://api.senfi-sharif.ir',
   },
   presets: [
     [
@@ -44,7 +44,10 @@ const config: Config = {
   ],
   themeConfig: {    
     image: 'img/maini_colors.png',
-    scripts: ['/custom.js'],
+    scripts: [
+      '/custom.js',
+      '/security-headers.js'
+    ],
     colorMode: {
       defaultMode: 'light',
       disableSwitch: false,
