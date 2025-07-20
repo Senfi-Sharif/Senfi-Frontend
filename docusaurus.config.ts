@@ -35,6 +35,7 @@ const config: Config = {
           showLastUpdateTime: true,
           showLastUpdateAuthor: true,
         },
+        blog: false, // Disable default blog to use custom blog pages
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },

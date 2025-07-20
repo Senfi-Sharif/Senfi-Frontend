@@ -1,0 +1,27 @@
+admin:
+  name: شورای صنفی دانشجویان
+  title: دبیرخانه شورای صنفی
+  url: https://senfi.sharif.ir
+  image_url: /img/maini_colors.png
+  bio: دبیرخانه شورای صنفی دانشجویان دانشگاه صنعتی شریف - در خدمت دانشجویان عزیز
+
+student:
+  name: دانشجوی ناشناس
+  title: دانشجو
+  url: https://senfi.sharif.ir
+  image_url: /img/maini_colors.png
+  bio: دانشجوی دانشگاه صنعتی شریف - به اشتراک‌گذاری تجربیات دانشجویی
+
+editor:
+  name: سردبیر
+  title: سردبیر وب‌سایت
+  url: https://senfi.sharif.ir
+  image_url: /img/maini_colors.png
+  bio: سردبیر وب‌سایت شورای صنفی - مسئول انتشار محتوا
+
+council_member:
+  name: عضو شورا
+  title: عضو شورای صنفی
+  url: https://senfi.sharif.ir
+  image_url: /img/maini_colors.png
+  bio: عضو فعال شورای صنفی دانشجویان دانشگاه صنعتی شریف 

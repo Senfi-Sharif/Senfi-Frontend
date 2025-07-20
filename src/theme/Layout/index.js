@@ -492,8 +492,8 @@ function LayoutContent(props) {
                   showNotification('ثبت‌نام با موفقیت انجام شد و وارد سیستم شدید!', 'success');
                   handleClose();
                 } else {
-                  showNotification('ثبت‌نام با موفقیت انجام شد!', 'success');
-                  handleClose();
+                showNotification('ثبت‌نام با موفقیت انجام شد!', 'success');
+                handleClose();
                 }
               } else {
                 setPasswordError(res.detail || 'ثبت‌نام با خطا مواجه شد.');
