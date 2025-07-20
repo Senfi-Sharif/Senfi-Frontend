@@ -1023,19 +1023,6 @@ body, * {
   background: var(--ifm-color-primary-light);
   color: var(--ifm-color-white);
 }
-.logoutButton {
-  background: var(--ifm-color-red);
-  color: var(--ifm-color-white);
-}
-.loginButton {
-  border: 1.5px solid var(--ifm-color-primary-lightest);
-  background: var(--ifm-color-white);
-  color: var(--ifm-color-primary);
-}
-.loginButton:hover {
-  border-color: var(--ifm-color-primary-light);
-  background: var(--ifm-color-white);
-}
 
 
 .adminBadge {
@@ -1536,12 +1523,12 @@ body, * {
 
 .header-dropdown-arrow {
   font-size: 1rem;
-  margin-right: 8px;
-  transition: transform 0.2s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-block;
 }
 
 .header-dropdown-arrow-open {
-  transform: rotate(180deg);
+  transform: rotate(-180deg) !important;
 }
 
 .header-dropdown-menu {
@@ -1648,6 +1635,14 @@ body, * {
   align-items: stretch;
   padding: 1.2rem 1.2rem 1.5rem 1.2rem;
   animation: slideInMenu 0.32s cubic-bezier(0.4,0,0.2,1);
+  transition: transform 0.32s cubic-bezier(0.4,0,0.2,1), opacity 0.32s cubic-bezier(0.4,0,0.2,1);
+  transform: translateX(0);
+  opacity: 1;
+}
+.header-mobile-menu.menu-closing {
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .header-mobile-menu a,
@@ -3124,7 +3119,6 @@ body, * {
     padding: 0.7em 0.7em;
     min-width: 0;
     border-radius: 50%;
-    background: var(--ifm-color-primary-lightest);
     color: var(--ifm-color-primary-lightest-dublicate
     );
     display: flex;

@@ -22,6 +22,7 @@ export default function Header({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileMenuClosing, setMobileMenuClosing] = useState(false);
   const authApi = useAuthApi();
   const [theme, setTheme] = useState<'dark' | 'light'>('light');
 
@@ -80,6 +81,21 @@ export default function Header({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [dropdownOpen]);
 
+  // Helper to open menu
+  const openMobileMenu = () => {
+    setMobileMenuOpen(true);
+    setMobileMenuClosing(false);
+  };
+
+  // Helper to close menu with animation
+  const closeMobileMenu = () => {
+    setMobileMenuClosing(true);
+    setTimeout(() => {
+      setMobileMenuOpen(false);
+      setMobileMenuClosing(false);
+    }, 320); // match CSS animation duration
+  };
+
   return (
     <>
       <header className="header-container">
@@ -107,7 +123,7 @@ export default function Header({
           )}
         </nav>
         {/* Hamburger icon for mobile */}
-        <button className="header-hamburger" onClick={() => setMobileMenuOpen(true)} aria-label="باز کردن منو">
+        <button className="header-hamburger" onClick={openMobileMenu} aria-label="باز کردن منو">
           <FaBars />
         </button>
         {/* بخش کاربر دسکتاپ و آیکون موبایل */}
@@ -128,7 +144,7 @@ export default function Header({
               >
                 {isAdmin && <span className="admin-badge">ادمین</span>}
                 {userEmail}
-                <span className={`header-dropdown-arrow ${dropdownOpen ? 'header-dropdown-arrow-open' : ''}`}>
+                <span className={`header-dropdown-arrow${dropdownOpen ? ' header-dropdown-arrow-open' : ''}`}>
                   ▼
                 </span>
               </button>
@@ -142,7 +158,7 @@ export default function Header({
                     پروفایل
                   </a>
                   <button 
-                    className="logoutButton header-dropdown-item header-dropdown-logout"
+                    className="header-dropdown-item header-dropdown-logout"
                     onClick={handleLogout}
                   >
                     خروج
@@ -163,11 +179,11 @@ export default function Header({
         </div>
       </header>
       {/* Mobile menu drawer */}
-      {mobileMenuOpen && (
+      {(mobileMenuOpen || mobileMenuClosing) && (
         <>
-          <div className="header-mobile-overlay" onClick={() => setMobileMenuOpen(false)} />
-          <div className="header-mobile-menu">
-            <button className="close-btn" onClick={() => setMobileMenuOpen(false)} aria-label="بستن منو"><FaTimes /></button>
+          <div className="header-mobile-overlay" onClick={closeMobileMenu} />
+          <div className={`header-mobile-menu${mobileMenuClosing ? ' menu-closing' : ''}`}> 
+            <button className="close-btn" onClick={closeMobileMenu} aria-label="بستن منو"><FaTimes /></button>
             <a href="/tree">شجره‌نامه</a>
             <a href="/publications">نشریه شورا</a>
             <a href="/sharif-senfi-regulations">آیین‌نامه شورا</a>
