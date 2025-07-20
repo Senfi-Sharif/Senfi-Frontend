@@ -8,6 +8,7 @@ interface HeaderProps {
   isLoggedIn: boolean;
   userEmail: string;
   userRole: string;
+  authLoading?: boolean;
   onLoginClick: () => void;
   onLogout: () => void;
 }
@@ -16,6 +17,7 @@ export default function Header({
   isLoggedIn, 
   userEmail, 
   userRole, 
+  authLoading = false,
   onLoginClick, 
   onLogout
 }: HeaderProps) {
@@ -131,10 +133,10 @@ export default function Header({
           <a href="/tree" className="header-nav-link">شجره‌نامه</a>
           <a href="/publications" className="header-nav-link">نشریه شورا</a>
           <a href="/sharif-senfi-regulations" className="header-nav-link">آیین‌نامه داخلی شورا</a>
-          {isLoggedIn && (
+          {!authLoading && isLoggedIn && (
             <a href="/campaigns" className="header-nav-link">کارزارها</a>
           )}
-          {isAdmin && (
+          {!authLoading && isAdmin && (
             <a href="/campaign-review" className="header-nav-link">بررسی کارزارها</a>
           )}
         </nav>
@@ -152,7 +154,7 @@ export default function Header({
           >
             {theme === 'dark' ? <FaSun /> : <FaMoon />}
           </button>
-          {isLoggedIn ? (
+          {!authLoading && isLoggedIn ? (
             <div className="header-dropdown-wrapper" data-dropdown>
               <button 
                 onClick={toggleDropdown}
@@ -201,7 +203,7 @@ export default function Header({
                 </div>
               )}
             </div>
-          ) : (
+          ) : !authLoading ? (
             <button 
               onClick={onLoginClick}
               className="header-login-button header-login-icon-btn"
@@ -210,7 +212,7 @@ export default function Header({
               <span className="header-login-btn-text">ورود / ثبت‌نام</span>
               <FaUser className="header-login-btn-icon" />
             </button>
-          )}
+          ) : null}
         </div>
       </header>
       {/* Mobile menu drawer */}
@@ -222,9 +224,9 @@ export default function Header({
             <a href="/tree">شجره‌نامه</a>
             <a href="/publications">نشریه شورا</a>
             <a href="/sharif-senfi-regulations">آیین‌نامه شورا</a>
-            {isLoggedIn && <a href="/campaigns">کارزارها</a>}
-            {isAdmin && <a href="/campaign-review">بررسی کارزارها</a>}
-            {isLoggedIn ? (
+            {!authLoading && isLoggedIn && <a href="/campaigns">کارزارها</a>}
+            {!authLoading && isAdmin && <a href="/campaign-review">بررسی کارزارها</a>}
+            {!authLoading && isLoggedIn ? (
               <button onClick={onLogout} className="header-mobile-logout-button">خروج</button>
             ) : null}
           </div>

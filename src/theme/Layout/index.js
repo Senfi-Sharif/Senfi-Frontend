@@ -23,6 +23,7 @@ function LayoutContent(props) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [userRole, setUserRole] = useState('');
+  const [authLoading, setAuthLoading] = useState(true); // Add loading state for auth check
 
   // لیست دانشکده‌ها و خوابگاه‌ها
   const FACULTY_CHOICES = [
@@ -58,7 +59,11 @@ function LayoutContent(props) {
       setIsLoggedIn(Boolean(token));
       setUserEmail(email || '');
       setUserRole(role || '');
+      setAuthLoading(false); // Mark auth check as complete
+    } else {
+      setAuthLoading(false); // Mark auth check as complete even if window is not available
     }
+    
     // Handle auth logout event from auth.js
     const handleAuthLogout = () => {
       setIsLoggedIn(false);
@@ -324,6 +329,7 @@ function LayoutContent(props) {
         isLoggedIn={isLoggedIn}
         userEmail={userEmail}
         userRole={userRole}
+        authLoading={authLoading}
         onLoginClick={() => {
           setModalOpen(true);
           setStep(1);
