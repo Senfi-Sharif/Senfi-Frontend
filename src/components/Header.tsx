@@ -25,6 +25,8 @@ export default function Header({
   const [mobileMenuClosing, setMobileMenuClosing] = useState(false);
   const authApi = useAuthApi();
   const [theme, setTheme] = useState<'dark' | 'light'>('light');
+  // Helper to detect mobile
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setIsAdmin(authApi.hasAdminAccess());
@@ -49,6 +51,13 @@ export default function Header({
     observer.observe(document.documentElement, { attributes: true });
     return () => observer.disconnect();
   }, [userRole]);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 800);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleLogout = () => {
     setDropdownOpen(false);
@@ -96,6 +105,13 @@ export default function Header({
     }, 320); // match CSS animation duration
   };
 
+  // Helper to get username from email
+  function getEmailUsername(email: string) {
+    if (!email) return '';
+    const suffix = '@sharif.edu';
+    return email.endsWith(suffix) ? email.slice(0, -suffix.length) : email;
+  }
+
   return (
     <>
       <header className="header-container">
@@ -142,14 +158,33 @@ export default function Header({
                 onClick={toggleDropdown}
                 className="header-dropdown-container user-button"
               >
-                {isAdmin && <span className="admin-badge">ادمین</span>}
-                {userEmail}
-                <span className={`header-dropdown-arrow${dropdownOpen ? ' header-dropdown-arrow-open' : ''}`}>
-                  ▼
-                </span>
+                {isMobile ? (
+                  <>
+                    <FaUser style={{ marginLeft: 4, fontSize: 18 }} />
+                    <span className={`header-dropdown-arrow${dropdownOpen ? ' header-dropdown-arrow-open' : ''}`}>▼</span>
+                  </>
+                ) : (
+                  <>
+                    {isAdmin && <span className="admin-badge">ادمین</span>}
+                    {userEmail}
+                    <span className={`header-dropdown-arrow${dropdownOpen ? ' header-dropdown-arrow-open' : ''}`}>▼</span>
+                  </>
+                )}
               </button>
               {dropdownOpen && (
-                <div className="dropdownMenu header-dropdown-menu" style={{ position: 'absolute', top: '110%', left: 0, minWidth: '160px', zIndex: 10 }}>
+                <div
+                  className="header-dropdown-menu"
+                  style={isMobile
+                    ? { position: 'absolute', top: '110%', left: '50%', right: 'auto', transform: 'translateX(-50%)', minWidth: '180px', maxWidth: '95vw', zIndex: 9999 }
+                    : { position: 'absolute', top: '110%', left: 0, minWidth: '160px', zIndex: 10 }
+                  }
+                >
+                  {isMobile && (
+                    <div className="header-dropdown-profile-mobile">
+                      {isAdmin && <span className="admin-badge">ادمین</span>}
+                      <span className="header-dropdown-email" dir="ltr">{getEmailUsername(userEmail)}</span>
+                    </div>
+                  )}
                   <a 
                     href="/profile" 
                     onClick={() => setDropdownOpen(false)}

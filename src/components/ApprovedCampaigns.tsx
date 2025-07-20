@@ -1,11 +1,10 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useAuthApi } from '../api/auth';
 import { useNotification } from '../contexts/NotificationContext';
 import CampaignSignatures from './CampaignSignatures';
 import SignCampaignButtons from './SignCampaignButtons';
 import ConfirmModal from './ConfirmModal';
 import CampaignCard from './CampaignCard';
-import { useRef } from 'react';
 import { FaClipboardList, FaHourglass, FaExclamationTriangle, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import '../css/approvedCampaigns.css';
 
@@ -23,7 +22,9 @@ const ApprovedCampaigns = () => {
   const [pendingId, setPendingId] = useState<number | null>(null);
   const [pendingLoading, setPendingLoading] = useState(false);
   const [search, setSearch] = useState('');
-  const [sortType, setSortType] = useState<'signatures' | 'deadline' | 'created_at'>('signatures');
+  const [sortType, setSortType] = useState<'signatures' | 'deadline' | 'created_at'>('created_at');
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
+  const sortDropdownRef = useRef<HTMLDivElement>(null);
 
   // فیلترها
   const [filterOpen, setFilterOpen] = useState(false);
@@ -38,6 +39,8 @@ const ApprovedCampaigns = () => {
   // تعریف refها و stateهای اندازه برای هر دکمه و dropdown
   const labelButtonRef = useRef<HTMLButtonElement>(null);
   const [labelDropdownWidth, setLabelDropdownWidth] = useState<number>(0);
+  const sortButtonRef = useRef<HTMLButtonElement>(null);
+  const [sortDropdownWidth, setSortDropdownWidth] = useState<number>(0);
   const signButtonRef = useRef<HTMLButtonElement>(null);
   const [signDropdownWidth, setSignDropdownWidth] = useState<number>(0);
   const statusButtonRef = useRef<HTMLButtonElement>(null);
@@ -46,6 +49,7 @@ const ApprovedCampaigns = () => {
   useEffect(() => {
     function updateWidths() {
       if (labelButtonRef.current) setLabelDropdownWidth(labelButtonRef.current.offsetWidth);
+      if (sortButtonRef.current) setSortDropdownWidth(sortButtonRef.current.offsetWidth);
       if (signButtonRef.current) setSignDropdownWidth(signButtonRef.current.offsetWidth);
       if (statusButtonRef.current) setStatusDropdownWidth(statusButtonRef.current.offsetWidth);
     }
@@ -241,6 +245,17 @@ const ApprovedCampaigns = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // بستن منو سورت با کلیک بیرون
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(event.target as Node)) {
+        setSortDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   // sync with old checkboxes for backward compatibility
   useEffect(() => {
     setFilterSigned(signFilter.includes('signed'));
@@ -270,6 +285,14 @@ const ApprovedCampaigns = () => {
     setFilterClosed(statusFilter.includes('closed'));
   }, [statusFilter]);
   const statusSummary = statusFilter.length === 2 ? 'همه وضعیت‌ها' : statusFilter.length === 0 ? 'هیچ' : statusFilter.map(f => STATUS_FILTERS.find(x => x.key === f)?.label).join('، ');
+
+  // فیلتر سورت
+  const SORT_FILTERS = [
+    { key: 'created_at', label: 'جدیدترین' },
+    { key: 'signatures', label: 'بیشترین امضا' },
+    { key: 'deadline', label: 'نزدیک‌ترین ددلاین' },
+  ];
+  const sortSummary = SORT_FILTERS.find(f => f.key === sortType)?.label || 'جدیدترین';
 
   // فیلتر نهایی
   const filteredCampaigns = useMemo(() => {
@@ -381,23 +404,42 @@ const ApprovedCampaigns = () => {
         )}
         {/* بقیه فیلترها و سرچ */}
         {/* سورت */}
-        <select
-          value={sortType}
-          onChange={e => setSortType(e.target.value as any)}
-          className="sort-select"
-          title={(() => {
-            switch(sortType) {
-              case 'created_at': return 'جدیدترین';
-              case 'signatures': return 'بیشترین امضا';
-              case 'deadline': return 'نزدیک‌ترین ددلاین';
-              default: return '';
-            }
-          })()}
-        >
-          <option value="created_at">جدیدترین</option>
-          <option value="signatures">بیشترین امضا</option>
-          <option value="deadline">نزدیک‌ترین ددلاین</option>
-        </select>
+        <div ref={sortDropdownRef} className="dropdown-container">
+          <button
+            ref={sortButtonRef}
+            type="button"
+            onClick={() => setSortDropdownOpen(v => !v)}
+            className={`dropdown-button ${sortDropdownOpen ? 'active' : ''}`}
+            title={sortSummary}
+          >
+            <span className="dropdown-button-text">{sortSummary}</span>
+            <span className="dropdown-arrow">{sortDropdownOpen ? '▲' : '▼'}</span>
+          </button>
+          {sortDropdownOpen && (
+            <div 
+              className="dropdown-menu"
+              style={{
+                minWidth: sortDropdownWidth || 120,
+                width: sortDropdownWidth || 'auto',
+                maxWidth: 220,
+                maxHeight: 200,
+              }}
+            >
+              {SORT_FILTERS.map(f => (
+                <label key={f.key} className="dropdown-checkbox-label">
+                  <input
+                    type="radio"
+                    name="sortType"
+                    checked={sortType === f.key}
+                    onChange={() => setSortType(f.key as any)}
+                    className="dropdown-checkbox"
+                  />
+                  {f.label}
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
         {/* فیلتر امضا شده/نشده به صورت دراپ‌داون */}
         <div ref={signDropdownRef} className="dropdown-container">
           <button
