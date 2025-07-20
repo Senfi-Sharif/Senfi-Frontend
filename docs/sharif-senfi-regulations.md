@@ -1,6 +1,6 @@
 ---
 id: sharif-senfi-regulations
-title: آیین‌نامه داخلی شورای صنفی دانشجویان دانشگاه صنعتی شریف
+title: آیین‌نامه داخلی
 sidebar_position: 1
 slug: /sharif-senfi-regulations
 ---
@@ -8,27 +8,14 @@ slug: /sharif-senfi-regulations
 import TOCInline from '@theme/TOCInline';
 import Admonition from '@theme/Admonition';
 
-<div dir="rtl" style={{
-  backgroundColor: 'var(--ifm-color-white)',
-  padding: '2rem',
-  borderRadius: '8px',
-  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-  marginBottom: '2rem'
-}}>
+<div className="docs-background-container" dir="rtl">
 
-# آیین‌نامه داخلی صنفی دانشجویان دانشگاه صنعتی شریف
+# آیین‌نامه داخلی شورای صنفی دانشجویان دانشگاه صنعتی شریف
 این آیین‌نامه هنوز در دست تدوین است و تکمیل نیست. 
 
 تدوین اولیه این سند توسط بهادر هادی و با همکاری آریا ترابی، فرزاد رحمانی، سینا صفی‌زاده و امیرمهدی نامجو انجام شده است.
 
-<div style={{
-  backgroundColor: 'var(--ifm-color-white)',
-  padding: '1.5rem',
-  borderRadius: '8px',
-  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-  marginTop: '1rem',
-  marginBottom: '1rem'
-}}>
+<div className="docs-background-container" style={{ marginTop: '1rem', marginBottom: '1rem' }}>
 <TOCInline toc={toc} />
 </div>
 

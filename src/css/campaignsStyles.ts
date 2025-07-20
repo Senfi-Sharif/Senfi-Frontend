@@ -775,17 +775,6 @@ const styles = {
     fontSize: '1rem',
     marginLeft: '0.5rem',
   },
-  dropdownMenu: {
-    position: 'absolute',
-    top: '100%',
-    right: '0',
-    background: 'var(--ifm-color-white)',
-    borderRadius: '0.5rem',
-    boxShadow: 'var(--ifm-shadow-light)',
-    zIndex: 1002,
-    minWidth: '150px',
-    border: '1px solid var(--ifm-color-primary-lightest)',
-  },
   dropdownItem: {
     padding: '0.8rem 1rem',
     cursor: 'pointer',

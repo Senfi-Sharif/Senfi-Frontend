@@ -132,13 +132,13 @@ export default function Header({
         <nav className="header-nav-section">
           <a href="/tree" className="header-nav-link">شجره‌نامه</a>
           <a href="/publications" className="header-nav-link">نشریه شورا</a>
-          <a href="/sharif-senfi-regulations" className="header-nav-link">آیین‌نامه داخلی شورا</a>
           {!authLoading && isLoggedIn && (
             <a href="/campaigns" className="header-nav-link">کارزارها</a>
           )}
           {!authLoading && isAdmin && (
             <a href="/campaign-review" className="header-nav-link">بررسی کارزارها</a>
           )}
+          <a href="/docs" className="header-nav-link">اسناد و راهنما</a>
         </nav>
         {/* Hamburger icon for mobile */}
         <button className="header-hamburger" onClick={openMobileMenu} aria-label="باز کردن منو">
@@ -223,9 +223,9 @@ export default function Header({
             <button className="close-btn" onClick={closeMobileMenu} aria-label="بستن منو"><FaTimes /></button>
             <a href="/tree">شجره‌نامه</a>
             <a href="/publications">نشریه شورا</a>
-            <a href="/sharif-senfi-regulations">آیین‌نامه شورا</a>
             {!authLoading && isLoggedIn && <a href="/campaigns">کارزارها</a>}
             {!authLoading && isAdmin && <a href="/campaign-review">بررسی کارزارها</a>}
+            <a href="/docs">اسناد و راهنما</a>
             {!authLoading && isLoggedIn ? (
               <button onClick={onLogout} className="header-mobile-logout-button">خروج</button>
             ) : null}

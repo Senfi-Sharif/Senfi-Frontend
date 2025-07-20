@@ -4,6 +4,8 @@ import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
+const ENABLE_ALGOLIA = process.env.ENABLE_ALGOLIA === 'true';
+
 const config: Config = {
   title: 'شورای صنفی دانشجویان',
   tagline: ' در دست ساخت ⏱️',
@@ -27,14 +29,11 @@ const config: Config = {
     [
       'classic',
       {
-        // 👇👇 حذف کامل این بخش!
-        // gtag: {
-        //   trackingID: 'G-3Y3WE0GLKY',
-        //   anonymizeIP: false,
-        // },
         docs: {
           sidebarPath: require.resolve('./sidebars.ts'),
           editUrl: 'https://github.com/senfi-sharif/senfi-sharif.ir/tree/main/',
+          showLastUpdateTime: true,
+          showLastUpdateAuthor: true,
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -42,7 +41,8 @@ const config: Config = {
       } satisfies Preset.Options,
     ],
   ],
-  themeConfig: {    
+  // Algolia DocSearch config (disabled by default, enable by setting ENABLE_ALGOLIA=true in .env)
+  themeConfig: {
     image: 'img/maini_colors.png',
     scripts: [
       '/custom.js',
@@ -52,6 +52,15 @@ const config: Config = {
       defaultMode: 'light',
       disableSwitch: false,
       respectPrefersColorScheme: false,
+    },
+    docs: {
+      sidebar: {
+        hideable: true,
+        autoCollapseCategories: true,
+      },
+    },
+    navbar: {
+      hideOnScroll: true,
     },
     footer: {
       style: 'dark',
@@ -73,7 +82,17 @@ const config: Config = {
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
-    }
+    },
+    ...(ENABLE_ALGOLIA ? {
+      algolia: {
+        appId: process.env.ALGOLIA_APP_ID || 'YOUR_APP_ID',
+        apiKey: process.env.ALGOLIA_API_KEY || 'YOUR_SEARCH_API_KEY',
+        indexName: process.env.ALGOLIA_INDEX_NAME || 'YOUR_INDEX_NAME',
+        contextualSearch: true,
+        searchParameters: {},
+        searchPagePath: 'search',
+      },
+    } : {}),
   } satisfies Preset.ThemeConfig,
 };
 

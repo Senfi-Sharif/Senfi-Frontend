@@ -3,6 +3,7 @@ import Layout from '@theme-original/Layout';
 import { NotificationProvider, useNotification } from '@site/src/contexts/NotificationContext';
 import Modal from '@site/src/components/Modal';
 import Header from '@site/src/components/Header';
+import BackToTop from '@site/src/components/BackToTop';
 import { useAuthApi } from '../../api/auth';
 import { SecureTokenManager, validatePassword, sanitizeInput } from '../../utils/security';
 
@@ -358,6 +359,9 @@ function LayoutContent(props) {
       <div className="layout-content-wrapper"> 
         {props.children}
       </div>
+      
+      {/* Back to Top Button */}
+      <BackToTop />
       {/* Modal ورود/ثبت‌نام */}
       <Modal open={modalOpen} onClose={handleClose}>
         <h2 className="auth-modal-title">ورود / ثبت‌نام</h2>
