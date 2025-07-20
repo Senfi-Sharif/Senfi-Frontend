@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthApi } from '../api/auth';
+import LoadingSpinner from './LoadingSpinner';
+import ErrorMessage from './ErrorMessage';
+import EmptyState from './EmptyState';
 import SenfiAccordion from './SenfiAccordion';
 
 interface Signature {
@@ -42,39 +45,35 @@ export default function CampaignSignatures({ campaignId }: CampaignSignaturesPro
 
   if (loading) {
     return (
-      <div className="campaign-signatures-loading">
-        <div className="campaign-signatures-loading-text">در حال بارگذاری...</div>
-      </div>
+      <LoadingSpinner message="در حال بارگذاری امضاها..." />
     );
   }
 
   if (error) {
     return (
-      <div className="campaign-signatures-error-container">
-        <div className="campaign-signature-error">{error}</div>
-      </div>
+      <ErrorMessage message={error} />
     );
   }
 
   // اگر کارزار ناشناس است، فقط تعداد را نمایش بده
   if (data && data.campaign_is_anonymous === 'anonymous') {
     return (
-      <div className="campaign-signatures-empty">
-        <div className="campaign-signatures-empty-text">
-          {data.total === 0
-            ? 'هنوز امضایی ثبت نشده است'
-            : `${data.total} امضا ثبت شده است`}
-        </div>
-      </div>
+      <EmptyState 
+        icon="📝"
+        title={data.total === 0 ? 'هنوز امضایی ثبت نشده است' : `${data.total} امضا ثبت شده است`}
+        subtitle="این کارزار به صورت ناشناس اداره می‌شود"
+      />
     );
   }
 
   // اگر کارزار عمومی است و هیچ امضایی ثبت نشده
   if (data && data.campaign_is_anonymous === 'public' && signatures.length === 0) {
     return (
-      <div className="campaign-signatures-empty">
-        <div className="campaign-signatures-empty-text">هنوز امضایی ثبت نشده است</div>
-      </div>
+      <EmptyState 
+        icon="📝"
+        title="هنوز امضایی ثبت نشده است"
+        subtitle="اولین نفری باشید که این کارزار را امضا می‌کند"
+      />
     );
   }
 

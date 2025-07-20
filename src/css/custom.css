@@ -2793,6 +2793,154 @@ body, * {
   text-decoration: underline;
 }
 
+/* Reusable Components */
+
+/* Loading Spinner Component */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  color: var(--ifm-color-primary-dark);
+}
+
+.loading-spinner-icon {
+  margin-bottom: 1rem;
+  color: var(--ifm-color-primary);
+}
+
+.loading-spinner-message {
+  font-weight: 500;
+}
+
+/* Error Message Component */
+.error-message {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.error-message-error {
+  background: var(--ifm-color-red-lightest);
+  border: 1px solid var(--ifm-color-red-light);
+  color: var(--ifm-color-red);
+}
+
+.error-message-warning {
+  background: var(--ifm-color-warning-lightest);
+  border: 1px solid var(--ifm-color-warning-light);
+  color: var(--ifm-color-warning);
+}
+
+.error-message-icon {
+  margin-left: 0.5rem;
+  font-size: 1.1em;
+}
+
+.error-message-text {
+  flex: 1;
+}
+
+.error-message-retry-btn {
+  margin-right: 1rem;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid currentColor;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: inherit;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.error-message-retry-btn:hover {
+  background: currentColor;
+  color: white;
+}
+
+/* Empty State Component */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  color: var(--ifm-color-primary-dark);
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+
+.empty-state-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-subtitle {
+  font-size: 1rem;
+  opacity: 0.8;
+  max-width: 400px;
+}
+
+/* Campaign List Item Component */
+.profile-signed-campaign-item.clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-signed-campaign-item.clickable:hover {
+  background: var(--ifm-color-primary-lightest);
+  transform: translateY(-1px);
+  box-shadow: var(--ifm-shadow-light);
+}
+
+.campaign-ended {
+  color: var(--ifm-color-red) !important;
+  font-weight: 600;
+}
+
+/* User Info Card Component Enhancements */
+.profile-info-card {
+  background: var(--ifm-color-white);
+  border: 1px solid var(--ifm-color-primary-lightest);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--ifm-shadow-light);
+  transition: all 0.3s ease;
+}
+
+.profile-info-card:hover {
+  box-shadow: var(--ifm-shadow);
+  transform: translateY(-2px);
+}
+
+/* Admin User List Component Enhancements */
+.profile-card {
+  background: var(--ifm-color-white);
+  border: 1px solid var(--ifm-color-primary-lightest);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--ifm-shadow-light);
+  transition: all 0.3s ease;
+}
+
+.profile-card:hover {
+  box-shadow: var(--ifm-shadow);
+  transform: translateY(-2px);
+}
+
 /* Layout and Auth Modal Styles */
 .layout-content-wrapper {
   position: relative;

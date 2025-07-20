@@ -4,6 +4,9 @@ import { useAuthApi } from '../api/auth';
 import { useNotification } from '../contexts/NotificationContext';
 import ConfirmModal from '../components/ConfirmModal';
 import StatsPanel from '../components/StatsPanel';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
+import EmptyState from '../components/EmptyState';
 import { statsContainer, statItem, statNumber, statLabel } from '../theme/sharedStyles';
 
 
@@ -196,17 +199,11 @@ function CampaignReviewPanel() {
       </div>
       
       {loading && (
-        <div className="campaign-review-loading-container">
-          <div className="campaign-review-loading-icon">⏳</div>
-          <div>در حال بارگذاری کارزارها...</div>
-        </div>
+        <LoadingSpinner message="در حال بارگذاری کارزارها..." />
       )}
       
       {error && (
-        <div className="campaign-review-error-container">
-          <div className="campaign-review-error-icon">⚠️</div>
-          {error}
-        </div>
+        <ErrorMessage message={error} />
       )}
       
       {!loading && !error && campaigns.length > 0 && (
@@ -220,15 +217,11 @@ function CampaignReviewPanel() {
       )}
       
       {campaigns.length === 0 && !loading && !error && (
-        <div className="campaign-review-empty-container">
-          <div className="campaign-review-empty-icon">🎉</div>
-          <div className="campaign-review-empty-title">
-            هیچ کارزاری در انتظار بررسی وجود ندارد
-          </div>
-          <div className="campaign-review-empty-subtitle">
-            همه کارزارها بررسی شده‌اند!
-          </div>
-        </div>
+        <EmptyState 
+          icon="🎉"
+          title="هیچ کارزاری در انتظار بررسی وجود ندارد"
+          subtitle="همه کارزارها بررسی شده‌اند!"
+        />
       )}
       {/* سرچ بار */}
       <div className="campaign-review-search-container">
@@ -242,15 +235,16 @@ function CampaignReviewPanel() {
       </div>
       <div className="campaign-review-campaigns-container">
         {loading ? (
-          <div className="campaign-review-loading-container">در حال بارگذاری...</div>
+          <LoadingSpinner message="در حال بارگذاری..." />
         ) : error ? (
-          <div className="campaign-review-error-container">{error}</div>
+          <ErrorMessage message={error} />
         ) : campaigns.length === 0 ? null : (
           filteredCampaigns.length === 0 ? (
-            <div className="campaign-review-empty-container">
-              <div className="campaign-review-empty-icon">📭</div>
-              <div>هیچ کارزاری مطابق جستجو یافت نشد</div>
-            </div>
+            <EmptyState 
+              icon="📭"
+              title="هیچ کارزاری مطابق جستجو یافت نشد"
+              subtitle="لطفاً عبارت جستجوی دیگری را امتحان کنید"
+            />
           ) : (
             filteredCampaigns.map((campaign) => (
               <CampaignCard

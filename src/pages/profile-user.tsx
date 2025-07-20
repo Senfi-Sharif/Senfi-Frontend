@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import Layout from '@theme/Layout';
 import { useAuthApi } from '../api/auth';
 import { SecureTokenManager } from '../utils/security';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
+import UserInfoCard from '../components/UserInfoCard';
 
 function getQueryParam(name: string) {
   if (typeof window === 'undefined') return null;
@@ -14,14 +17,19 @@ function ProfileUserContent({ user, loading, error, role, setRole, myRole, updat
     <div className="profile-user-card">
       <h1 className="profile-user-title">پروفایل کاربر</h1>
       {loading ? (
-        <div>در حال بارگذاری...</div>
+        <LoadingSpinner message="در حال بارگذاری اطلاعات کاربر..." />
       ) : error ? (
-        <div className="profile-user-error">{error}</div>
+        <ErrorMessage message={error} />
       ) : user ? (
         <>
-          <div className="profile-user-row"><strong>ایمیل:</strong> {user.email}</div>
-          <div className="profile-user-row"><strong>نقش فعلی:</strong> {user.role}</div>
-          <div className="profile-user-row"><strong>واحد:</strong> {user.unit || '-'}</div>
+          <UserInfoCard 
+            user={{ 
+              email: user.email, 
+              role: user.role, 
+              unit: user.unit 
+            }}
+            showActions={false}
+          />
           {myRole === 'superadmin' || myRole === 'head' ? (
             <form onSubmit={handleRoleChange} className="profile-user-form">
               <label className="profile-user-label">تغییر نقش کاربر:</label>

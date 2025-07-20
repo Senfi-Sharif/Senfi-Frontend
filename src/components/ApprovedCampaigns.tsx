@@ -5,6 +5,9 @@ import CampaignSignatures from './CampaignSignatures';
 import SignCampaignButtons from './SignCampaignButtons';
 import ConfirmModal from './ConfirmModal';
 import CampaignCard from './CampaignCard';
+import LoadingSpinner from './LoadingSpinner';
+import ErrorMessage from './ErrorMessage';
+import EmptyState from './EmptyState';
 import { FaClipboardList, FaHourglass, FaExclamationTriangle, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import '../css/approvedCampaigns.css';
 
@@ -530,22 +533,17 @@ const ApprovedCampaigns = () => {
         {total > 0 && <span className="approved-campaigns-count"> ({total} کارزار)</span>}
       </h2>
       {loading && (
-        <div>
-          <div className="approved-campaigns-loading-icon">⏳</div>
-          <div>در حال بارگذاری کارزارها...</div>
-        </div>
+        <LoadingSpinner message="در حال بارگذاری کارزارها..." />
       )}
       {error && (
-        <div>
-          <div className="approved-campaigns-error-icon">⚠️</div>
-          {error}
-        </div>
+        <ErrorMessage message={error} />
       )}
       {allCampaigns.length === 0 && !loading && (
-        <div className="approved-campaigns-empty-container">
-          <div className="approved-campaigns-empty-icon">📋</div>
-          <div>هیچ کارزاری وجود ندارد</div>
-        </div>
+        <EmptyState 
+          icon="📋"
+          title="هیچ کارزاری وجود ندارد"
+          subtitle="در حال حاضر هیچ کارزاری برای نمایش موجود نیست"
+        />
       )}
               <div>
         {allCampaigns.map((c: any) => (

@@ -1,47 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import { useAuthApi } from '../api/auth';
-import { FaUser, FaEnvelope, FaUserShield, FaSign, FaCheckCircle, FaExclamationCircle, FaRegListAlt } from 'react-icons/fa';
+import { FaUser, FaCheckCircle } from 'react-icons/fa';
 import { SecureTokenManager } from '../utils/security';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
+import EmptyState from '../components/EmptyState';
+import UserInfoCard from '../components/UserInfoCard';
+import CampaignListItem from '../components/CampaignListItem';
+import AdminUserList from '../components/AdminUserList';
 
-function AdminUserList() {
-  const authApi = useAuthApi();
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  useEffect(() => {
-    async function fetchUsers() {
-      try {
-        setLoading(true);
-        const users = await authApi.getUsers();
-        setUsers(users);
-        setError('');
-      } catch (err) {
-        setError('خطا در دریافت لیست کاربران');
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchUsers();
-  }, []);
-  return (
-    <div className="profile-card">
-      <h2 className="profile-admin-title"><FaUserShield style={{marginLeft:8}}/>لیست کاربران ثبت‌نامی</h2>
-      {loading ? <div className="profile-loading"><FaRegListAlt style={{marginLeft:8}}/>در حال بارگذاری...</div> : error ? <div className="profile-error"><FaExclamationCircle style={{marginLeft:8}}/>{error}</div> : (
-        <div className="profile-users-list">
-          {users.map((u) => (
-            <div key={u.id} className="profile-user-item" onClick={()=>window.location.href=`/profile-user?id=${u.id}`}
-              tabIndex={0} role="button" aria-label={`نمایش پروفایل ${u.email}`}
-              >
-              <span className="profile-user-email"><FaEnvelope style={{marginLeft:4}}/>{u.email}</span>
-              <span className="profile-user-role"><FaUser style={{marginLeft:4}}/>{u.role}{u.unit ? ` | ${u.unit}` : ''}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
+
 
 function ProfileContent({ signedCampaigns, userEmail, userRole, error, handleLogout }) {
   return (
@@ -50,33 +19,34 @@ function ProfileContent({ signedCampaigns, userEmail, userRole, error, handleLog
       {/* فقط برای سوپرادمین و head */}
       {(userRole === 'superadmin' || userRole === 'head') && <AdminUserList />}
       {/* اطلاعات کاربر */}
-      <div className="profile-info-card">
-        <h2 className="profile-info-title"><FaUser style={{marginLeft:8}}/>اطلاعات شخصی</h2>
-        <div className="profile-info-item"><FaEnvelope style={{marginLeft:4}}/><strong>ایمیل:</strong> {userEmail}</div>
-        <div className="profile-info-item"><FaUserShield style={{marginLeft:4}}/><strong>نقش:</strong> {userRole}</div>
-        <button 
-          onClick={handleLogout}
-          className="profile-logout-button"
-        >
-          <FaSign style={{marginLeft:4}}/>خروج از حساب
-        </button>
-      </div>
+      <UserInfoCard 
+        user={{ email: userEmail, role: userRole }}
+        onLogout={handleLogout}
+      />
       {/* کارزارهای امضاشده */}
       <div className="profile-signed-campaigns-card">
         <h2 className="profile-campaigns-title"><FaCheckCircle style={{marginLeft:8}}/>کارزارهای امضاشده <span style={{fontWeight:400}}>({signedCampaigns.length} کارزار)</span></h2>
         {error && (
-          <div className="profile-campaigns-error"><FaExclamationCircle style={{marginLeft:4}}/>{error}</div>
+          <ErrorMessage message={error} />
         )}
         {signedCampaigns.length === 0 ? (
-          <div className="profile-campaigns-empty"><FaRegListAlt style={{marginLeft:4}}/>هنوز هیچ کارزاری امضا نکرده‌اید.</div>
+          <EmptyState 
+            icon="📋"
+            title="هنوز هیچ کارزاری امضا نکرده‌اید"
+            subtitle="پس از امضای کارزارها، آن‌ها در اینجا نمایش داده خواهند شد"
+          />
         ) : (
           <div className="profile-campaigns-list">
             {signedCampaigns.map((campaign: any) => (
-              <div key={campaign.campaign_id} className="profile-signed-campaign-item">
-                <div className="profile-signed-campaign-title"><FaCheckCircle style={{marginLeft:4}}/>{campaign.campaign_title}</div>
-                <div className="profile-faded">تاریخ امضا: {new Date(campaign.signed_at).toLocaleDateString('fa-IR')}</div>
-                <div className="profile-faded">نوع امضا: {campaign.is_anonymous === "anonymous" ? "ناشناس" : "عمومی"}</div>
-              </div>
+              <CampaignListItem
+                key={campaign.campaign_id}
+                campaign={{
+                  id: campaign.campaign_id,
+                  title: campaign.campaign_title,
+                  signed_at: campaign.signed_at,
+                  is_anonymous: campaign.is_anonymous
+                }}
+              />
             ))}
           </div>
         )}
@@ -135,7 +105,7 @@ export default function Profile() {
   if (loading) {
     return (
       <Layout title="پروفایل کاربر">
-        <div className="profile-loading-container">در حال بارگذاری...</div>
+        <LoadingSpinner message="در حال بارگذاری پروفایل..." />
       </Layout>
     );
   }
@@ -144,7 +114,7 @@ export default function Profile() {
     return (
       <Layout title="پروفایل کاربر">
         <div className="profile-error-container">
-          <div className="profile-error-message">{error}</div>
+          <ErrorMessage message={error} />
           <a href="/" className="profile-return-link">بازگشت به صفحه اصلی</a>
         </div>
       </Layout>
