@@ -59,6 +59,15 @@
   opacity: 0.20;
 }
 
+/* افزایش opacity برای موبایل */
+@media (max-width: 768px) {
+  .home-bg-logo {
+    opacity: 0.4;
+    background-position: center 30%;  /* حرکت به بالا */
+    background-size: 110vw auto !important; 
+  }
+}
+
 /* موبایل */
 @media (max-width: 600px) {
   .home-bg-logo {

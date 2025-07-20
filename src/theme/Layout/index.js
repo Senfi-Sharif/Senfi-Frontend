@@ -450,11 +450,6 @@ function LayoutContent(props) {
               setPasswordError('تکرار رمز عبور الزامی است');
               return;
             }
-            const passwordValidation = validatePassword(password);
-            if (!passwordValidation.isValid) {
-              setPasswordError(passwordValidation.errors.join(' '));
-              return;
-            }
             if (password !== password2) {
               setPasswordError('رمز عبور و تکرار آن یکسان نیستند.');
               return;
@@ -464,13 +459,37 @@ function LayoutContent(props) {
             try {
               const res = await authApi.register(email, password, faculty, dormitory);
               if (res.success) {
-                showNotification('ثبت‌نام با موفقیت انجام شد!', 'success');
-                handleClose();
+                // Automatically log in the user with the returned token
+                if (res.token && res.user) {
+                  SecureTokenManager.setToken(res.token);
+                  SecureTokenManager.setRole(res.user?.role || '');
+                  SecureTokenManager.setEmail(email);
+                  
+                  // Store additional user info in localStorage
+                  localStorage.setItem('auth_email', email);
+                  localStorage.setItem('faculty', res.user?.faculty || '');
+                  localStorage.setItem('dormitory', res.user?.dormitory || '');
+                  
+                  setIsLoggedIn(true);
+                  setUserEmail(email);
+                  setUserRole(res.user?.role || '');
+                  
+                  // Dispatch custom event to notify other components
+                  window.dispatchEvent(new CustomEvent('auth:login', {
+                    detail: { user: res.user, email: email }
+                  }));
+                  
+                  showNotification('ثبت‌نام با موفقیت انجام شد و وارد سیستم شدید!', 'success');
+                  handleClose();
+                } else {
+                  showNotification('ثبت‌نام با موفقیت انجام شد!', 'success');
+                  handleClose();
+                }
               } else {
-                setPasswordError('ثبت‌نام با خطا مواجه شد.');
+                setPasswordError(res.detail || 'ثبت‌نام با خطا مواجه شد.');
               }
             } catch (err) {
-              setPasswordError('خطا: ' + (err?.message || err));
+              setPasswordError(err?.message || 'خطا در ثبت‌نام');
             } finally {
               setLoading(false);
             }
