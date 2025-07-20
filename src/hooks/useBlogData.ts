@@ -53,7 +53,7 @@ const fetchBlogData = async (apiBase: string): Promise<BlogPost[]> => {
       title: post.title,
       date: post.published_at || post.created_at,
       author: post.author_email,
-      tags: Array.isArray(post.tags) ? post.tags : [],
+      tags: post.tags || [],
       category: post.category,
       excerpt: post.excerpt,
       readingTime: `${post.reading_time} دقیقه`,
