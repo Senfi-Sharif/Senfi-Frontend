@@ -1,0 +1,324 @@
+/* Rich Text Editor Styles - TipTap */
+.rich-text-editor-container {
+  margin: 1rem 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* Toolbar */
+.rich-text-editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #ddd;
+  direction: rtl;
+}
+
+.toolbar-group {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.toolbar-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  color: #333;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toolbar-button:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.toolbar-button.active {
+  background: var(--ifm-color-primary);
+  color: #fff;
+  border-color: var(--ifm-color-primary);
+}
+
+.toolbar-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Editor Content */
+.rich-text-editor-content-wrapper {
+  min-height: 200px;
+}
+
+.rich-text-editor-content {
+  padding: 1rem;
+  min-height: 200px;
+  outline: none;
+  direction: rtl;
+  text-align: right;
+  font-family: 'Tahoma', 'Arial', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.rich-text-editor-content:empty::before {
+  content: attr(data-placeholder);
+  color: #999;
+  font-style: italic;
+  pointer-events: none;
+}
+
+/* Editor Content Styles */
+.rich-text-editor-content h1,
+.rich-text-editor-content h2,
+.rich-text-editor-content h3,
+.rich-text-editor-content h4,
+.rich-text-editor-content h5,
+.rich-text-editor-content h6 {
+  text-align: right;
+  margin: 1rem 0 0.5rem 0;
+  font-weight: bold;
+}
+
+.rich-text-editor-content h1 { font-size: 2rem; }
+.rich-text-editor-content h2 { font-size: 1.75rem; }
+.rich-text-editor-content h3 { font-size: 1.5rem; }
+.rich-text-editor-content h4 { font-size: 1.25rem; }
+.rich-text-editor-content h5 { font-size: 1.1rem; }
+.rich-text-editor-content h6 { font-size: 1rem; }
+
+.rich-text-editor-content p {
+  margin: 0.5rem 0;
+  text-align: right;
+}
+
+.rich-text-editor-content blockquote {
+  border-right: 4px solid #0066cc;
+  border-left: none;
+  margin: 1rem 0;
+  padding: 0.5rem 1rem 0.5rem 0;
+  background: #f8f9fa;
+  font-style: italic;
+}
+
+.rich-text-editor-content ul,
+.rich-text-editor-content ol {
+  padding-right: 1.5rem;
+  padding-left: 0;
+  margin: 0.5rem 0;
+}
+
+.rich-text-editor-content li {
+  margin: 0.25rem 0;
+}
+
+.rich-text-editor-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1rem 0;
+  display: block;
+}
+
+.rich-text-editor-content a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.rich-text-editor-content a:hover {
+  text-decoration: underline;
+}
+
+.rich-text-editor-content code {
+  background: #f4f4f4;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.rich-text-editor-content pre {
+  background: #f4f4f4;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+  direction: ltr;
+  text-align: left;
+}
+
+/* TipTap specific styles */
+.ProseMirror {
+  outline: none;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+}
+
+.ProseMirror p.is-editor-empty:first-child {
+  direction: rtl;
+}
+
+/* Focus states */
+.rich-text-editor-container:focus-within {
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .rich-text-editor-toolbar {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  
+  .toolbar-group {
+    gap: 0.125rem;
+  }
+  
+  .toolbar-button {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.75rem;
+  }
+  
+  .rich-text-editor-content {
+    font-size: 13px;
+    padding: 0.75rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .rich-text-editor-container {
+    background: #1a202c;
+    border-color: #4a5568;
+  }
+  
+  .rich-text-editor-toolbar {
+    background: #2d3748;
+    border-bottom-color: #4a5568;
+  }
+  
+  .toolbar-button {
+    background: #2d3748;
+    color: #e2e8f0;
+    border-color: #4a5568;
+  }
+  
+  .toolbar-button:hover {
+    background: #4a5568;
+    border-color: #718096;
+  }
+  
+  .toolbar-button.active {
+    background: #0066cc;
+    color: #fff;
+    border-color: #0066cc;
+  }
+  
+  .rich-text-editor-content {
+    color: #e2e8f0;
+    background: #1a202c;
+  }
+  
+  .rich-text-editor-content:empty::before {
+    color: #718096;
+  }
+  
+  .rich-text-editor-content blockquote {
+    background: #2d3748;
+    border-right-color: #0066cc;
+  }
+  
+  .rich-text-editor-content code,
+  .rich-text-editor-content pre {
+    background: #2d3748;
+    color: #e2e8f0;
+  }
+  
+  .rich-text-editor-content a {
+    color: #63b3ed;
+  }
+  
+  .rich-text-editor-content a:hover {
+    color: #90cdf4;
+  }
+}
+
+/* Docusaurus Dark Mode Support */
+[data-theme='dark'] .rich-text-editor-container {
+  background: #1a202c;
+  border-color: #4a5568;
+}
+
+[data-theme='dark'] .rich-text-editor-toolbar {
+  background: #2d3748;
+  border-bottom-color: #4a5568;
+}
+
+[data-theme='dark'] .toolbar-button {
+  background: #2d3748;
+  color: #e2e8f0;
+  border-color: #4a5568;
+}
+
+[data-theme='dark'] .toolbar-button:hover {
+  background: #4a5568;
+  border-color: #718096;
+}
+
+[data-theme='dark'] .toolbar-button.active {
+  background: var(--ifm-color-primary);
+  color: #fff;
+  border-color: var(--ifm-color-primary);
+}
+
+[data-theme='dark'] .rich-text-editor-content {
+  color: #e2e8f0;
+  background: #1a202c;
+}
+
+[data-theme='dark'] .rich-text-editor-content:empty::before {
+  color: #718096;
+}
+
+[data-theme='dark'] .rich-text-editor-content blockquote {
+  background: #2d3748;
+  border-right-color: var(--ifm-color-primary);
+}
+
+[data-theme='dark'] .rich-text-editor-content code,
+[data-theme='dark'] .rich-text-editor-content pre {
+  background: #2d3748;
+  color: #e2e8f0;
+}
+
+[data-theme='dark'] .rich-text-editor-content a {
+  color: #63b3ed;
+}
+
+[data-theme='dark'] .rich-text-editor-content a:hover {
+  color: #90cdf4;
+}
+
+/* Focus states for dark mode */
+[data-theme='dark'] .rich-text-editor-container:focus-within {
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.25);
+} 

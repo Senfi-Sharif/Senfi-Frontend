@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaEyeSlash, FaSave, FaTimes } from 'react-icons/fa';
+import RichTextEditor from '../../components/RichTextEditor';
 
 interface BlogPost {
   id: number;
@@ -118,6 +119,13 @@ export default function BlogManagement(): React.JSX.Element {
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const handleContentChange = (content: string) => {
+    setFormData(prev => ({
+      ...prev,
+      content: content
     }));
   };
 
@@ -415,13 +423,12 @@ export default function BlogManagement(): React.JSX.Element {
 
                   <div className="form-group">
                     <label htmlFor="content">محتوا *</label>
-                    <textarea
-                      id="content"
-                      name="content"
+                    <RichTextEditor
                       value={formData.content}
-                      onChange={handleInputChange}
-                      rows={10}
-                      required
+                      onChange={handleContentChange}
+                      placeholder="محتوای مطلب را بنویسید..."
+                      height="300px"
+                      className="blog-management-editor"
                     />
                   </div>
 

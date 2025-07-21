@@ -192,6 +192,21 @@ export default function BlogPostDetail(): React.JSX.Element {
             )}
           </div>
           
+          {/* Featured Image */}
+          {post.image_url && (
+            <div className="blog-post-featured-image">
+              <img 
+                src={post.image_url} 
+                alt={post.title}
+                className="featured-image"
+                onError={(e) => {
+                  console.error('Error loading image:', post.image_url);
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            </div>
+          )}
+          
           <div className="blog-post-content">
             <div 
               className="content"

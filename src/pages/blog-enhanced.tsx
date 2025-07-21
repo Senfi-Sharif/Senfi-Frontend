@@ -5,8 +5,9 @@ import BlogSearch from '../components/BlogSearch';
 import BlogFilter from '../components/BlogFilter';
 import BlogPagination from '../components/BlogPagination';
 import BlogSidebar from '../components/BlogSidebar';
-import { FaNewspaper, FaCalendar, FaClock, FaUser, FaTag } from 'react-icons/fa';
+import { FaNewspaper, FaCalendar, FaClock, FaUser, FaTag, FaPlus } from 'react-icons/fa';
 import { useBlogData } from '../hooks/useBlogData';
+import { SecureTokenManager } from '../utils/security';
 
 export default function BlogEnhanced(): React.JSX.Element {
   const { siteConfig } = useDocusaurusContext();
@@ -17,6 +18,28 @@ export default function BlogEnhanced(): React.JSX.Element {
 
   // Get real blog data from custom hook
   const { blogPosts: realBlogPosts, categories, loading, error } = useBlogData();
+  
+  // Check if user is authenticated
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const token = SecureTokenManager.getToken();
+    const email = SecureTokenManager.getEmail();
+    const role = SecureTokenManager.getRole();
+    
+    if (token && email) {
+      const userData = {
+        email: email,
+        role: role || 'user'
+      };
+      setIsAuthenticated(true);
+      setUser(userData);
+    } else {
+      setIsAuthenticated(false);
+      setUser(null);
+    }
+  }, []);
 
   // Filter posts based on search query and category
   const filteredPosts = useMemo(() => {
@@ -89,13 +112,31 @@ export default function BlogEnhanced(): React.JSX.Element {
       <div className="blog-enhanced-page">
         <div className="container">
           <div className="blog-enhanced-header">
-            <h1 className="blog-enhanced-title">
-              <FaNewspaper className="blog-enhanced-title-icon" />
-              بلاگ
-            </h1>
-            <p className="blog-enhanced-description">
-              آخرین اخبار، اطلاعیه‌ها و به‌روزرسانی‌های شورای صنفی دانشجویان دانشگاه صنعتی شریف به همراه مطالب شما
-            </p>
+            <div className="blog-enhanced-header-content">
+              <div className="blog-enhanced-title-section">
+                <h1 className="blog-enhanced-title">
+                  <FaNewspaper className="blog-enhanced-title-icon" />
+                  بلاگ
+                </h1>
+                <p className="blog-enhanced-description">
+                  آخرین اخبار، اطلاعیه‌ها و به‌روزرسانی‌های شورای صنفی دانشجویان دانشگاه صنعتی شریف به همراه مطالب شما
+                </p>
+              </div>
+
+              
+              {isAuthenticated && (
+                <div className="blog-enhanced-actions">
+                  <button 
+                    className="blog-enhanced-create-btn"
+                    onClick={() => window.location.href = '/blog-create'}
+                    title="ایجاد مطلب جدید"
+                  >
+                    <FaPlus className="blog-enhanced-create-icon" />
+                    ایجاد مطلب جدید
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="blog-enhanced-content">
@@ -168,6 +209,22 @@ export default function BlogEnhanced(): React.JSX.Element {
                             ))}
                           </div>
                         </header>
+                        
+                        {/* Featured Image */}
+                        {post.image_url && (
+                          <div className="blog-enhanced-post-image">
+                            <img 
+                              src={post.image_url} 
+                              alt={post.title}
+                              className="post-image"
+                              onError={(e) => {
+                                console.error('Error loading image:', post.image_url);
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          </div>
+                        )}
+                        
                         <div className="blog-enhanced-post-excerpt">
                           {post.excerpt}
                         </div>

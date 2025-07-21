@@ -11,6 +11,7 @@ interface BlogPost {
   excerpt: string;
   readingTime: string;
   url: string;
+  image_url?: string;
 }
 
 interface ApiBlogPost {
@@ -57,7 +58,8 @@ const fetchBlogData = async (apiBase: string): Promise<BlogPost[]> => {
       category: post.category,
       excerpt: post.excerpt,
       readingTime: `${post.reading_time} دقیقه`,
-      url: `/blog-post?slug=${post.slug}`
+      url: `/blog-post?slug=${post.slug}`,
+      image_url: post.image_url
     }));
   } catch (error) {
     console.error('Error fetching blog posts:', error);

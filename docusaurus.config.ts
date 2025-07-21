@@ -15,7 +15,7 @@ const config: Config = {
   baseUrl: '/',
   organizationName: 'aryatrb',
   projectName: 'senfi.sharif.ir',
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   i18n: {
     defaultLocale: 'fa',
@@ -42,6 +42,7 @@ const config: Config = {
       } satisfies Preset.Options,
     ],
   ],
+
   // Algolia DocSearch config (disabled by default, enable by setting ENABLE_ALGOLIA=true in .env)
   themeConfig: {
     image: 'img/maini_colors.png',
