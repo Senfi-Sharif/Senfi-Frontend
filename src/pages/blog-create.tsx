@@ -46,6 +46,10 @@ export default function BlogCreate(): React.JSX.Element {
   useEffect(() => {
     const token = SecureTokenManager.getToken();
     const email = SecureTokenManager.getEmail();
+    if (!token || !email) {
+      window.location.href = '/';
+      return;
+    }
     const role = SecureTokenManager.getRole();
     
     if (token && email) {

@@ -6,7 +6,7 @@ interface BlogSearchProps {
   placeholder?: string;
 }
 
-export default function BlogSearch({ onSearch, placeholder = "جستجو در بلاگ..." }: BlogSearchProps) {
+export default function BlogSearch({ onSearch, placeholder = "جستجو در کارزارها..." }: BlogSearchProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
 

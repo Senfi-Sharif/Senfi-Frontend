@@ -108,13 +108,13 @@ export function useAuthApi() {
     return await processResponse(res);
   }
 
-  async function login(email, password) {
+  async function login(email, password, rememberMe = false) {
     let res;
     try {
       res = await fetch(`${API_BASE}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, remember_me: rememberMe }),
       });
     } catch (err) {
       throw new Error('ارتباط با سرور برقرار نشد');
@@ -408,7 +408,7 @@ export function useAuthApi() {
     return await processResponse(res);
   }
 
-  async function submitCampaign({ title, description, email, is_anonymous, end_datetime, label }) {
+  async function submitCampaign({ title, content, description, excerpt, tags, category, image_url, deadline, is_anonymous, anonymous_allowed, email }) {
     const token = SecureTokenManager.getToken();
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
@@ -419,7 +419,7 @@ export function useAuthApi() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ title, description, email, is_anonymous, end_datetime, label }),
+        body: JSON.stringify({ title, content, description, excerpt, tags, category, image_url, deadline, is_anonymous, anonymous_allowed, email }),
       });
     } catch (err) {
       throw new Error('ارتباط با سرور برقرار نشد');

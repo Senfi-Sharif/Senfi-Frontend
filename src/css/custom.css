@@ -3365,7 +3365,8 @@ body, * {
   pointer-events: none;
 }
 
-main, .theme-doc-markdown {
+/* --- فاصله سراسری بعد از هدر برای همه صفحات --- */
+main, .container, .main-campaigns-container, .theme-doc-markdown {
   padding-top: 64px !important;
   margin-top: 0 !important;
 }
@@ -6030,4 +6031,114 @@ h1, h2, h3, h4, h5, h6, [id] {
     margin-top: 50px;
     padding: 1rem 0;
   }
+}
+
+/* --- استایل دارک‌مود برای فیلترها و dropdownها --- */
+[data-theme="dark"] .dropdown-menu {
+  background: #23272f !important;
+  color: #f3f4f6 !important;
+  border: 1px solid #333 !important;
+  box-shadow: 0 2px 8px #0008 !important;
+}
+[data-theme="dark"] .dropdown-button {
+  background: #23272f !important;
+  color: #f3f4f6 !important;
+  border: 1px solid #333 !important;
+}
+[data-theme="dark"] .dropdown-checkbox-label {
+  color: #f3f4f6 !important;
+}
+[data-theme="dark"] .dropdown-menu input[type="checkbox"],
+[data-theme="dark"] .dropdown-menu input[type="radio"] {
+  accent-color: #1e40af;
+}
+[data-theme="dark"] .dropdown-menu label {
+  color: #f3f4f6 !important;
+}
+[data-theme="dark"] .dropdown-menu .dropdown-checkbox-label:hover {
+  background: #2d323c !important;
+}
+[data-theme="dark"] .dropdown-menu .dropdown-checkbox-label:active {
+  background: #1e293b !important;
+}
+/* --- پایان استایل دارک‌مود فیلترها --- */
+
+.blog-enhanced-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 12px;
+  margin-bottom: 32px;
+  width: 100%;
+}
+
+.blog-enhanced-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+@media (max-width: 600px) {
+  .blog-enhanced-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.7rem;
+  }
+}
+
+.dropdown-button {
+  padding: 0.35em 1em;
+  border-radius: 1em;
+  font-size: 1em;
+  border: 1.5px solid var(--ifm-color-primary-lightest, #e0e7ff);
+  background: var(--ifm-background-color, #fff);
+  min-width: 120px;
+  width: auto;
+  text-align: right;
+  cursor: pointer;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1em;
+  color: var(--ifm-font-color-base, #222);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.5em;
+}
+.dropdown-menu {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  z-index: 9999;
+  background: var(--ifm-color-primary-lightest, #e0e7ff);
+  border: 1.5px solid var(--ifm-color-primary-lightest, #e0e7ff);
+  border-radius: 1em;
+  box-shadow: 0 4px 16px rgba(30,64,175,0.13);
+  padding: 0.5em 0.7em;
+  min-width: 120px;
+  width: auto;
+  max-width: 320px;
+  max-height: 320px;
+  overflow-y: auto;
+  margin-top: 2px;
+  color: var(--ifm-font-color-base, #222);
+}
+.dropdown-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.98em;
+  padding: 0.25em 0;
+}
+.dropdown-checkbox {
+  accent-color: var(--ifm-color-primary, #1e40af);
+  width: 18px;
+  height: 18px;
+  margin-left: 4px;
+  background: var(--ifm-background-color, #fff);
 }

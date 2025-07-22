@@ -22,8 +22,6 @@ const ApprovedCampaigns = () => {
   const [refresh, setRefresh] = useState(0);
   const authApi = useAuthApi();
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [pendingId, setPendingId] = useState<number | null>(null);
-  const [pendingLoading, setPendingLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [sortType, setSortType] = useState<'signatures' | 'deadline' | 'created_at'>('created_at');
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
@@ -127,41 +125,6 @@ const ApprovedCampaigns = () => {
     }));
   };
 
-  const handleSetPending = useCallback((campaignId: number) => {
-    setPendingId(campaignId);
-    setConfirmOpen(true);
-  }, []);
-
-  // بعد از بازگرداندن به بررسی فقط امضای همان کارزار را آپدیت کن
-  const confirmSetPending = useCallback(async () => {
-    if (!pendingId || pendingLoading) return;
-    setPendingLoading(true);
-    try {
-      await authApi.updateCampaignStatus(pendingId, undefined, 'pending');
-      showNotification('کارزار به حالت بررسی بازگردانده شد.', 'success');
-      setRefresh(r => r + 1); // رفرش لیست بعد از تغییر وضعیت
-      // فقط امضای همین کارزار را چک کن
-      try {
-        const sig = await authApi.checkUserSignature(pendingId);
-        setUserSignatures(prev => ({ ...prev, [pendingId]: sig }));
-      } catch (err) {
-        // Silent error handling
-      }
-    } catch (err: any) {
-      showNotification(err.message || 'خطا در بازگرداندن کارزار به حالت بررسی', 'error');
-    } finally {
-      setPendingLoading(false);
-      setConfirmOpen(false);
-      setPendingId(null);
-    }
-  }, [pendingId, pendingLoading, authApi, showNotification]);
-
-  const handleCancelPending = useCallback(() => {
-    setConfirmOpen(false);
-    setPendingId(null);
-    setPendingLoading(false);
-  }, []);
-
   const formatDate = (dateString: string) => {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -174,62 +137,61 @@ const ApprovedCampaigns = () => {
     });
   };
 
-  // لیبل‌های قابل مشاهده فقط از campaigns دریافتی
-  const visibleLabels = useMemo(() => {
+  // دسته‌بندی‌های قابل مشاهده فقط از campaigns دریافتی
+  const visibleCategories = useMemo(() => {
     const set = new Set<string>();
     (campaigns || []).forEach((c: any) => {
-      if (c.label) set.add(c.label);
+      if (c.category) set.add(c.category);
     });
     return Array.from(set);
   }, [campaigns]);
   
-  // همه لیبل‌های ممکن برای فیلتر
-  const ALL_POSSIBLE_LABELS = [
-    "مسائل دانشگاهی",
-    "فیزیک", "صنایع", "کامپیوتر", "برق", "عمران", "مواد", 
-    "مهندسی شیمی و نفت", "ریاضی", "هوافضا", "انرژی", 
-    "مدیریت و اقتصاد", "شیمی", "مکانیک",
-    "احمدی روشن", "طرشت ۲", "طرشت ۳", "خوابگاهی نیستم"
-  ];
-  
-  // ترکیب لیبل‌های موجود و لیبل‌های ممکن
-  const ALL_LABELS = useMemo(() => {
-    const combined = new Set([...visibleLabels, ...ALL_POSSIBLE_LABELS]);
-    return Array.from(combined).sort();
-  }, [visibleLabels]);
-  const [labelFilter, setLabelFilter] = useState<string[]>(ALL_LABELS);
-  useEffect(() => { setLabelFilter(ALL_LABELS); }, [JSON.stringify(ALL_LABELS)]);
-  const [labelDropdownOpen, setLabelDropdownOpen] = useState(false);
-  const labelDropdownRef = useRef<HTMLDivElement>(null);
+  // اضافه کردن state برای دسته‌بندی‌ها
+  const [allCategories, setAllCategories] = useState<string[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categoriesError, setCategoriesError] = useState<string | null>(null);
 
-  // بستن منو با کلیک بیرون
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (labelDropdownRef.current && !labelDropdownRef.current.contains(event.target as Node)) {
-        setLabelDropdownOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    setCategoriesLoading(true);
+    fetch('/api/campaigns/categories')
+      .then(res => res.json())
+      .then(data => {
+        setAllCategories(data.categories || []);
+        setCategoriesLoading(false);
+      })
+      .catch(err => {
+        setCategoriesError('خطا در دریافت دسته‌بندی‌ها');
+        setCategoriesLoading(false);
+      });
   }, []);
 
-  // هندل تغییر چک‌باکس
-  const handleLabelCheckbox = (label: string) => {
-    setLabelFilter(prev =>
-      prev.includes(label)
-        ? prev.filter(l => l !== label)
-        : [...prev, label]
+  // جایگزینی ALL_CATEGORIES با allCategories در کل فایل
+  const ALL_CATEGORIES = useMemo(() => {
+    const combined = new Set([...visibleCategories, ...allCategories]);
+    return Array.from(combined).sort();
+  }, [visibleCategories, allCategories]);
+  const [categoryFilter, setCategoryFilter] = useState<string[]>(ALL_CATEGORIES);
+  useEffect(() => { setCategoryFilter(ALL_CATEGORIES); }, [JSON.stringify(ALL_CATEGORIES)]);
+  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
+  const categoryDropdownRef = useRef<HTMLDivElement>(null);
+
+  // هندل تغییر چک‌باکس دسته‌بندی
+  const handleCategoryCheckbox = (cat: string) => {
+    setCategoryFilter(prev =>
+      prev.includes(cat)
+        ? prev.filter(l => l !== cat)
+        : [...prev, cat]
     );
   };
 
   // متن خلاصه انتخاب‌شده‌ها
-  const labelSummary = labelFilter.length === ALL_LABELS.length
-    ? 'همه موضوعات'
-    : labelFilter.length === 0
-      ? 'هیچ موضوعی انتخاب نشده'
-      : labelFilter.length <= 2
-        ? labelFilter.join('، ')
-        : `${labelFilter.length} موضوع انتخاب شده`;
+  const categorySummary = categoryFilter.length === ALL_CATEGORIES.length
+    ? 'همه دسته‌بندی‌ها'
+    : categoryFilter.length === 0
+      ? 'هیچ دسته‌بندی انتخاب نشده'
+      : categoryFilter.length <= 2
+        ? categoryFilter.join('، ')
+        : `${categoryFilter.length} دسته‌بندی انتخاب شده`;
 
   // فیلتر امضا شده/نشده
   const SIGN_FILTERS = [
@@ -300,9 +262,9 @@ const ApprovedCampaigns = () => {
   // فیلتر نهایی
   const filteredCampaigns = useMemo(() => {
     let result = campaigns;
-    // فیلتر بر اساس لیبل
-    if (labelFilter.length > 0) {
-      result = result.filter((c: any) => labelFilter.includes(c.label));
+    // فیلتر بر اساس دسته‌بندی
+    if (categoryFilter.length > 0) {
+      result = result.filter((c: any) => categoryFilter.includes(c.category));
     }
     // فیلتر امضا شده/نشده
     if (!filterSigned || !filterUnsigned) {
@@ -348,7 +310,7 @@ const ApprovedCampaigns = () => {
       });
     }
     return sorted;
-  }, [campaigns, userSignatures, filterSigned, filterUnsigned, filterClosed, filterOpenCampaigns, search, sortType, labelFilter]);
+  }, [campaigns, userSignatures, filterSigned, filterUnsigned, filterClosed, filterOpenCampaigns, search, sortType, categoryFilter]);
 
   // لیست واحد همه کارزارها
   const allCampaigns = filteredCampaigns;
@@ -368,21 +330,21 @@ const ApprovedCampaigns = () => {
       {/* فیلتر لیبل به صورت دراپ‌داون مولتی‌سِلکت */}
       <div className="filters-container">
         {/* فیلتر لیبل */}
-        {ALL_LABELS.length > 0 && (
-          <div ref={labelDropdownRef} className="dropdown-container">
+        {ALL_CATEGORIES.length > 0 && (
+          <div ref={categoryDropdownRef} className="dropdown-container">
             <button
               ref={labelButtonRef}
               type="button"
-              onClick={() => setLabelDropdownOpen(v => !v)}
-              className={`dropdown-button ${labelDropdownOpen ? 'active' : ''}`}
-              title={labelSummary}
+              onClick={() => setCategoryDropdownOpen(v => !v)}
+              className={`dropdown-button ${categoryDropdownOpen ? 'active' : ''}`}
+              title={categorySummary}
             >
-              <span className="dropdown-button-text">{labelSummary}</span>
+              <span className="dropdown-button-text">{categorySummary}</span>
               <span className="dropdown-arrow">
-                {labelDropdownOpen ? '▲' : '▼'}
+                {categoryDropdownOpen ? '▲' : '▼'}
               </span>
             </button>
-            {labelDropdownOpen && (
+            {categoryDropdownOpen && (
               <div 
                 className="dropdown-menu"
                 style={{
@@ -390,12 +352,12 @@ const ApprovedCampaigns = () => {
                   width: labelDropdownWidth || 'auto',
                 }}
               >
-                {ALL_LABELS.map(l => (
+                {ALL_CATEGORIES.map(l => (
                   <label key={l} className="dropdown-checkbox-label">
                     <input
                       type="checkbox"
-                      checked={labelFilter.includes(l)}
-                      onChange={() => handleLabelCheckbox(l)}
+                      checked={categoryFilter.includes(l)}
+                      onChange={() => handleCategoryCheckbox(l)}
                       className="dropdown-checkbox"
                     />
                     {l}
@@ -552,21 +514,9 @@ const ApprovedCampaigns = () => {
             c={c}
             isSigned={!!userSignatures[c.id]?.has_signed}
             userRole={authApi.getUserRole()}
-            handleSetPending={handleSetPending}
-            handleSignSuccess={handleSignSuccess}
           />
               ))}
       </div>
-      <ConfirmModal
-        open={confirmOpen}
-        title="بازگرداندن کارزار به حالت بررسی"
-        message="آیا مطمئن هستید که می‌خواهید این کارزار را به حالت بررسی بازگردانید؟"
-        confirmText="بله، بازگردان به بررسی"
-        cancelText="انصراف"
-        onConfirm={confirmSetPending}
-        onCancel={handleCancelPending}
-        loading={pendingLoading}
-      />
     </div>
   );
 };

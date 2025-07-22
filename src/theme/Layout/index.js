@@ -25,6 +25,7 @@ function LayoutContent(props) {
   const [userEmail, setUserEmail] = useState('');
   const [userRole, setUserRole] = useState('');
   const [authLoading, setAuthLoading] = useState(true); // Add loading state for auth check
+  const [rememberMe, setRememberMe] = useState(false); // اضافه کردن state
 
   // لیست دانشکده‌ها و خوابگاه‌ها
   const FACULTY_CHOICES = [
@@ -239,7 +240,7 @@ function LayoutContent(props) {
     }
   };
 
-  const handleLoginSubmit = async e => {
+  const handleLoginSubmit = async (e, rememberMeChecked) => {
     e.preventDefault();
     if (!password || password.trim() === '') {
       setPasswordError('رمز عبور الزامی است');
@@ -248,19 +249,26 @@ function LayoutContent(props) {
     setPasswordError('');
     setLoading(true);
     try {
-      const res = await authApi.login(email, password);
+      const res = await authApi.login(email, password, rememberMeChecked);
       
               // Security: Removed debug logging to prevent sensitive data exposure
       
       if (res && res.token) {
-        SecureTokenManager.setToken(res.token);
-        SecureTokenManager.setRole(res.user?.role || '');
-        SecureTokenManager.setEmail(email);
-        // Store additional user info in localStorage for now
-        localStorage.setItem('auth_email', email);
-        localStorage.setItem('faculty', res.user?.faculty || '');
-        localStorage.setItem('dormitory', res.user?.dormitory || '');
-        
+        if (rememberMeChecked) {
+          localStorage.setItem('auth_token', res.token);
+          localStorage.setItem('auth_email', email);
+          localStorage.setItem('auth_role', res.user?.role || '');
+          sessionStorage.setItem('auth_role', res.user?.role || '');
+          localStorage.setItem('faculty', res.user?.faculty || '');
+          localStorage.setItem('dormitory', res.user?.dormitory || '');
+        } else {
+          SecureTokenManager.setToken(res.token);
+          SecureTokenManager.setRole(res.user?.role || '');
+          localStorage.setItem('auth_role', res.user?.role || '');
+          SecureTokenManager.setEmail(email);
+          localStorage.setItem('faculty', res.user?.faculty || '');
+          localStorage.setItem('dormitory', res.user?.dormitory || '');
+        }
         setIsLoggedIn(true);
         setUserEmail(email);
         setUserRole(res.user?.role || '');
@@ -385,7 +393,7 @@ function LayoutContent(props) {
           </form>
         )}
         {step === 2 && hasAccount === true && (
-          <form className="auth-form" onSubmit={handleLoginSubmit}>
+          <form className="auth-form" onSubmit={e => handleLoginSubmit(e, rememberMe)}>
             <label className="auth-form-label">رمز عبور:</label>
             <input 
               type="password" 
@@ -396,6 +404,16 @@ function LayoutContent(props) {
               className="auth-form-input"
               disabled={loading} 
             />
+            <div style={{ margin: '12px 0', display: 'flex', alignItems: 'center' }}>
+              <input
+                type="checkbox"
+                id="rememberMe"
+                checked={rememberMe}
+                onChange={e => setRememberMe(e.target.checked)}
+                style={{ marginLeft: 8 }}
+              />
+              <label htmlFor="rememberMe" style={{ cursor: 'pointer', userSelect: 'none' }}>من را به یاد بسپار (۱۴ روز)</label>
+            </div>
             {passwordError && <div className="auth-form-error">{passwordError}</div>}
             <button type="submit" className="auth-form-button" disabled={loading}>
               {loading ? '...' : 'ورود'}

@@ -133,13 +133,11 @@ export default function Header({
           <a href="/tree" className="header-nav-link">شجره‌نامه</a>
           <a href="/publications" className="header-nav-link">نشریه شورا</a>
           <a href="/blog-enhanced" className="header-nav-link">اخبار و اطلاعیه‌ها</a>
-          {!authLoading && isLoggedIn && (
-            <a href="/campaigns" className="header-nav-link">کارزارها</a>
+          <a href="/campaigns-enhanced" className="header-nav-link">کارزارها</a>
+          {!authLoading && (userRole === 'superadmin' || userRole === 'center_member' || userRole === 'head' || userRole === 'center_member' || userRole === 'dorm_member' || userRole === 'faculty_member') && (
+            <a href="/admin/campaign-management" className="header-nav-link">مدیریت کارزارها</a>
           )}
-          {!authLoading && isAdmin && (
-            <a href="/campaign-review" className="header-nav-link">بررسی کارزارها</a>
-          )}
-          {!authLoading && userRole === 'superadmin' && (
+          {!authLoading && (userRole === 'superadmin' || userRole === 'center_member' || userRole === 'head') && (
             <a href="/admin/blog-management" className="header-nav-link">مدیریت بلاگ</a>
           )}
           <a href="/docs" className="header-nav-link">اسناد و راهنما</a>
@@ -228,9 +226,10 @@ export default function Header({
             <a href="/tree">شجره‌نامه</a>
             <a href="/publications">نشریه شورا</a>
             <a href="/blog-enhanced">اخبار و اطلاعیه‌ها</a>
-            {!authLoading && isLoggedIn && <a href="/campaigns">کارزارها</a>}
-            {!authLoading && isAdmin && <a href="/campaign-review">بررسی کارزارها</a>}
-            {!authLoading && userRole === 'superadmin' && <a href="/admin/blog-management">مدیریت بلاگ</a>}
+            <a href="/campaigns-enhanced">کارزارها</a>
+            {!authLoading && isAdmin && <a href="/admin/campaign-management">مدیریت کارزارها</a>}
+            {!authLoading && (userRole === 'dorm_member' || userRole === 'faculty_member') && <a href="/admin/campaign-management">مدیریت کارزارها</a>}
+            {!authLoading && (userRole === 'superadmin' || userRole === 'center_member' || userRole === 'head') && <a href="/admin/blog-management">مدیریت بلاگ</a>}
             <a href="/docs">اسناد و راهنما</a>
             {!authLoading && isLoggedIn ? (
               <button onClick={onLogout} className="header-mobile-logout-button">خروج</button>

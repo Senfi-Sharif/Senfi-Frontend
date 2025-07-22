@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import SignCampaignButtons from './SignCampaignButtons';
 import CampaignSignatures from './CampaignSignatures';
 import styles, { campaignCardClosed, campaignCardEndedLabel } from '../css/campaignsStyles';
 import { FaEnvelope, FaRegCalendarAlt, FaRegClock, FaTag } from 'react-icons/fa';
+import { useHistory } from 'react-router-dom';
 
 function formatDate(dateString: string) {
   const d = new Date(dateString);
@@ -13,11 +13,10 @@ interface CampaignCardProps {
   c: any;
   isSigned?: boolean;
   userRole: string;
-  handleSetPending: (id: number) => void;
-  handleSignSuccess: (id: number) => void;
 }
 
-const CampaignCard: React.FC<CampaignCardProps> = ({ c, isSigned = false, userRole, handleSetPending, handleSignSuccess }) => {
+const CampaignCard: React.FC<CampaignCardProps> = ({ c, isSigned = false, userRole }) => {
+  const history = useHistory();
   const [isHovered, setIsHovered] = useState(false);
   const now = new Date();
   const isClosed = c.end_datetime && new Date(c.end_datetime) < now;
@@ -28,6 +27,8 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ c, isSigned = false, userRo
       className={`campaign-card${isHovered ? ' campaign-card-hover' : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={() => history.push(`/campaign-detail?id=${c.id}`)}
+      style={{ cursor: 'pointer' }}
     >
       {/* برچسب پایان یافته */}
       {isClosed && (
@@ -42,30 +43,20 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ c, isSigned = false, userRo
       )}
       {/* Title row: remove inline sign status */}
       <div className="campaign-title">{c.title}</div>
+      {c.excerpt && (
+        <div className="campaign-excerpt" style={{ color: '#666', fontStyle: 'italic', marginBottom: '0.5rem' }}>
+          {c.excerpt}
+        </div>
+      )}
       <div className="campaign-description">{c.description}</div>
       <div className={`campaign-meta${isClosed ? ' campaign-meta-closed' : ''}`}>
         {c.email && <span><FaEnvelope /> ثبت‌کننده: {c.email} | </span>}
         {c.created_at && <span><FaRegCalendarAlt /> تاریخ: {formatDate(c.created_at)}</span>}
         {c.end_datetime && <span className="campaign-end-date"><FaRegClock /> پایان: {formatDate(c.end_datetime)}</span>}
       </div>
-      {!isClosed && (
-        <SignCampaignButtons
-          campaignId={c.id}
-          campaignIsAnonymous={c.is_anonymous || "public"}
-          onSignatureSuccess={() => handleSignSuccess(c.id)}
-        />
-      )}
       <CampaignSignatures
         campaignId={c.id}
       />
-      {(userRole === 'superadmin' || userRole === 'head') && (
-        <button
-          onClick={() => handleSetPending(c.id)}
-          className="campaign-admin-button"
-        >
-          بازگرداندن به بررسی
-        </button>
-      )}
     </div>
   );
 };

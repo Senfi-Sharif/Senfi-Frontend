@@ -161,10 +161,13 @@ export class SecureTokenManager {
    * Store authentication token securely
    * @param token - JWT token
    */
-  static setToken(token: string): void {
+  static setToken(token: string, useLocalStorage: boolean = false): void {
     if (typeof window !== 'undefined') {
-      // Use sessionStorage for better security (cleared when tab closes)
-      sessionStorage.setItem(this.TOKEN_KEY, token);
+      if (useLocalStorage) {
+        localStorage.setItem(this.TOKEN_KEY, token);
+      } else {
+        sessionStorage.setItem(this.TOKEN_KEY, token);
+      }
     }
   }
   
@@ -174,7 +177,7 @@ export class SecureTokenManager {
    */
   static getToken(): string | null {
     if (typeof window !== 'undefined') {
-      return sessionStorage.getItem(this.TOKEN_KEY);
+      return sessionStorage.getItem(this.TOKEN_KEY) || localStorage.getItem(this.TOKEN_KEY);
     }
     return null;
   }
@@ -183,9 +186,13 @@ export class SecureTokenManager {
    * Store user email
    * @param email - User email
    */
-  static setEmail(email: string): void {
+  static setEmail(email: string, useLocalStorage: boolean = false): void {
     if (typeof window !== 'undefined') {
-      sessionStorage.setItem(this.EMAIL_KEY, email);
+      if (useLocalStorage) {
+        localStorage.setItem(this.EMAIL_KEY, email);
+      } else {
+        sessionStorage.setItem(this.EMAIL_KEY, email);
+      }
     }
   }
   
@@ -195,7 +202,7 @@ export class SecureTokenManager {
    */
   static getEmail(): string | null {
     if (typeof window !== 'undefined') {
-      return sessionStorage.getItem(this.EMAIL_KEY);
+      return sessionStorage.getItem(this.EMAIL_KEY) || localStorage.getItem(this.EMAIL_KEY);
     }
     return null;
   }
@@ -204,9 +211,13 @@ export class SecureTokenManager {
    * Store user role
    * @param role - User role
    */
-  static setRole(role: string): void {
+  static setRole(role: string, useLocalStorage: boolean = false): void {
     if (typeof window !== 'undefined') {
-      sessionStorage.setItem(this.ROLE_KEY, role);
+      if (useLocalStorage) {
+        localStorage.setItem(this.ROLE_KEY, role);
+      } else {
+        sessionStorage.setItem(this.ROLE_KEY, role);
+      }
     }
   }
   
@@ -216,7 +227,7 @@ export class SecureTokenManager {
    */
   static getRole(): string | null {
     if (typeof window !== 'undefined') {
-      return sessionStorage.getItem(this.ROLE_KEY);
+      return sessionStorage.getItem(this.ROLE_KEY) || localStorage.getItem(this.ROLE_KEY);
     }
     return null;
   }
@@ -229,6 +240,9 @@ export class SecureTokenManager {
       sessionStorage.removeItem(this.TOKEN_KEY);
       sessionStorage.removeItem(this.EMAIL_KEY);
       sessionStorage.removeItem(this.ROLE_KEY);
+      localStorage.removeItem(this.TOKEN_KEY);
+      localStorage.removeItem(this.EMAIL_KEY);
+      localStorage.removeItem(this.ROLE_KEY);
     }
   }
   

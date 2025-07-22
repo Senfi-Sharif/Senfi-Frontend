@@ -154,7 +154,6 @@
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       setInterval(() => {
         if (securityEvents.length > 0) {
-          console.log('Security Events:', securityEvents);
           securityEvents.length = 0; // Clear events
         }
       }, 30000); // Log every 30 seconds
@@ -185,6 +184,4 @@
       }
     });
   }
-
-  console.log('Security headers and monitoring initialized');
 })(); 

@@ -114,30 +114,29 @@ export default function BlogEnhanced(): React.JSX.Element {
           <div className="blog-enhanced-header">
             <div className="blog-enhanced-header-content">
               <div className="blog-enhanced-title-section">
-                <h1 className="blog-enhanced-title">
-                  <FaNewspaper className="blog-enhanced-title-icon" />
+            <h1 className="blog-enhanced-title">
+              <FaNewspaper className="blog-enhanced-title-icon" />
                   بلاگ
-                </h1>
-                <p className="blog-enhanced-description">
+            </h1>
+            <p className="blog-enhanced-description">
                   آخرین اخبار، اطلاعیه‌ها و به‌روزرسانی‌های شورای صنفی دانشجویان دانشگاه صنعتی شریف به همراه مطالب شما
-                </p>
+            </p>
               </div>
-
-              
-              {isAuthenticated && (
-                <div className="blog-enhanced-actions">
-                  <button 
-                    className="blog-enhanced-create-btn"
-                    onClick={() => window.location.href = '/blog-create'}
-                    title="ایجاد مطلب جدید"
-                  >
-                    <FaPlus className="blog-enhanced-create-icon" />
-                    ایجاد مطلب جدید
-                  </button>
-                </div>
-              )}
             </div>
           </div>
+          {/* دکمه ایجاد بلاگ جدید فقط برای کاربران لاگین شده */}
+          {isAuthenticated && (
+            <div className="blog-enhanced-actions" style={{ marginTop: 12, marginBottom: 24, display: 'flex', justifyContent: 'center' }}>
+              <button
+                className="blog-enhanced-create-btn"
+                onClick={() => window.location.href = '/blog-create'}
+                title="ایجاد مطلب جدید"
+              >
+                <FaPlus className="blog-enhanced-create-icon" />
+                ایجاد مطلب جدید
+              </button>
+            </div>
+          )}
 
           <div className="blog-enhanced-content">
             <div className="blog-enhanced-main">
@@ -176,39 +175,39 @@ export default function BlogEnhanced(): React.JSX.Element {
 
               {/* Blog Posts */}
               {!loading && !error && (
-                <div className="blog-enhanced-posts">
-                  {paginatedPosts.length > 0 ? (
-                    paginatedPosts.map((post) => (
-                      <article key={post.id} className="blog-enhanced-post">
-                        <header className="blog-enhanced-post-header">
-                          <h2 className="blog-enhanced-post-title">
-                            <a href={post.url} className="blog-enhanced-post-link">
-                              {post.title}
-                            </a>
-                          </h2>
-                          <div className="blog-enhanced-post-meta">
-                            <span className="blog-enhanced-post-date">
-                              <FaCalendar className="blog-enhanced-meta-icon" />
-                              {formatDate(post.date)}
+              <div className="blog-enhanced-posts">
+                {paginatedPosts.length > 0 ? (
+                  paginatedPosts.map((post) => (
+                    <article key={post.id} className="blog-enhanced-post">
+                      <header className="blog-enhanced-post-header">
+                        <h2 className="blog-enhanced-post-title">
+                          <a href={post.url} className="blog-enhanced-post-link">
+                            {post.title}
+                          </a>
+                        </h2>
+                        <div className="blog-enhanced-post-meta">
+                          <span className="blog-enhanced-post-date">
+                            <FaCalendar className="blog-enhanced-meta-icon" />
+                            {formatDate(post.date)}
+                          </span>
+                          <span className="blog-enhanced-post-author">
+                            <FaUser className="blog-enhanced-meta-icon" />
+                            {post.author}
+                          </span>
+                          <span className="blog-enhanced-post-reading-time">
+                            <FaClock className="blog-enhanced-meta-icon" />
+                            {post.readingTime}
+                          </span>
+                        </div>
+                        <div className="blog-enhanced-post-tags">
+                          {post.tags.map((tag) => (
+                            <span key={tag} className="blog-enhanced-post-tag">
+                              <FaTag className="blog-enhanced-tag-icon" />
+                              {tag}
                             </span>
-                            <span className="blog-enhanced-post-author">
-                              <FaUser className="blog-enhanced-meta-icon" />
-                              {post.author}
-                            </span>
-                            <span className="blog-enhanced-post-reading-time">
-                              <FaClock className="blog-enhanced-meta-icon" />
-                              {post.readingTime}
-                            </span>
-                          </div>
-                          <div className="blog-enhanced-post-tags">
-                            {post.tags.map((tag) => (
-                              <span key={tag} className="blog-enhanced-post-tag">
-                                <FaTag className="blog-enhanced-tag-icon" />
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        </header>
+                          ))}
+                        </div>
+                      </header>
                         
                         {/* Featured Image */}
                         {post.image_url && (
@@ -225,49 +224,50 @@ export default function BlogEnhanced(): React.JSX.Element {
                           </div>
                         )}
                         
-                        <div className="blog-enhanced-post-excerpt">
-                          {post.excerpt}
-                        </div>
-                        <footer className="blog-enhanced-post-footer">
-                          <a href={post.url} className="blog-enhanced-read-more">
-                            ادامه مطلب
-                          </a>
-                        </footer>
-                      </article>
-                    ))
-                  ) : (
-                    <div className="blog-enhanced-empty">
-                      <h3>نتیجه‌ای یافت نشد</h3>
-                      <p>
-                        {searchQuery || selectedCategory 
-                          ? 'با فیلترهای انتخاب شده مطلبی یافت نشد. لطفاً فیلترها را تغییر دهید.'
-                          : 'در حال حاضر مطلبی برای نمایش وجود ندارد.'
-                        }
-                      </p>
-                    </div>
-                  )}
-                </div>
+                      <div className="blog-enhanced-post-excerpt">
+                        {post.excerpt}
+                      </div>
+                      <footer className="blog-enhanced-post-footer">
+                        <a href={post.url} className="blog-enhanced-read-more">
+                          ادامه مطلب
+                        </a>
+                      </footer>
+                    </article>
+                  ))
+                ) : (
+                  <div className="blog-enhanced-empty">
+                    <h3>نتیجه‌ای یافت نشد</h3>
+                    <p>
+                      {searchQuery || selectedCategory 
+                        ? 'با فیلترهای انتخاب شده مطلبی یافت نشد. لطفاً فیلترها را تغییر دهید.'
+                        : 'در حال حاضر مطلبی برای نمایش وجود ندارد.'
+                      }
+                    </p>
+                  </div>
+                )}
+              </div>
               )}
 
               {/* Pagination */}
               {!loading && !error && totalPages > 1 && (
-                <BlogPagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                  totalPosts={filteredPosts.length}
-                  postsPerPage={postsPerPage}
-                />
+              <BlogPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                totalPosts={filteredPosts.length}
+                postsPerPage={postsPerPage}
+              />
               )}
             </div>
 
             {/* Sidebar */}
             <div className="blog-enhanced-sidebar">
               <BlogSidebar
-                recentPosts={realBlogPosts.slice(0, 3).map(post => ({
+                recentPosts={paginatedPosts.slice(0, 3).map(post => ({
                   ...post,
                   id: post.id,
-                  url: post.url
+                  url: post.url,
+                  created_at: (post as any).created_at || ''
                 }))}
                 categories={categories}
                 onCategoryClick={handleCategoryClick}

@@ -4,7 +4,7 @@ import { FaClock, FaTag, FaCalendar } from 'react-icons/fa';
 interface BlogPost {
   id: string;
   title: string;
-  date: string;
+  created_at: string;
   readingTime?: string;
   tags?: string[];
   excerpt?: string;
@@ -25,7 +25,9 @@ export default function BlogSidebar({
   selectedCategory 
 }: BlogSidebarProps) {
   const formatDate = (dateString: string) => {
+    if (!dateString) return '';
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '';
     return date.toLocaleDateString('fa-IR', {
       year: 'numeric',
       month: 'long',
@@ -52,7 +54,7 @@ export default function BlogSidebar({
               <div className="blog-sidebar-post-meta">
                 <time className="blog-sidebar-post-date">
                   <FaCalendar className="blog-sidebar-meta-icon" />
-                  {formatDate(post.date)}
+                  {formatDate(post.created_at)}
                 </time>
                 {post.readingTime && (
                   <span className="blog-sidebar-post-reading-time">

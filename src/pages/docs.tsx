@@ -8,7 +8,7 @@ export default function DocsPage() {
   useEffect(() => {
     // Redirect to Docusaurus docs after a short delay
     const timer = setTimeout(() => {
-      window.location.href = '/docs/user-guide';
+      window.location.href = '/docs/sharif-senfi-regulations';
     }, 3000);
 
     return () => clearTimeout(timer);

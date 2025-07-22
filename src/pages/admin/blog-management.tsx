@@ -3,6 +3,7 @@ import Layout from '@theme/Layout';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaEyeSlash, FaSave, FaTimes } from 'react-icons/fa';
 import RichTextEditor from '../../components/RichTextEditor';
+import { SecureTokenManager } from '../../utils/security';
 
 interface BlogPost {
   id: number;
@@ -56,8 +57,7 @@ export default function BlogManagement(): React.JSX.Element {
 
   useEffect(() => {
     // Check authentication
-    const token = sessionStorage.getItem('auth_token');
-    console.log('Token found:', !!token);
+    const token = SecureTokenManager.getToken();
     if (token) {
       setUserToken(token);
       checkUserRole(token);
@@ -74,9 +74,7 @@ export default function BlogManagement(): React.JSX.Element {
       
       if (response.ok) {
         const userData = await response.json();
-        console.log('User data:', userData);
-        console.log('User role:', userData.role);
-        setIsSuperAdmin(userData.role === 'superadmin');
+        setIsSuperAdmin(userData.role === 'superadmin' || userData.role === 'center_member' || userData.role === 'head');
       } else {
         console.error('Failed to get user data:', response.status);
       }
@@ -334,7 +332,6 @@ export default function BlogManagement(): React.JSX.Element {
       </Layout>
     );
   }
-
   if (!isSuperAdmin) {
     return (
       <Layout title="مدیریت بلاگ" description="مدیریت مطالب بلاگ">
@@ -342,7 +339,7 @@ export default function BlogManagement(): React.JSX.Element {
           <div className="container">
             <div className="access-denied">
               <h2>دسترسی محدود</h2>
-              <p>فقط سوپرادمین می‌تواند مطالب بلاگ را مدیریت کند.</p>
+              <p>فقط ادمین، عضو مرکز یا دبیر شورا می‌تواند مطالب بلاگ را مدیریت کند.</p>
             </div>
           </div>
         </div>

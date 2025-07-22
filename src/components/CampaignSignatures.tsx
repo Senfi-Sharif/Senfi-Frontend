@@ -77,34 +77,41 @@ export default function CampaignSignatures({ campaignId }: CampaignSignaturesPro
     );
   }
 
+  const totalSignatures = (data && typeof data.total === 'number') ? data.total : signatures.length;
   return (
     <div className="campaign-signatures-list">
       <SenfiAccordion
-        title={`امضاهای ثبت شده (${signatures.length})`}
+        title={`امضاهای ثبت شده (${totalSignatures})`}
         defaultOpen={false}
         icon={null}
       >
         <div className="campaign-signatures-scroll">
-          {signatures.map((signature) => (
-            <div
-              key={signature.id}
-              className="campaign-signature-item"
-            >
-              <div>
-                <div className="campaign-signature-email">
-                  {signature.is_anonymous === 'anonymous' ? 'کاربر ناشناس' : signature.user_email}
-                </div>
-                <div className="campaign-signature-date">
-                  {signature.signed_at ? new Date(signature.signed_at).toLocaleDateString('fa-IR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}
-                </div>
-              </div>
-              {signature.is_anonymous === 'anonymous' && (
-                <span className="campaign-signature-anonymous">
-                  ناشناس
-                </span>
-              )}
+          {data && data.campaign_anonymous_allowed === true ? (
+            <div style={{ padding: '1.2em', textAlign: 'center', color: '#888', fontSize: '1.05em' }}>
+              اسامی امضاکنندگان این کارزار ناشناس است
             </div>
-          ))}
+          ) : (
+            signatures.map((signature) => (
+              <div
+                key={signature.id}
+                className="campaign-signature-item"
+              >
+                <div>
+                  <div className="campaign-signature-email">
+                    {signature.is_anonymous === 'anonymous' ? 'کاربر ناشناس' : signature.user_email}
+                  </div>
+                  <div className="campaign-signature-date">
+                    {signature.signed_at ? new Date(signature.signed_at).toLocaleDateString('fa-IR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}
+                  </div>
+                </div>
+                {signature.is_anonymous === 'anonymous' && (
+                  <span className="campaign-signature-anonymous">
+                    ناشناس
+                  </span>
+                )}
+              </div>
+            ))
+          )}
         </div>
       </SenfiAccordion>
     </div>

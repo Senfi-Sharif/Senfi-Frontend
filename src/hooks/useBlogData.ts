@@ -49,21 +49,27 @@ const fetchBlogData = async (apiBase: string): Promise<BlogPost[]> => {
     
     const data: BlogResponse = await response.json();
     
-    return data.posts.map(post => ({
-      id: post.slug,
-      title: post.title,
-      date: post.published_at || post.created_at,
-      author: post.author_email,
-      tags: post.tags || [],
-      category: post.category,
-      excerpt: post.excerpt,
-      readingTime: `${post.reading_time} دقیقه`,
-      url: `/blog-post?slug=${post.slug}`,
-      image_url: post.image_url
-    }));
+    return data.posts.map(post => {
+      let date = post.created_at;
+      if (!date) {
+        date = new Date().toISOString();
+      }
+      return {
+        id: post.slug,
+        title: post.title,
+        date: date,
+        author: post.author_email,
+        tags: post.tags || [],
+        category: post.category,
+        excerpt: post.excerpt,
+        readingTime: `${post.reading_time} دقیقه`,
+        url: `/blog-post?slug=${post.slug}`,
+        image_url: post.image_url
+      };
+    });
   } catch (error) {
     console.error('Error fetching blog posts:', error);
-    return [];
+  return [];
   }
 };
 

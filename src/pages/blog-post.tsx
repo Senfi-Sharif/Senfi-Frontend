@@ -29,12 +29,6 @@ export default function BlogPostDetail(): React.JSX.Element {
   const urlParams = new URLSearchParams(location.search);
   const slug = urlParams.get('slug') || location.pathname.split('/').pop();
   
-  // Debug logging
-  console.log('Location pathname:', location.pathname);
-  console.log('URL search:', location.search);
-  console.log('Extracted slug:', slug);
-  console.log('API_BASE:', API_BASE);
-  
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,11 +38,8 @@ export default function BlogPostDetail(): React.JSX.Element {
       try {
         setLoading(true);
         const url = `${API_BASE}/api/blog/posts/${slug}`;
-        console.log('Fetching from URL:', url);
         
         const response = await fetch(url);
-        console.log('Response status:', response.status);
-        console.log('Response ok:', response.ok);
         
         if (!response.ok) {
           if (response.status === 404) {
@@ -58,7 +49,6 @@ export default function BlogPostDetail(): React.JSX.Element {
         }
         
         const postData = await response.json();
-        console.log('Post data:', postData);
         setPost(postData);
         setError(null);
       } catch (err) {
