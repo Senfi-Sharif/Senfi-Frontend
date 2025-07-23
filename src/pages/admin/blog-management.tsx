@@ -321,35 +321,30 @@ export default function BlogManagement(): React.JSX.Element {
   if (!userToken) {
     return (
       <Layout title="مدیریت بلاگ" description="مدیریت مطالب بلاگ">
-        <div className="blog-management-page">
           <div className="container">
             <div className="auth-required">
               <h2>نیاز به ورود</h2>
               <p>لطفاً ابتدا وارد شوید تا بتوانید مطالب بلاگ را مدیریت کنید.</p>
             </div>
           </div>
-        </div>
       </Layout>
     );
   }
   if (!isSuperAdmin) {
     return (
       <Layout title="مدیریت بلاگ" description="مدیریت مطالب بلاگ">
-        <div className="blog-management-page">
           <div className="container">
             <div className="access-denied">
               <h2>دسترسی محدود</h2>
               <p>فقط ادمین، عضو مرکز یا دبیر شورا می‌تواند مطالب بلاگ را مدیریت کند.</p>
             </div>
           </div>
-        </div>
       </Layout>
     );
   }
 
   return (
     <Layout title="مدیریت بلاگ" description="مدیریت مطالب بلاگ">
-      <div className="blog-management-page">
         <div className="container">
           <div className="blog-management-header">
             <h1>مدیریت مطالب بلاگ</h1>
@@ -568,7 +563,6 @@ export default function BlogManagement(): React.JSX.Element {
             </div>
           )}
         </div>
-      </div>
     </Layout>
   );
 } 

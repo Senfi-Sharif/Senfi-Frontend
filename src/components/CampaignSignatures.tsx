@@ -92,24 +92,24 @@ export default function CampaignSignatures({ campaignId }: CampaignSignaturesPro
             </div>
           ) : (
             signatures.map((signature) => (
-              <div
-                key={signature.id}
-                className="campaign-signature-item"
-              >
-                <div>
-                  <div className="campaign-signature-email">
-                    {signature.is_anonymous === 'anonymous' ? 'کاربر ناشناس' : signature.user_email}
-                  </div>
-                  <div className="campaign-signature-date">
-                    {signature.signed_at ? new Date(signature.signed_at).toLocaleDateString('fa-IR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}
-                  </div>
+            <div
+              key={signature.id}
+              className="campaign-signature-item"
+            >
+              <div>
+                <div className="campaign-signature-email">
+                  {signature.is_anonymous === 'anonymous' ? 'کاربر ناشناس' : signature.user_email}
                 </div>
-                {signature.is_anonymous === 'anonymous' && (
-                  <span className="campaign-signature-anonymous">
-                    ناشناس
-                  </span>
-                )}
+                <div className="campaign-signature-date">
+                  {signature.signed_at ? new Date(signature.signed_at).toLocaleDateString('fa-IR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}
+                </div>
               </div>
+              {signature.is_anonymous === 'anonymous' && (
+                <span className="campaign-signature-anonymous">
+                  ناشناس
+                </span>
+              )}
+            </div>
             ))
           )}
         </div>

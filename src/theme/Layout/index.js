@@ -262,12 +262,12 @@ function LayoutContent(props) {
           localStorage.setItem('faculty', res.user?.faculty || '');
           localStorage.setItem('dormitory', res.user?.dormitory || '');
         } else {
-          SecureTokenManager.setToken(res.token);
-          SecureTokenManager.setRole(res.user?.role || '');
+        SecureTokenManager.setToken(res.token);
+        SecureTokenManager.setRole(res.user?.role || '');
           localStorage.setItem('auth_role', res.user?.role || '');
-          SecureTokenManager.setEmail(email);
-          localStorage.setItem('faculty', res.user?.faculty || '');
-          localStorage.setItem('dormitory', res.user?.dormitory || '');
+        SecureTokenManager.setEmail(email);
+        localStorage.setItem('faculty', res.user?.faculty || '');
+        localStorage.setItem('dormitory', res.user?.dormitory || '');
         }
         setIsLoggedIn(true);
         setUserEmail(email);

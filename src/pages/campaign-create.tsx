@@ -12,24 +12,10 @@ import persian_fa from 'react-date-object/locales/persian_fa';
 import { campaignCreatePageStyles } from '../css/campaignsStyles';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 
-const FACULTY_CHOICES = [
-  "فیزیک", "صنایع", "کامپیوتر", "برق", "عمران", "مواد", "مهندسی شیمی و نفت", "ریاضی", "هوافضا", "انرژی", "مدیریت و اقتصاد", "شیمی", "مکانیک"
-];
-const DORMITORY_CHOICES = [
-  "احمدی روشن", "طرشت ۲", "طرشت ۳"
-];
-let userRole = SecureTokenManager.getRole() || '';
-let userFaculty = '';
-let userDormitory = '';
-if (typeof window !== 'undefined') {
-  userFaculty = localStorage.getItem('faculty') || '';
-  userDormitory = localStorage.getItem('dormitory') || '';
-}
-
 export default function CampaignCreatePage() {
   const { siteConfig } = useDocusaurusContext();
   const API_BASE = siteConfig.customFields.apiUrl;
-  const [categoryChoices, setCategoryChoices] = useState<string[]>(["مسائل دانشگاهی"]);
+  const [categoryChoices, setCategoryChoices] = useState<string[]>([]);
   const [title, setTitle] = useState('');
   const [excerpt, setExcerpt] = useState('');
   const [content, setContent] = useState('');
@@ -42,6 +28,11 @@ export default function CampaignCreatePage() {
   const [error, setError] = useState('');
   const { showNotification } = useNotification();
   const authApi = useAuthApi();
+
+  // Add state for user info
+  const [userFaculty, setUserFaculty] = useState('');
+  const [userDormitory, setUserDormitory] = useState('');
+  const [userRole, setUserRole] = useState('');
 
   useEffect(() => {
     const token = SecureTokenManager.getToken();
@@ -65,6 +56,25 @@ export default function CampaignCreatePage() {
         setCategoryChoices(["مسائل دانشگاهی"]);
       });
   }, [API_BASE]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setUserFaculty(localStorage.getItem('faculty') || '');
+      setUserDormitory(localStorage.getItem('dormitory') || '');
+      setUserRole(SecureTokenManager.getRole() || '');
+    }
+  }, []);
+
+  // دسته‌بندی‌ها را فیلتر کن تا 'شورای عمومی' نمایش داده نشود
+  const filteredCategoryChoices = categoryChoices.filter(cat => cat !== 'شورای عمومی');
+
+  // مقدار اولیه category را به اولین مقدار مجاز تنظیم کن
+  useEffect(() => {
+    if (filteredCategoryChoices.length > 0 && !filteredCategoryChoices.includes(category)) {
+      setCategory(filteredCategoryChoices[0]);
+    }
+    // eslint-disable-next-line
+  }, [filteredCategoryChoices]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,7 +125,7 @@ export default function CampaignCreatePage() {
 
   return (
     <Layout>
-      <div className="campaign-create-page" style={campaignCreatePageStyles.container}>
+      <div className="campaign-create-page" style={{...campaignCreatePageStyles.container, backgroundColor: 'var(--ifm-color-primary-lightest)'}}>
         <h1>ایجاد کارزار جدید</h1>
         <form onSubmit={handleSubmit} style={campaignCreatePageStyles.form}>
           <div>
@@ -130,10 +140,20 @@ export default function CampaignCreatePage() {
             <label style={campaignCreatePageStyles.label}>متن کامل کارزار:</label>
             <RichTextEditor value={content} onChange={setContent} placeholder="متن کامل کارزار..." height="300px" />
           </div>
+          {userRole === 'simple_user' && (
+            <div style={{ marginBottom: 8, fontSize: 15, color: '#555' }}>
+              {userFaculty && userFaculty !== 'نامشخص' && (
+                <span style={{ marginLeft: 12 }}>دانشکده: <b>{userFaculty}</b></span>
+              )}
+              {userDormitory && userDormitory !== 'خوابگاهی نیستم' && (
+                <span>خوابگاه: <b>{userDormitory}</b></span>
+              )}
+            </div>
+          )}
           <div>
             <label style={campaignCreatePageStyles.label}>دسته‌بندی:</label>
-            <select value={category} onChange={e => setCategory(e.target.value)} style={campaignCreatePageStyles.select}>
-              {categoryChoices.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+            <select value={category} onChange={e => setCategory(e.target.value)} style={campaignCreatePageStyles.select} required>
+              {filteredCategoryChoices.map(cat => <option key={cat} value={cat}>{cat}</option>)}
             </select>
           </div>
           <div>
@@ -161,7 +181,7 @@ export default function CampaignCreatePage() {
           </div>
           <div>
             <label style={campaignCreatePageStyles.label}>نوع امضا:</label>
-            <div style={campaignCreatePageStyles.radioGroup}>
+            <div style={campaignCreatePageStyles.radioGroupRow}>
               <label style={campaignCreatePageStyles.radioLabel}>
                 <input
                   type="radio"

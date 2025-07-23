@@ -832,6 +832,12 @@ export const campaignCardEndedLabel = {
   fontSize: '1.1em',
 };
 
+export const radioGroupRow = {
+  display: 'flex',
+  flexDirection: 'row' as const,
+  gap: 8 as const,
+};
+
 export const campaignCreatePageStyles = {
   container: {
     maxWidth: 700,
@@ -916,6 +922,7 @@ export const campaignCreatePageStyles = {
     marginTop: 8,
     fontSize: 15,
   },
+  radioGroupRow,
 };
 
 export default styles; 

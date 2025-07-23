@@ -159,7 +159,7 @@ function QuickLinksSection() {
       icon: <FaBullhorn />,
       title: 'کارزارها',
       description: 'کارزارهای فعال و گذشته',
-      link: '/campaigns-enhanced',
+      link: '/campaigns',
       requiresAuth: true
     }
   ];

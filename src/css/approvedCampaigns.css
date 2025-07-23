@@ -88,7 +88,7 @@
   border-radius: 1em;
   font-size: 1em;
   border: 1.5px solid var(--ifm-color-primary-lightest-dublicate, #e0e7ff);
-  background: var(--ifm-background-color);
+  background-color: var(--ifm-color-primary-lightest) !important;
   min-width: 120px;
   width: auto;
   text-align: right;

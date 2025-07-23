@@ -1,3 +1,7 @@
+body {
+  padding-top: 64px !important;
+}
+
 :root {
   --ifm-color-primary: #1e40af;              /* اصلی شورا - آبی زیباتر */
   --ifm-color-primary-dark: #1e3a8a;         /* دارک‌تر شورای صنفی */
@@ -4178,6 +4182,7 @@ h1, h2, h3, h4, h5, h6, [id] {
   position: relative;
   display: flex;
   align-items: center;
+  background-color: var(--ifm-color-primary-lightest);
 }
 
 .blog-search-input {
@@ -4237,6 +4242,7 @@ h1, h2, h3, h4, h5, h6, [id] {
   display: flex;
   align-items: center;
   gap: 1rem;
+  background-color: var(--ifm-color-primary-lightest);
 }
 
 .blog-filter-toggle-btn {
@@ -4670,7 +4676,7 @@ h1, h2, h3, h4, h5, h6, [id] {
 
 .blog-enhanced-description {
   font-size: 1.2rem;
-  color: var(--ifm-font-color-secondary);
+  color: var(--ifm-color-primary-lightest-dublicate);
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.6;
@@ -4975,14 +4981,6 @@ h1, h2, h3, h4, h5, h6, [id] {
   }
 }
 
-/* Blog Management Page Styles - Default with Dark/Light Mode Support */
-.blog-management-page {
-  padding: 2rem 0;
-  min-height: 100vh;
-  margin-top: 60px;
-  background: var(--ifm-background-surface-color);
-  color: var(--ifm-font-color-base);
-}
 
 .blog-management-header {
   display: flex;
@@ -5696,10 +5694,6 @@ h1, h2, h3, h4, h5, h6, [id] {
 }
 
 @media (max-width: 480px) {
-  .blog-management-page {
-    padding: 1rem 0;
-    margin-top: 50px; /* Smaller margin for mobile */
-  }
   
   .blog-post-detail-page {
     padding: 1rem 0;
@@ -6092,8 +6086,8 @@ h1, h2, h3, h4, h5, h6, [id] {
   padding: 0.35em 1em;
   border-radius: 1em;
   font-size: 1em;
-  border: 1.5px solid var(--ifm-color-primary-lightest, #e0e7ff);
-  background: var(--ifm-background-color, #fff);
+  border: 1.5px solid var(--ifm-color-primary-lor ightest, #e0e7ff);
+  background: var(--ifm-color-primary-lightest);
   min-width: 120px;
   width: auto;
   text-align: right;
@@ -6141,4 +6135,24 @@ h1, h2, h3, h4, h5, h6, [id] {
   height: 18px;
   margin-left: 4px;
   background: var(--ifm-background-color, #fff);
+}
+
+/* Breadcrumb Styles */
+.breadcrumbs__link {
+  color: var(--ifm-font-color-base, #222) !important;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.breadcrumbs__item {
+  color: var(--ifm-font-color-secondary, #6b7280);
+}
+
+/* Light mode breadcrumb styles */
+[data-theme='light'] .breadcrumbs__link {
+  color: var(--ifm-color-primary-lightest) !important;
+}
+
+[data-theme='light'] .breadcrumbs__item--active .breadcrumbs__link {
+  color: var(--ifm-color-primary-lightest) !important;
 }

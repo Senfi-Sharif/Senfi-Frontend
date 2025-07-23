@@ -109,7 +109,6 @@ export default function BlogEnhanced(): React.JSX.Element {
       title="بلاگ"
       description="آخرین اخبار، اطلاعیه‌ها و به‌روزرسانی‌های شورای صنفی دانشجویان دانشگاه صنعتی شریف"
     >
-      <div className="blog-enhanced-page">
         <div className="container">
           <div className="blog-enhanced-header">
             <div className="blog-enhanced-header-content">
@@ -276,7 +275,6 @@ export default function BlogEnhanced(): React.JSX.Element {
             </div>
           </div>
         </div>
-      </div>
     </Layout>
   );
 } 

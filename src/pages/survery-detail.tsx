@@ -23,9 +23,6 @@ const CampaignDetailPage = () => {
   const { siteConfig } = useDocusaurusContext();
   const API_BASE = siteConfig.customFields.apiUrl;
   const isAuthenticated = typeof window !== 'undefined' && !!SecureTokenManager.getToken();
-  const [userFaculty, setUserFaculty] = useState('');
-  const [userDormitory, setUserDormitory] = useState('');
-  const [userRole, setUserRole] = useState('');
 
   useEffect(() => {
     if (!id) {
@@ -53,14 +50,6 @@ const CampaignDetailPage = () => {
         setLoading(false);
       });
   }, [id, API_BASE]);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setUserFaculty(localStorage.getItem('faculty') || '');
-      setUserDormitory(localStorage.getItem('dormitory') || '');
-      setUserRole(SecureTokenManager.getRole() || '');
-    }
-  }, []);
 
   const formatDate = (dateString: string) => {
     if (!dateString) return '';
@@ -143,12 +132,6 @@ const CampaignDetailPage = () => {
     <Layout title={campaign.title} description={campaign.excerpt}>
       <div className="blog-post-detail-page">
         <div className="container">
-          {campaign.author_faculty && campaign.author_faculty !== 'نامشخص' && (
-            <span style={{ marginLeft: 12 }}>دانشکده: <b>{campaign.author_faculty}</b></span>
-          )}
-          {campaign.author_dormitory && campaign.author_dormitory !== 'خوابگاهی نیستم' && (
-            <span>خوابگاه: <b>{campaign.author_dormitory}</b></span>
-          )}
           <div className="blog-post-header">
             <button onClick={handleBack} className="back-button">
               <FaArrowRight /> بازگشت به کارزارها

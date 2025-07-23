@@ -42,6 +42,11 @@ export default function CampaignsEnhanced(): React.JSX.Element {
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesError, setCategoriesError] = useState<string | null>(null);
 
+  // Add state for user info
+  const [userFaculty, setUserFaculty] = useState('');
+  const [userDormitory, setUserDormitory] = useState('');
+  const [userRole, setUserRole] = useState('');
+
   useEffect(() => {
     const token = SecureTokenManager.getToken();
     const email = SecureTokenManager.getEmail();
@@ -52,6 +57,14 @@ export default function CampaignsEnhanced(): React.JSX.Element {
     } else {
       setIsAuthenticated(false);
       setUser(null);
+          }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setUserFaculty(localStorage.getItem('faculty') || '');
+      setUserDormitory(localStorage.getItem('dormitory') || '');
+      setUserRole(SecureTokenManager.getRole() || '');
     }
   }, []);
 
@@ -92,15 +105,17 @@ export default function CampaignsEnhanced(): React.JSX.Element {
   const [labelDropdownOpen, setLabelDropdownOpen] = useState(false);
   const labelDropdownRef = React.useRef<HTMLDivElement>(null);
 
+  // لیبل‌ها را فیلتر کن تا 'شورای عمومی' نمایش داده نشود
+  const filteredLabelChoices = labelChoices.filter(label => label !== 'شورای عمومی');
   // مقداردهی اولیه labelFilter فقط یک بار بعد از دریافت labelChoices
   useEffect(() => {
-    if (labelChoices.length > 0 && labelFilter.length === 0) {
-      setLabelFilter(labelChoices);
+    if (filteredLabelChoices.length > 0 && labelFilter.length === 0) {
+      setLabelFilter(filteredLabelChoices);
     }
     // eslint-disable-next-line
-  }, [labelChoices]);
+  }, [filteredLabelChoices]);
 
-  const labelSummary = labelFilter.length === labelChoices.length
+  const labelSummary = labelFilter.length === filteredLabelChoices.length
     ? 'همه لیبل‌ها'
     : labelFilter.length === 0
       ? 'هیچ لیبلی انتخاب نشده'
@@ -147,7 +162,7 @@ export default function CampaignsEnhanced(): React.JSX.Element {
   };
 
   // ALL_CATEGORIES فقط برابر labelChoices باشد
-  const ALL_CATEGORIES = labelChoices;
+  const ALL_CATEGORIES = filteredLabelChoices;
 
   // منطق فیلتر: اگر هیچ لیبلی انتخاب نشده بود، هیچ کارزاری نمایش داده نشود
   const filteredCampaigns = useMemo(() => {
@@ -157,7 +172,7 @@ export default function CampaignsEnhanced(): React.JSX.Element {
     }
     if (labelFilter.length < ALL_CATEGORIES.length) {
       result = result.filter((c: any) => labelFilter.includes(c.category));
-    }
+          }
     // فیلتر امضا شده/نشده
     if (!showSigned || !showUnsigned) {
       result = result.filter((c: any) => {
@@ -183,8 +198,8 @@ export default function CampaignsEnhanced(): React.JSX.Element {
       result = result.filter((c: any) =>
         (c.title && c.title.toLowerCase().includes(s)) ||
         (c.excerpt && c.excerpt.toLowerCase().includes(s))
-      );
-    }
+  );
+}
     // سورت
     let sorted = [...result];
     if (sortType === 'signature_count') {
@@ -221,7 +236,7 @@ export default function CampaignsEnhanced(): React.JSX.Element {
   const handleClearFilters = () => {
     setSearchQuery('');
     setSelectedCategory('');
-    setLabelFilter(labelChoices); // همه لیبل‌ها انتخاب شوند
+    setLabelFilter(filteredLabelChoices); // همه لیبل‌ها انتخاب شوند
   };
   const handleCategoryClick = (category: string) => setSelectedCategory(category);
 
@@ -257,7 +272,6 @@ export default function CampaignsEnhanced(): React.JSX.Element {
       title="کارزارها"
       description="لیست کارزارهای فعال و گذشته شورای صنفی دانشجویان دانشگاه صنعتی شریف"
     >
-      <div className="blog-enhanced-page">
         <div className="container">
           <div className="blog-enhanced-header">
             <div className="blog-enhanced-header-content">
@@ -268,7 +282,7 @@ export default function CampaignsEnhanced(): React.JSX.Element {
                 </h1>
                 <p className="blog-enhanced-description">
                   لیست کارزارهای فعال و گذشته شورای صنفی دانشجویان دانشگاه صنعتی شریف
-                </p>
+            </p>
               </div>
             </div>
           </div>
@@ -283,6 +297,16 @@ export default function CampaignsEnhanced(): React.JSX.Element {
                 <FaPlus className="blog-enhanced-create-icon" />
                 ایجاد کارزار جدید
               </button>
+            </div>
+          )}
+          {userRole === 'simple_user' && (
+            <div style={{ margin: '12px 0', fontSize: 15, color: '#555' }}>
+              {userFaculty && userFaculty !== 'نامشخص' && (
+                <span style={{ marginLeft: 12 }}>دانشکده: <b>{userFaculty}</b></span>
+              )}
+              {userDormitory && userDormitory !== 'خوابگاهی نیستم' && (
+                <span>خوابگاه: <b>{userDormitory}</b></span>
+              )}
             </div>
           )}
 
@@ -449,6 +473,12 @@ export default function CampaignsEnhanced(): React.JSX.Element {
                               {c.title}
                             </a>
                           </h2>
+                          {c.author_faculty && c.author_faculty !== 'نامشخص' && (
+                            <span style={{ marginLeft: 12, fontSize: 14, color: '#555' }}>دانشکده: <b>{c.author_faculty}</b></span>
+                          )}
+                          {c.author_dormitory && c.author_dormitory !== 'خوابگاهی نیستم' && (
+                            <span style={{ fontSize: 14, color: '#555' }}>خوابگاه: <b>{c.author_dormitory}</b></span>
+                          )}
                           <span className="blog-enhanced-post-category" style={{ marginRight: 8, fontWeight: 500, color: '#1e40af', display: 'inline-block' }}>
                             <FaTag style={{ marginLeft: 4, opacity: 0.7 }} />
                             {c.category}
@@ -548,7 +578,6 @@ export default function CampaignsEnhanced(): React.JSX.Element {
             </div>
           </div>
         </div>
-      </div>
     </Layout>
   );
 } 

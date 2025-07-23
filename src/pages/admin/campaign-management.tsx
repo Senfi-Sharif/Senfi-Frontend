@@ -77,18 +77,20 @@ export default function CampaignManagement(): React.JSX.Element {
   }, []);
 
   useEffect(() => {
-    setCategoriesLoading(true);
-    fetch(`${API_BASE}/api/campaigns/categories`)
+    const token = SecureTokenManager.getToken();
+    fetch(`${API_BASE}/api/campaigns/categories`, {
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    })
       .then(res => res.json())
       .then(data => {
         setCategoryChoices(data.categories || []);
         setCategoriesLoading(false);
       })
-      .catch(err => {
-        setCategoriesError('خطا در دریافت دسته‌بندی‌ها');
+      .catch(() => {
+        setCategoryChoices(["مسائل دانشگاهی"]);
         setCategoriesLoading(false);
       });
-  }, []);
+  }, [API_BASE]);
 
   const checkUserRole = async (token: string) => {
     try {
@@ -238,14 +240,12 @@ export default function CampaignManagement(): React.JSX.Element {
   if (!userToken) {
     return (
       <Layout title="مدیریت کارزارها" description="مدیریت کارزارها">
-        <div className="blog-management-page">
           <div className="container">
             <div className="auth-required">
               <h2>نیاز به ورود</h2>
               <p>لطفاً ابتدا وارد شوید تا بتوانید کارزارها را مدیریت کنید.</p>
             </div>
           </div>
-        </div>
       </Layout>
     );
   }
@@ -253,37 +253,21 @@ export default function CampaignManagement(): React.JSX.Element {
   if (!isAdmin) {
     return (
       <Layout title="مدیریت کارزارها" description="مدیریت کارزارها">
-        <div className="blog-management-page">
           <div className="container">
             <div className="access-denied">
               <h2>دسترسی محدود</h2>
               <p>فقط ادمین یا عضو دانشکده/خوابگاه می‌تواند کارزارها را مدیریت کند.</p>
             </div>
           </div>
-        </div>
       </Layout>
     );
   }
 
   return (
     <Layout title="مدیریت کارزارها" description="مدیریت کارزارها">
-      <div className="blog-management-page">
         <div className="container">
           <div className="blog-management-header">
             <h1>مدیریت کارزارها</h1>
-            <button 
-              onClick={() => {
-                setShowForm(true);
-                setEditingCampaign(null);
-                setFormData({
-                  title: '', slug: '', content: '', excerpt: '', tags: '', category: 'عمومی', image_url: '', deadline: null, anonymous_allowed: true
-                });
-              }}
-              className="add-post-button"
-            >
-              <FaPlus />
-              افزودن کارزار جدید
-            </button>
           </div>
 
           {error && (
@@ -360,15 +344,7 @@ export default function CampaignManagement(): React.JSX.Element {
                         value={formData.category}
                         onChange={handleInputChange}
                       >
-                        {categoriesLoading ? (
-                          <option>در حال بارگذاری...</option>
-                        ) : categoriesError ? (
-                          <option>{categoriesError}</option>
-                        ) : (
-                          categoryChoices.map(cat => (
-                            <option key={cat} value={cat}>{cat}</option>
-                          ))
-                        )}
+                        {categoryChoices.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                       </select>
                     </div>
                     <div className="form-group">
@@ -517,7 +493,6 @@ export default function CampaignManagement(): React.JSX.Element {
             </div>
           )}
         </div>
-      </div>
     </Layout>
   );
 } 

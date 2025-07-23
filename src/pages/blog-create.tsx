@@ -165,7 +165,6 @@ export default function BlogCreate(): React.JSX.Element {
       title="ایجاد مطلب جدید"
       description="ایجاد مطلب جدید برای بلاگ شورای صنفی"
     >
-      <div className="blog-create-page">
         <div className="container">
           <div className="blog-create-header">
             <h1 className="blog-create-title">
@@ -326,7 +325,6 @@ export default function BlogCreate(): React.JSX.Element {
             </form>
           </div>
         </div>
-      </div>
     </Layout>
   );
 } 

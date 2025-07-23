@@ -610,13 +610,6 @@
 }
 
 /* ===== BLOG MANAGEMENT PAGE ===== */
-.blog-management-page {
-  padding: 2rem 0;
-  min-height: 100vh;
-  margin-top: 60px;
-  background: var(--ifm-background-surface-color);
-  color: var(--ifm-font-color-base);
-}
 
 .blog-management-header {
   display: flex;
@@ -1009,8 +1002,7 @@
 
 /* ===== DARK MODE SPECIFIC ADJUSTMENTS ===== */
 [data-theme='dark'] .blog-enhanced-page,
-[data-theme='dark'] .blog-post-detail-page,
-[data-theme='dark'] .blog-management-page {
+[data-theme='dark'] .blog-post-detail-page {
   background: var(--ifm-background-surface-color);
 }
 
@@ -1090,8 +1082,7 @@
 
 /* ===== LIGHT MODE SPECIFIC ADJUSTMENTS ===== */
 [data-theme='light'] .blog-enhanced-page,
-[data-theme='light'] .blog-post-detail-page,
-[data-theme='light'] .blog-management-page {
+[data-theme='light'] .blog-post-detail-page {
   background: var(--ifm-background-surface-color);
 }
 
@@ -1278,10 +1269,6 @@
 }
 
 @media (max-width: 480px) {
-  .blog-management-page {
-    padding: 1rem 0;
-    margin-top: 50px;
-  }
   
   .blog-post-detail-page {
     padding: 1rem 0;

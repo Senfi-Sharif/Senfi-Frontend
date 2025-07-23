@@ -116,7 +116,7 @@ export default function Header({
 
   return (
     <>
-      <header className="header-container">
+      <header className="header-container" style={{ marginBottom: 64, zIndex: 100 }}>
         {/* لوگو و عنوان */}
         <a href="/" className="header-logo-link">
           <div className="header-logo-section">
@@ -132,10 +132,14 @@ export default function Header({
         <nav className="header-nav-section">
           <a href="/tree" className="header-nav-link">شجره‌نامه</a>
           <a href="/publications" className="header-nav-link">نشریه شورا</a>
-          <a href="/blog-enhanced" className="header-nav-link">اخبار و اطلاعیه‌ها</a>
-          <a href="/campaigns-enhanced" className="header-nav-link">کارزارها</a>
-          {!authLoading && (userRole === 'superadmin' || userRole === 'center_member' || userRole === 'head' || userRole === 'center_member' || userRole === 'dorm_member' || userRole === 'faculty_member') && (
+          <a href="/blog" className="header-nav-link">اخبار و اطلاعیه‌ها</a>
+            <a href="/campaigns" className="header-nav-link">کارزارها</a>
+          <a href="/polls" className="header-nav-link">نظرسنجی‌ها</a>
+          {!authLoading && userRole && userRole !== 'simple_user' && (
             <a href="/admin/campaign-management" className="header-nav-link">مدیریت کارزارها</a>
+          )}
+          {!authLoading && userRole && userRole !== 'simple_user' && (
+            <a href="/admin/poll-management" className="header-nav-link">مدیریت نظرسنجی‌ها</a>
           )}
           {!authLoading && (userRole === 'superadmin' || userRole === 'center_member' || userRole === 'head') && (
             <a href="/admin/blog-management" className="header-nav-link">مدیریت بلاگ</a>
@@ -225,10 +229,11 @@ export default function Header({
             <button className="close-btn" onClick={closeMobileMenu} aria-label="بستن منو"><FaTimes /></button>
             <a href="/tree">شجره‌نامه</a>
             <a href="/publications">نشریه شورا</a>
-            <a href="/blog-enhanced">اخبار و اطلاعیه‌ها</a>
-            <a href="/campaigns-enhanced">کارزارها</a>
-            {!authLoading && isAdmin && <a href="/admin/campaign-management">مدیریت کارزارها</a>}
-            {!authLoading && (userRole === 'dorm_member' || userRole === 'faculty_member') && <a href="/admin/campaign-management">مدیریت کارزارها</a>}
+            <a href="/blog">اخبار و اطلاعیه‌ها</a>
+            <a href="/campaigns">کارزارها</a>
+            <a href="/polls">نظرسنجی‌ها</a>
+            {!authLoading && userRole && userRole !== 'simple_user' && <a href="/admin/campaign-management">مدیریت کارزارها</a>}
+            {!authLoading && userRole && userRole !== 'simple_user' && <a href="/admin/poll-management">مدیریت نظرسنجی‌ها</a>}
             {!authLoading && (userRole === 'superadmin' || userRole === 'center_member' || userRole === 'head') && <a href="/admin/blog-management">مدیریت بلاگ</a>}
             <a href="/docs">اسناد و راهنما</a>
             {!authLoading && isLoggedIn ? (

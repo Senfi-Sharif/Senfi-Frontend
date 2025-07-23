@@ -166,7 +166,7 @@ export class SecureTokenManager {
       if (useLocalStorage) {
         localStorage.setItem(this.TOKEN_KEY, token);
       } else {
-        sessionStorage.setItem(this.TOKEN_KEY, token);
+      sessionStorage.setItem(this.TOKEN_KEY, token);
       }
     }
   }
@@ -191,7 +191,7 @@ export class SecureTokenManager {
       if (useLocalStorage) {
         localStorage.setItem(this.EMAIL_KEY, email);
       } else {
-        sessionStorage.setItem(this.EMAIL_KEY, email);
+      sessionStorage.setItem(this.EMAIL_KEY, email);
       }
     }
   }
@@ -216,7 +216,7 @@ export class SecureTokenManager {
       if (useLocalStorage) {
         localStorage.setItem(this.ROLE_KEY, role);
       } else {
-        sessionStorage.setItem(this.ROLE_KEY, role);
+      sessionStorage.setItem(this.ROLE_KEY, role);
       }
     }
   }
