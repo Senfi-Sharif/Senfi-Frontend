@@ -4,6 +4,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaEyeSlash, FaSave, FaTimes } from 'react-icons/fa';
 import RichTextEditor from '../../components/RichTextEditor';
 import { SecureTokenManager } from '../../utils/security';
+import AdminSidebar from '../../components/AdminSidebar';
 
 interface BlogPost {
   id: number;
@@ -32,7 +33,7 @@ interface BlogFormData {
   reading_time: number;
 }
 
-export default function BlogManagement(): React.JSX.Element {
+export default function AdminBlogManagementPage(): React.JSX.Element {
   const { siteConfig } = useDocusaurusContext();
   const API_BASE = siteConfig.customFields.apiUrl;
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -54,6 +55,7 @@ export default function BlogManagement(): React.JSX.Element {
   // Check if user is super admin
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [userToken, setUserToken] = useState<string | null>(null);
+  const [categoryChoices, setCategoryChoices] = useState<string[]>([]);
 
   useEffect(() => {
     // Check authentication
@@ -63,6 +65,20 @@ export default function BlogManagement(): React.JSX.Element {
       checkUserRole(token);
     }
   }, []);
+
+  useEffect(() => {
+    const token = SecureTokenManager.getToken();
+    fetch(`${API_BASE}/api/campaigns/categories`, {
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    })
+      .then(res => res.json())
+      .then(data => {
+        setCategoryChoices(data.categories || []);
+      })
+      .catch(() => {
+        setCategoryChoices(["مسائل دانشگاهی"]);
+      });
+  }, [API_BASE]);
 
   const checkUserRole = async (token: string) => {
     try {
@@ -318,6 +334,8 @@ export default function BlogManagement(): React.JSX.Element {
     return date.toLocaleDateString('fa-IR');
   };
 
+  // اگر جایی دسته‌بندی‌ها را فیلتر می‌کردی (مثلاً categoryChoices.filter(...))، حذف کن و فقط از categoryChoices استفاده کن
+
   if (!userToken) {
     return (
       <Layout title="مدیریت بلاگ" description="مدیریت مطالب بلاگ">
@@ -344,30 +362,13 @@ export default function BlogManagement(): React.JSX.Element {
   }
 
   return (
+    <div style={{ display: 'flex', minHeight: '100vh' }}>
+      <AdminSidebar current="blog" />
+      <div style={{ flex: 1 }}>
     <Layout title="مدیریت بلاگ" description="مدیریت مطالب بلاگ">
         <div className="container">
           <div className="blog-management-header">
             <h1>مدیریت مطالب بلاگ</h1>
-            <button 
-              onClick={() => {
-                setShowForm(true);
-                setEditingPost(null);
-                setFormData({
-                  title: '',
-                  slug: '',
-                  content: '',
-                  excerpt: '',
-                  tags: '',
-                  category: 'عمومی',
-                  image_url: '',
-                  reading_time: 5
-                });
-              }}
-              className="add-post-button"
-            >
-              <FaPlus />
-              افزودن مطلب جدید
-            </button>
           </div>
 
           {error && (
@@ -443,11 +444,12 @@ export default function BlogManagement(): React.JSX.Element {
                         name="category"
                         value={formData.category}
                         onChange={handleInputChange}
-                      >
-                        <option value="عمومی">عمومی</option>
-                        <option value="اخبار">اخبار</option>
-                        <option value="اطلاعیه">اطلاعیه</option>
-                        <option value="مقالات">مقالات</option>
+                            className="form-select"
+                            required
+                          >
+                            {categoryChoices.map(cat => (
+                              <option key={cat} value={cat}>{cat}</option>
+                            ))}
                       </select>
                     </div>
 
@@ -564,5 +566,7 @@ export default function BlogManagement(): React.JSX.Element {
           )}
         </div>
     </Layout>
+      </div>
+    </div>
   );
 } 

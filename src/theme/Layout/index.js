@@ -26,6 +26,7 @@ function LayoutContent(props) {
   const [userRole, setUserRole] = useState('');
   const [authLoading, setAuthLoading] = useState(true); // Add loading state for auth check
   const [rememberMe, setRememberMe] = useState(false); // اضافه کردن state
+  const [expiringWarned, setExpiringWarned] = useState(false);
 
   // لیست دانشکده‌ها و خوابگاه‌ها
   const FACULTY_CHOICES = [
@@ -103,6 +104,7 @@ function LayoutContent(props) {
   // تایمر بررسی اعتبار توکن (هر 2 دقیقه)
   useEffect(() => {
     if (!isLoggedIn) {
+      setExpiringWarned(false); // Reset warning flag on logout
       return; // اگر لاگین نیست، نیازی به بررسی نیست
     }
 
@@ -119,6 +121,7 @@ function LayoutContent(props) {
         setIsLoggedIn(false);
         setUserEmail('');
         setUserRole('');
+        setExpiringWarned(false); // Reset warning flag on logout
         showNotification('جلسه شما منقضی شده است. شما به صفحه اصلی هدایت می‌شوید.', 'error');
         // هدایت به صفحه اصلی
         if (typeof window !== 'undefined') {
@@ -129,7 +132,12 @@ function LayoutContent(props) {
 
       // بررسی نزدیک بودن به انقضا (30 دقیقه قبل)
       if (authApi.isTokenExpiringSoon && authApi.isTokenExpiringSoon(token, 30)) {
-        showNotification('جلسه شما به زودی منقضی می‌شود. لطفاً دوباره وارد شوید.', 'warning');
+        if (!expiringWarned) {
+          showNotification('جلسه شما به زودی منقضی می‌شود. لطفاً دوباره وارد شوید.', 'warning');
+          setExpiringWarned(true);
+        }
+      } else {
+        setExpiringWarned(false); // اگر توکن جدید گرفت، اجازه بده دوباره هشدار بیاد
       }
     };
 
@@ -315,11 +323,8 @@ function LayoutContent(props) {
     setIsLoggedIn(false);
     setUserEmail('');
     setUserRole('');
-    
-    // انتقال به صفحه اصلی
-    if (typeof window !== 'undefined') {
-      window.location.href = '/';
-    }
+    window.dispatchEvent(new CustomEvent('auth:logout'));
+    window.location.reload(); // ری‌لود کامل برای sync همه contextها
   };
 
 

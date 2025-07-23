@@ -9,6 +9,7 @@ import TimePicker from 'react-multi-date-picker/plugins/time_picker';
 import moment from 'moment';
 import persian from 'react-date-object/calendars/persian';
 import persian_fa from 'react-date-object/locales/persian_fa';
+import AdminSidebar from '../../components/AdminSidebar';
 
 export default function PollManagementPage() {
   const { siteConfig } = useDocusaurusContext();
@@ -227,6 +228,9 @@ export default function PollManagementPage() {
   }
 
   return (
+    <div style={{ display: 'flex', minHeight: '100vh' }}>
+      <AdminSidebar current="poll" />
+      <div style={{ flex: 1 }}>
     <Layout>
         <div className="container">
           <div className="blog-management-header">
@@ -451,5 +455,7 @@ export default function PollManagementPage() {
         )}
       </div>
     </Layout>
+      </div>
+    </div>
   );
 } 

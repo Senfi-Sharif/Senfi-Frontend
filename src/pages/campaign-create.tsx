@@ -65,16 +65,14 @@ export default function CampaignCreatePage() {
     }
   }, []);
 
-  // دسته‌بندی‌ها را فیلتر کن تا 'شورای عمومی' نمایش داده نشود
-  const filteredCategoryChoices = categoryChoices.filter(cat => cat !== 'شورای عمومی');
-
+  // اگر جایی دسته‌بندی‌ها را فیلتر می‌کردی (مثلاً categoryChoices.filter(...))، حذف کن و فقط از categoryChoices استفاده کن
   // مقدار اولیه category را به اولین مقدار مجاز تنظیم کن
   useEffect(() => {
-    if (filteredCategoryChoices.length > 0 && !filteredCategoryChoices.includes(category)) {
-      setCategory(filteredCategoryChoices[0]);
+    if (categoryChoices.length > 0 && !categoryChoices.includes(category)) {
+      setCategory(categoryChoices[0]);
     }
     // eslint-disable-next-line
-  }, [filteredCategoryChoices]);
+  }, [categoryChoices]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -153,7 +151,7 @@ export default function CampaignCreatePage() {
           <div>
             <label style={campaignCreatePageStyles.label}>دسته‌بندی:</label>
             <select value={category} onChange={e => setCategory(e.target.value)} style={campaignCreatePageStyles.select} required>
-              {filteredCategoryChoices.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+              {categoryChoices.map(cat => <option key={cat} value={cat}>{cat}</option>)}
             </select>
           </div>
           <div>
@@ -179,28 +177,27 @@ export default function CampaignCreatePage() {
               portal
             />
           </div>
-          <div>
+          <div className="column-flex">
             <label style={campaignCreatePageStyles.label}>نوع امضا:</label>
-            <div style={campaignCreatePageStyles.radioGroupRow}>
+            {/* Radio group for anonymous/public */}
               <label style={campaignCreatePageStyles.radioLabel}>
                 <input
                   type="radio"
-                  name="anonymous"
-                  checked={!anonymousAllowed}
-                  onChange={() => setAnonymousAllowed(false)}
+                name="anonymousAllowed"
+                checked={anonymousAllowed}
+                onChange={() => setAnonymousAllowed(true)}
                 />
-                شناس (امضاکنندگان نمایش داده می‌شوند)
+              ناشناس (نام شما نمایش داده نمی‌شود)
               </label>
               <label style={campaignCreatePageStyles.radioLabel}>
                 <input
                   type="radio"
-                  name="anonymous"
-                  checked={anonymousAllowed}
-                  onChange={() => setAnonymousAllowed(true)}
+                name="anonymousAllowed"
+                checked={!anonymousAllowed}
+                onChange={() => setAnonymousAllowed(false)}
                 />
-                ناشناس (فقط تعداد امضاها نمایش داده می‌شود)
+              عمومی (نام شما نمایش داده می‌شود)
               </label>
-            </div>
           </div>
           <button type="submit" disabled={loading} style={campaignCreatePageStyles.button}>
             {loading ? 'در حال ارسال...' : 'ثبت کارزار'}

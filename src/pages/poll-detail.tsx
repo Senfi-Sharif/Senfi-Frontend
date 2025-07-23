@@ -342,20 +342,20 @@ export default function PollDetailPage() {
           </div>
         ) : (
           // اگر هنوز رأی نداده و ددلاین نگذشته، فرم رأی‌گیری را نمایش بده
-          <div>
+        <div>
             <h3 style={{ margin: '18px 0 10px 0', color: 'var(--ifm-font-color-base, #fff)' }}>گزینه‌ها:</h3>
-            {poll.options.map((opt: any) => (
+          {poll.options.map((opt: any) => (
               <div key={opt.id} style={{ marginBottom: 10 }}>
                 <label style={{ fontSize: 16, cursor: canVote ? 'pointer' : 'default', color: 'var(--ifm-font-color-base, #fff)' }}>
-                  <input
-                    type={poll.is_multiple_choice ? 'checkbox' : 'radio'}
-                    name="poll-option"
-                    value={opt.id}
-                    checked={selectedOptions.includes(opt.id)}
+                <input
+                  type={poll.is_multiple_choice ? 'checkbox' : 'radio'}
+                  name="poll-option"
+                  value={opt.id}
+                  checked={selectedOptions.includes(opt.id)}
                     disabled={!canVote || (poll.is_multiple_choice && !selectedOptions.includes(opt.id) && !canSelectMore)}
-                    onChange={e => {
+                  onChange={e => {
                       setWarning('');
-                      if (poll.is_multiple_choice) {
+                    if (poll.is_multiple_choice) {
                         if (e.target.checked) {
                           if (maxChoices && selectedOptions.length >= maxChoices) {
                             setWarning(`حداکثر ${maxChoices} گزینه می‌توانید انتخاب کنید.`);
@@ -365,15 +365,15 @@ export default function PollDetailPage() {
                         } else {
                           setSelectedOptions(sel => sel.filter(x => x !== opt.id));
                         }
-                      } else {
-                        setSelectedOptions([opt.id]);
-                      }
-                    }}
-                  />
-                  {opt.text}
-                </label>
-              </div>
-            ))}
+                    } else {
+                      setSelectedOptions([opt.id]);
+                    }
+                  }}
+                />
+                {opt.text}
+              </label>
+            </div>
+          ))}
             {warning && <div style={{ color: 'var(--ifm-color-danger, #ff5252)', margin: '8px 0' }}>{warning}</div>}
             {canVote && !poll.has_voted && <button onClick={handleVote} disabled={voting} style={{ marginTop: 12, padding: '8px 28px', fontSize: 16, borderRadius: 8, background: 'var(--ifm-color-primary, #1976d2)', color: '#fff', border: 'none', cursor: 'pointer', transition: 'background 0.2s' }}>{voting ? 'در حال ارسال...' : 'ثبت رأی'}</button>}
           </div>

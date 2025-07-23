@@ -14,15 +14,6 @@ interface BlogFormData {
   image_url: string;
 }
 
-const CATEGORIES = [
-  'اخبار',
-  'مقالات', 
-  'آموزش',
-  'گزارش',
-  'مصاحبه',
-  'سایر'
-];
-
 export default function BlogCreate(): React.JSX.Element {
   const { siteConfig } = useDocusaurusContext();
   const API_BASE = siteConfig.customFields.apiUrl;
@@ -41,6 +32,7 @@ export default function BlogCreate(): React.JSX.Element {
   const [success, setSuccess] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [categoryChoices, setCategoryChoices] = useState<string[]>([]);
 
   // Check authentication on component mount
   useEffect(() => {
@@ -64,6 +56,29 @@ export default function BlogCreate(): React.JSX.Element {
       window.location.href = '/';
     }
   }, []);
+
+  useEffect(() => {
+    const token = SecureTokenManager.getToken();
+    fetch(`${API_BASE}/api/campaigns/categories`, {
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log('Fetched blog categories:', data.categories);
+        setCategoryChoices(data.categories || []);
+      })
+      .catch(() => {
+        setCategoryChoices(["مسائل دانشگاهی"]);
+      });
+  }, [API_BASE]);
+
+  // مقدار اولیه category را به اولین مقدار مجاز تنظیم کن
+  useEffect(() => {
+    if (categoryChoices.length > 0 && !categoryChoices.includes(formData.category)) {
+      setFormData(prev => ({ ...prev, category: categoryChoices[0] }));
+    }
+    // eslint-disable-next-line
+  }, [categoryChoices]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -146,6 +161,8 @@ export default function BlogCreate(): React.JSX.Element {
     window.location.href = '/blog-enhanced';
   };
 
+  // دسته‌بندی‌ها را فیلتر نکن، فقط از categoryChoices استفاده کن
+
   if (!isAuthenticated) {
     return (
       <Layout title="ایجاد مطلب جدید">
@@ -221,10 +238,8 @@ export default function BlogCreate(): React.JSX.Element {
                   className="form-select"
                   required
                 >
-                  {CATEGORIES.map(category => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
+                  {categoryChoices.map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
                   ))}
                 </select>
               </div>

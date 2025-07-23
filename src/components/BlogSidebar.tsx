@@ -16,13 +16,15 @@ interface BlogSidebarProps {
   categories: { name: string; count: number }[];
   onCategoryClick: (category: string) => void;
   selectedCategory?: string;
+  statsTitle?: string; // NEW PROP
 }
 
 export default function BlogSidebar({ 
   recentPosts, 
   categories, 
   onCategoryClick, 
-  selectedCategory 
+  selectedCategory,
+  statsTitle = 'آمار بلاگ', // default
 }: BlogSidebarProps) {
   const formatDate = (dateString: string) => {
     if (!dateString) return '';
@@ -104,9 +106,7 @@ export default function BlogSidebar({
 
       {/* Blog Stats */}
       <div className="blog-sidebar-section">
-        <h3 className="blog-sidebar-title">
-          آمار وبلاگ
-        </h3>
+        <h3 className="blog-sidebar-title">{statsTitle}</h3>
         <div className="blog-sidebar-stats">
           <div className="blog-sidebar-stat">
             <span className="blog-sidebar-stat-label">کل مطالب:</span>

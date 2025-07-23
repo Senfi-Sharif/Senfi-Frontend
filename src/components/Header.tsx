@@ -116,7 +116,7 @@ export default function Header({
 
   return (
     <>
-      <header className="header-container" style={{ marginBottom: 64, zIndex: 100 }}>
+      <header className="header-container">
         {/* لوگو و عنوان */}
         <a href="/" className="header-logo-link">
           <div className="header-logo-section">
@@ -135,14 +135,8 @@ export default function Header({
           <a href="/blog" className="header-nav-link">اخبار و اطلاعیه‌ها</a>
             <a href="/campaigns" className="header-nav-link">کارزارها</a>
           <a href="/polls" className="header-nav-link">نظرسنجی‌ها</a>
-          {!authLoading && userRole && userRole !== 'simple_user' && (
-            <a href="/admin/campaign-management" className="header-nav-link">مدیریت کارزارها</a>
-          )}
-          {!authLoading && userRole && userRole !== 'simple_user' && (
-            <a href="/admin/poll-management" className="header-nav-link">مدیریت نظرسنجی‌ها</a>
-          )}
-          {!authLoading && (userRole === 'superadmin' || userRole === 'center_member' || userRole === 'head') && (
-            <a href="/admin/blog-management" className="header-nav-link">مدیریت بلاگ</a>
+          {!authLoading && isLoggedIn && (userRole === 'superadmin' || userRole === 'center_member' || userRole === 'head') && (
+            <a href="/admin/blog-management" className="header-nav-link">پنل مدیریت</a>
           )}
           <a href="/docs" className="header-nav-link">اسناد و راهنما</a>
         </nav>
@@ -232,9 +226,7 @@ export default function Header({
             <a href="/blog">اخبار و اطلاعیه‌ها</a>
             <a href="/campaigns">کارزارها</a>
             <a href="/polls">نظرسنجی‌ها</a>
-            {!authLoading && userRole && userRole !== 'simple_user' && <a href="/admin/campaign-management">مدیریت کارزارها</a>}
-            {!authLoading && userRole && userRole !== 'simple_user' && <a href="/admin/poll-management">مدیریت نظرسنجی‌ها</a>}
-            {!authLoading && (userRole === 'superadmin' || userRole === 'center_member' || userRole === 'head') && <a href="/admin/blog-management">مدیریت بلاگ</a>}
+            {!authLoading && isLoggedIn && (userRole === 'superadmin' || userRole === 'center_member' || userRole === 'head') && <a href="/admin/blog-management">پنل مدیریت</a>}
             <a href="/docs">اسناد و راهنما</a>
             {!authLoading && isLoggedIn ? (
               <button onClick={onLogout} className="header-mobile-logout-button">خروج</button>

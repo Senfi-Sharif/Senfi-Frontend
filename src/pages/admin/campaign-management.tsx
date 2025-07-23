@@ -9,6 +9,7 @@ import TimePicker from 'react-multi-date-picker/plugins/time_picker';
 import moment from 'moment';
 import persian from 'react-date-object/calendars/persian';
 import persian_fa from 'react-date-object/locales/persian_fa';
+import AdminSidebar from '../../components/AdminSidebar';
 
 interface Campaign {
   id: number;
@@ -264,6 +265,9 @@ export default function CampaignManagement(): React.JSX.Element {
   }
 
   return (
+    <div style={{ display: 'flex', minHeight: '100vh' }}>
+      <AdminSidebar current="campaign" />
+      <div style={{ flex: 1 }}>
     <Layout title="مدیریت کارزارها" description="مدیریت کارزارها">
         <div className="container">
           <div className="blog-management-header">
@@ -494,5 +498,7 @@ export default function CampaignManagement(): React.JSX.Element {
           )}
         </div>
     </Layout>
+      </div>
+    </div>
   );
 } 

@@ -236,14 +236,18 @@ export class SecureTokenManager {
    * Clear all authentication data
    */
   static clearAuth(): void {
-    if (typeof window !== 'undefined') {
-      sessionStorage.removeItem(this.TOKEN_KEY);
-      sessionStorage.removeItem(this.EMAIL_KEY);
-      sessionStorage.removeItem(this.ROLE_KEY);
-      localStorage.removeItem(this.TOKEN_KEY);
-      localStorage.removeItem(this.EMAIL_KEY);
-      localStorage.removeItem(this.ROLE_KEY);
-    }
+    // پاک کردن همه کلیدهای احراز هویت از localStorage و sessionStorage
+    const keys = [
+      'auth_token',
+      'auth_email',
+      'auth_role',
+      'faculty',
+      'dormitory',
+    ];
+    keys.forEach(key => {
+      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
+    });
   }
   
   /**

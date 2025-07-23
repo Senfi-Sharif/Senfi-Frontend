@@ -72,14 +72,6 @@
   font-size: 2rem;
 }
 
-.blog-enhanced-description {
-  font-size: 1.2rem;
-  color: var(--ifm-font-color-secondary);
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
-
 .blog-enhanced-content {
   display: grid;
   grid-template-columns: 1fr 300px;
@@ -1181,10 +1173,6 @@
   
   .blog-enhanced-title-icon {
     font-size: 1.5rem;
-  }
-  
-  .blog-enhanced-description {
-    font-size: 1rem;
   }
   
   .blog-enhanced-post {
