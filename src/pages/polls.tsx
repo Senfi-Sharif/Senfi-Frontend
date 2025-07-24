@@ -218,35 +218,35 @@ export default function PollsPage() {
       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
         <GeneralSidebar current="polls" />
         <div style={{ flex: 1 }}>
-          <GenericListPage
-            title="نظرسنجی‌ها"
-            description="لیست نظرسنجی‌های فعال و گذشته شورای صنفی دانشجویان دانشگاه صنعتی شریف"
-            items={paginatedPolls}
-            loading={loading}
-            error={error || ''}
-            searchPlaceholder="جستجو در نظرسنجی‌ها..."
-            onSearch={setSearchQuery}
-            filterOptions={categoryOptions}
-            filterLabel="دسته‌بندی"
-            filterValue={selectedCategories}
-            onFilterChange={setSelectedCategories}
-            sortOptions={sortOptions}
-            sortValue={sortType}
-            onSortChange={setSortType}
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-            renderItem={renderItem}
-            sidebar={sidebar}
-            onClearFilters={() => {
-              setSearchQuery('');
-              setSelectedCategories(categoryOptions);
-              setShowOpen(true);
-              setShowClosed(true);
-              setSortType('created_at');
-            }}
-            createButton={createButton}
-              />
+      <GenericListPage
+        title="نظرسنجی‌ها"
+        description="لیست نظرسنجی‌های فعال و گذشته شورای صنفی دانشجویان دانشگاه صنعتی شریف"
+        items={paginatedPolls}
+        loading={loading}
+        error={error || ''}
+        searchPlaceholder="جستجو در نظرسنجی‌ها..."
+        onSearch={setSearchQuery}
+        filterOptions={categoryOptions}
+        filterLabel="دسته‌بندی"
+        filterValue={selectedCategories}
+        onFilterChange={setSelectedCategories}
+        sortOptions={sortOptions}
+        sortValue={sortType}
+        onSortChange={setSortType}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+        renderItem={renderItem}
+        sidebar={sidebar}
+        onClearFilters={() => {
+          setSearchQuery('');
+          setSelectedCategories(categoryOptions);
+          setShowOpen(true);
+          setShowClosed(true);
+          setSortType('created_at');
+        }}
+        createButton={createButton}
+          />
         </div>
       </div>
     </Layout>

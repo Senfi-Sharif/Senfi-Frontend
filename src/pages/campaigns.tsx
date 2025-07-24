@@ -248,32 +248,32 @@ export default function CampaignsEnhanced(): React.JSX.Element {
       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
         <GeneralSidebar current="campaigns" />
         <div style={{ flex: 1 }}>
-          <GenericListPage
-            title="کارزارها"
-            description="لیست کارزارهای فعال و گذشته شورای صنفی دانشجویان دانشگاه صنعتی شریف"
-            items={paginatedCampaigns}
-            loading={loading}
-            error={error || ''}
-            searchPlaceholder="جستجو در کارزارها..."
-            onSearch={setSearchQuery}
-            filterOptions={categoryOptions}
-            filterLabel="دسته‌بندی"
-            filterValue={selectedCategories}
-            onFilterChange={setSelectedCategories}
-            sortOptions={sortOptions}
-            sortValue={sortType}
-            onSortChange={setSortType}
-                      currentPage={currentPage}
-                      totalPages={totalPages}
-                      onPageChange={setCurrentPage}
-            renderItem={renderItem}
-            sidebar={sidebar}
-            onClearFilters={() => {
-              setSearchQuery('');
-              setSelectedCategories(categoryOptions);
-            }}
-            createButton={createButton}
-                  />
+      <GenericListPage
+        title="کارزارها"
+        description="لیست کارزارهای فعال و گذشته شورای صنفی دانشجویان دانشگاه صنعتی شریف"
+        items={paginatedCampaigns}
+        loading={loading}
+        error={error || ''}
+        searchPlaceholder="جستجو در کارزارها..."
+        onSearch={setSearchQuery}
+        filterOptions={categoryOptions}
+        filterLabel="دسته‌بندی"
+        filterValue={selectedCategories}
+        onFilterChange={setSelectedCategories}
+        sortOptions={sortOptions}
+        sortValue={sortType}
+        onSortChange={setSortType}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+        renderItem={renderItem}
+        sidebar={sidebar}
+        onClearFilters={() => {
+          setSearchQuery('');
+          setSelectedCategories(categoryOptions);
+        }}
+        createButton={createButton}
+              />
         </div>
       </div>
     </Layout>

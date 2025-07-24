@@ -133,7 +133,7 @@ function LayoutContent(props) {
       // بررسی نزدیک بودن به انقضا (30 دقیقه قبل)
       if (authApi.isTokenExpiringSoon && authApi.isTokenExpiringSoon(token, 30)) {
         if (!expiringWarned) {
-          showNotification('جلسه شما به زودی منقضی می‌شود. لطفاً دوباره وارد شوید.', 'warning');
+        showNotification('جلسه شما به زودی منقضی می‌شود. لطفاً دوباره وارد شوید.', 'warning');
           setExpiringWarned(true);
         }
       } else {

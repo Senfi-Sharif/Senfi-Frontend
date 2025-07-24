@@ -90,7 +90,13 @@ export default function AdminBlogManagementPage(): React.JSX.Element {
       
       if (response.ok) {
         const userData = await response.json();
-        setIsSuperAdmin(userData.role === 'superadmin' || userData.role === 'center_member' || userData.role === 'head');
+        setIsSuperAdmin(
+          userData.role === 'superadmin' ||
+          userData.role === 'center_member' ||
+          userData.role === 'head' ||
+          userData.role === 'faculty_member' ||
+          userData.role === 'dorm_member'
+        );
       } else {
         console.error('Failed to get user data:', response.status);
       }
@@ -354,7 +360,7 @@ export default function AdminBlogManagementPage(): React.JSX.Element {
           <div className="container">
             <div className="access-denied">
               <h2>دسترسی محدود</h2>
-              <p>فقط ادمین، عضو مرکز یا دبیر شورا می‌تواند مطالب بلاگ را مدیریت کند.</p>
+              <p>فقط ادمین، عضو مرکز، دبیر شورا، عضو دانشکده یا عضو خوابگاه می‌تواند مطالب بلاگ را مدیریت کند.</p>
             </div>
           </div>
       </Layout>

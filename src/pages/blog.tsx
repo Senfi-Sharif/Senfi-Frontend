@@ -121,6 +121,11 @@ export default function BlogEnhanced(): React.JSX.Element {
             <span className="blog-enhanced-post-date">{formatDate(post.date)}</span>
             <span className="blog-enhanced-post-author">{post.author}</span>
             <span className="blog-enhanced-post-reading-time">{post.readingTime}</span>
+            {post.category && (
+              <span className="blog-enhanced-post-category" style={{ marginRight: 8, fontWeight: 500, color: '#1e40af', display: 'inline-block' }}>
+                {post.category}
+              </span>
+            )}
           </div>
           <div className="blog-enhanced-post-tags">
             {post.tags.map((tag: string) => (
@@ -151,32 +156,32 @@ export default function BlogEnhanced(): React.JSX.Element {
       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
         <GeneralSidebar current="blog" />
         <div style={{ flex: 1 }}>
-          <GenericListPage
-            title="بلاگ"
-            description="آخرین اخبار، اطلاعیه‌ها و به‌روزرسانی‌های شورای صنفی دانشجویان دانشگاه صنعتی شریف"
-            items={paginatedPosts}
-            loading={loading}
-            error={error || ''}
-            searchPlaceholder="جستجو در مطالب..."
-            onSearch={setSearchQuery}
-            filterOptions={categoryOptions}
-            filterLabel="دسته‌بندی"
-            filterValue={selectedCategories}
-            onFilterChange={setSelectedCategories}
-            sortOptions={sortOptions}
-            sortValue={sortType}
-            onSortChange={setSortType}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            renderItem={renderItem}
-            sidebar={sidebar}
-            onClearFilters={() => {
-              setSearchQuery('');
-              setSelectedCategories(categoryOptions);
-            }}
-            createButton={createButton}
-          />
+      <GenericListPage
+        title="بلاگ"
+        description="آخرین اخبار، اطلاعیه‌ها و به‌روزرسانی‌های شورای صنفی دانشجویان دانشگاه صنعتی شریف"
+        items={paginatedPosts}
+        loading={loading}
+        error={error || ''}
+        searchPlaceholder="جستجو در مطالب..."
+        onSearch={setSearchQuery}
+        filterOptions={categoryOptions}
+        filterLabel="دسته‌بندی"
+        filterValue={selectedCategories}
+        onFilterChange={setSelectedCategories}
+        sortOptions={sortOptions}
+        sortValue={sortType}
+        onSortChange={setSortType}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        renderItem={renderItem}
+        sidebar={sidebar}
+        onClearFilters={() => {
+          setSearchQuery('');
+          setSelectedCategories(categoryOptions);
+        }}
+        createButton={createButton}
+      />
         </div>
       </div>
     </Layout>

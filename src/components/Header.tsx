@@ -135,7 +135,7 @@ export default function Header({
           <a href="/blog" className="header-nav-link">اخبار و اطلاعیه‌ها</a>
             <a href="/campaigns" className="header-nav-link">کارزارها</a>
           <a href="/polls" className="header-nav-link">نظرسنجی‌ها</a>
-          {!authLoading && isLoggedIn && (userRole === 'superadmin' || userRole === 'center_member' || userRole === 'head') && (
+          {!authLoading && isLoggedIn && (userRole === 'superadmin' || userRole === 'center_member' || userRole === 'head' || userRole === 'faculty_member' || userRole === 'dorm_member') && (
             <a href="/admin/blog-management" className="header-nav-link">پنل مدیریت</a>
           )}
           <a href="/docs" className="header-nav-link">اسناد و راهنما</a>
@@ -226,7 +226,7 @@ export default function Header({
             <a href="/blog">اخبار و اطلاعیه‌ها</a>
             <a href="/campaigns">کارزارها</a>
             <a href="/polls">نظرسنجی‌ها</a>
-            {!authLoading && isLoggedIn && (userRole === 'superadmin' || userRole === 'center_member' || userRole === 'head') && <a href="/admin/blog-management">پنل مدیریت</a>}
+            {!authLoading && isLoggedIn && (userRole === 'superadmin' || userRole === 'center_member' || userRole === 'head' || userRole === 'faculty_member' || userRole === 'dorm_member') && <a href="/admin/blog-management">پنل مدیریت</a>}
             <a href="/docs">اسناد و راهنما</a>
             {!authLoading && isLoggedIn ? (
               <button onClick={onLogout} className="header-mobile-logout-button">خروج</button>
