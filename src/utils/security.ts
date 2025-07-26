@@ -332,3 +332,54 @@ export class RateLimiter {
     return Math.max(0, maxAttempts - limit.count);
   }
 } 
+
+export class URLParameterValidator {
+  private static readonly ALLOWED_PARAMS = new Set([
+    'slug', 'id', 'page', 'category', 'search', 'sort', 'filter'
+  ]);
+
+  /**
+   * Validates URL parameters and removes any unknown parameters
+   * This prevents potential security vulnerabilities from unknown URL parameters
+   */
+  static validateAndCleanURL(): void {
+    if (typeof window === 'undefined') return;
+
+    try {
+      const url = new URL(window.location.href);
+      const searchParams = url.searchParams;
+      let hasChanges = false;
+
+      // Check each parameter
+      for (const [key] of searchParams.entries()) {
+        if (!this.ALLOWED_PARAMS.has(key)) {
+          searchParams.delete(key);
+          hasChanges = true;
+          console.warn(`Removed unknown URL parameter: ${key}`);
+        }
+      }
+
+      // Update URL if changes were made
+      if (hasChanges) {
+        const newUrl = url.toString();
+        window.history.replaceState({}, '', newUrl);
+      }
+    } catch (error) {
+      console.error('Error validating URL parameters:', error);
+    }
+  }
+
+  /**
+   * Checks if a URL parameter is allowed
+   */
+  static isParameterAllowed(param: string): boolean {
+    return this.ALLOWED_PARAMS.has(param);
+  }
+
+  /**
+   * Gets the list of allowed parameters
+   */
+  static getAllowedParameters(): string[] {
+    return Array.from(this.ALLOWED_PARAMS);
+  }
+} 

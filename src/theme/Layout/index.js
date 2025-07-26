@@ -5,7 +5,7 @@ import Modal from '@site/src/components/Modal';
 import Header from '@site/src/components/Header';
 import BackToTop from '@site/src/components/BackToTop';
 import { useAuthApi } from '../../api/auth';
-import { SecureTokenManager, validatePassword, sanitizeInput } from '../../utils/security';
+import { SecureTokenManager, validatePassword, sanitizeInput, URLParameterValidator } from '../../utils/security';
 
 function LayoutContent(props) {
   const { showNotification } = useNotification();
@@ -50,6 +50,9 @@ function LayoutContent(props) {
       
       // Set theme immediately
       document.documentElement.setAttribute('data-theme', initialTheme);
+      
+      // Validate and clean URL parameters to prevent security vulnerabilities
+      URLParameterValidator.validateAndCleanURL();
     }
   }, []);
 
