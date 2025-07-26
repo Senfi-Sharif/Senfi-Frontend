@@ -7,6 +7,8 @@ import BlogSidebar from '../components/BlogSidebar';
 import GenericListPage from '../components/GenericListPage';
 import GeneralSidebar from '../components/GeneralSidebar';
 
+import { sanitizeHTML } from '../utils/security';
+
 export default function PollsPage() {
   const { siteConfig } = useDocusaurusContext();
   const API_BASE = siteConfig.customFields.apiUrl;
@@ -177,7 +179,7 @@ export default function PollsPage() {
           <span>ددلاین: {new Date(poll.deadline).toLocaleString('fa-IR')}</span>
                         </div>
         <div className="blog-enhanced-post-excerpt">
-          <div dangerouslySetInnerHTML={{ __html: poll.description }} />
+          <div dangerouslySetInnerHTML={{ __html: sanitizeHTML(poll.description) }} />
                     </div>
                     {poll.options && poll.total_votes > 0 && (
                       <div style={{ margin: '18px 0 10px 0' }}>

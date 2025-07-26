@@ -8,11 +8,24 @@
  * @returns Sanitized HTML string
  */
 export function sanitizeHTML(html: string): string {
+  if (!html || typeof html !== 'string') {
+    return '';
+  }
+
   if (typeof window !== 'undefined') {
     // Use DOMPurify if available
     try {
       const DOMPurify = require('dompurify');
-      return DOMPurify.sanitize(html);
+      return DOMPurify.sanitize(html, {
+        ALLOWED_TAGS: [
+          'p', 'br', 'strong', 'em', 'u', 's', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+          'ul', 'ol', 'li', 'blockquote', 'code', 'pre', 'a', 'img', 'div', 'span'
+        ],
+        ALLOWED_ATTR: [
+          'href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel'
+        ],
+        ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i
+      });
     } catch (error) {
       // Fallback to basic sanitization
       return basicSanitizeHTML(html);
@@ -30,8 +43,13 @@ function basicSanitizeHTML(html: string): string {
   return html
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
     .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
+    .replace(/<embed\b[^<]*(?:(?!<\/embed>)<[^<]*)*<\/embed>/gi, '')
     .replace(/javascript:/gi, '')
+    .replace(/vbscript:/gi, '')
     .replace(/on\w+\s*=/gi, '')
+    .replace(/data:text\/html/gi, '')
+    .replace(/data:application\/javascript/gi, '')
     .trim();
 }
 
@@ -49,104 +67,102 @@ export function sanitizeInput(input: string, maxLength: number = 1000): string {
   return input
     .replace(/[<>]/g, '') // Remove < and >
     .replace(/javascript:/gi, '') // Remove javascript: protocol
+    .replace(/vbscript:/gi, '') // Remove vbscript: protocol
     .replace(/on\w+\s*=/gi, '') // Remove event handlers
+    .replace(/data:text\/html/gi, '') // Remove data URLs
+    .replace(/data:application\/javascript/gi, '') // Remove JavaScript data URLs
     .trim()
     .slice(0, maxLength); // Limit length
 }
 
 /**
+ * Validate and sanitize URLs
+ * @param url - URL string to validate
+ * @returns Sanitized URL or empty string if invalid
+ */
+export function sanitizeURL(url: string): string {
+  if (!url || typeof url !== 'string') {
+    return '';
+  }
+
+  // Basic URL validation
+  const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+  if (!urlPattern.test(url)) {
+    return '';
+  }
+
+  // Ensure protocol
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = 'https://' + url;
+  }
+
+  // Remove potentially dangerous protocols
+  if (url.startsWith('javascript:') || url.startsWith('vbscript:') || url.startsWith('data:')) {
+    return '';
+  }
+
+  return url;
+}
+
+/**
  * Validate email format
- * @param email - Email to validate
+ * @param email - Email string to validate
  * @returns True if valid email format
  */
 export function validateEmail(email: string): boolean {
   if (!email || typeof email !== 'string') {
     return false;
   }
-  
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email.trim());
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailPattern.test(email.trim().toLowerCase());
 }
 
 /**
  * Validate password strength
- * @param password - Password to validate
- * @returns Validation result with errors
+ * @param password - Password string to validate
+ * @returns Object with validation results
  */
 export function validatePassword(password: string): {
   isValid: boolean;
   errors: string[];
-  score: number; // 0-4 (weak to strong)
+  strength: 'weak' | 'medium' | 'strong';
 } {
   const errors: string[] = [];
-  let score = 0;
-  
-  if (!password || typeof password !== 'string') {
-    errors.push('رمز عبور الزامی است');
-    return { isValid: false, errors, score: 0 };
+  let strength: 'weak' | 'medium' | 'strong' = 'weak';
+
+  if (!password || password.length < 8) {
+    errors.push('رمز عبور باید حداقل 8 کاراکتر باشد');
   }
-  
-  // Length check
-  if (password.length < 8) {
-    errors.push('رمز عبور باید حداقل ۸ کاراکتر باشد');
-  } else {
-    score += 1;
-  }
-  
-  // Uppercase check
+
   if (!/[A-Z]/.test(password)) {
     errors.push('رمز عبور باید شامل حروف بزرگ باشد');
-  } else {
-    score += 1;
   }
-  
-  // Lowercase check
+
   if (!/[a-z]/.test(password)) {
     errors.push('رمز عبور باید شامل حروف کوچک باشد');
-  } else {
-    score += 1;
   }
-  
-  // Number check
+
   if (!/\d/.test(password)) {
     errors.push('رمز عبور باید شامل اعداد باشد');
-  } else {
-    score += 1;
   }
-  
-  // Special character check
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
     errors.push('رمز عبور باید شامل کاراکترهای خاص باشد');
-  } else {
-    score += 1;
   }
-  
+
+  // Calculate strength
+  if (password.length >= 12 && errors.length === 0) {
+    strength = 'strong';
+  } else if (password.length >= 8 && errors.length <= 2) {
+    strength = 'medium';
+  }
+
   return {
     isValid: errors.length === 0,
     errors,
-    score: Math.min(score, 4)
+    strength
   };
-}
-
-/**
- * Get password strength label
- * @param score - Password strength score (0-4)
- * @returns Strength label
- */
-export function getPasswordStrengthLabel(score: number): string {
-  switch (score) {
-    case 0:
-    case 1:
-      return 'ضعیف';
-    case 2:
-      return 'متوسط';
-    case 3:
-      return 'قوی';
-    case 4:
-      return 'خیلی قوی';
-    default:
-      return 'نامشخص';
-  }
 }
 
 /**

@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Auto-sanitize files with dangerouslySetInnerHTML
+echo "🔒 Running auto-sanitize script..."
+npm run auto-sanitize
+
+# Run security audit
+echo "🔍 Running security audit..."
+npm run security-audit
+
+# Run linting
+echo "🧹 Running ESLint..."
+npm run lint
+
+echo "✅ Pre-commit checks completed!" 

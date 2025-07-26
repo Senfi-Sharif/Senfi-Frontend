@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import { useLocation } from '@docusaurus/router';
 import { FaCalendar, FaUser, FaTag, FaArrowRight } from 'react-icons/fa';
+import { useHistory } from 'react-router-dom';
+
+import { sanitizeHTML } from '../../utils/security';
 
 interface Campaign {
   id: number;
@@ -164,7 +167,7 @@ export default function CampaignDetailDynamic() {
           <div className="blog-post-content">
             <div
               className="content"
-              dangerouslySetInnerHTML={{ __html: campaign.content }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHTML(campaign.content) }}
             />
           </div>
         </div>

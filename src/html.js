@@ -1,3 +1,4 @@
+import { sanitizeHTML } from 'utils/security';
 export default function Html(props) {
   return (
     <html {...props.htmlAttributes} >

@@ -4,6 +4,8 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { useLocation } from '@docusaurus/router';
 import { FaCalendar, FaClock, FaUser, FaTag, FaArrowRight } from 'react-icons/fa';
 
+import { sanitizeHTML } from '../utils/security';
+
 interface BlogPost {
   id: number;
   title: string;
@@ -200,7 +202,7 @@ export default function BlogPostDetail(): React.JSX.Element {
           <div className="blog-post-content">
             <div 
               className="content"
-              dangerouslySetInnerHTML={{ __html: post.content }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHTML(post.content) }}
             />
           </div>
         </div>

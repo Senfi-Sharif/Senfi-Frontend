@@ -11,14 +11,12 @@
     'default-src': ["'self'"],
     'script-src': [
       "'self'",
-      "'unsafe-inline'",
       "https://cdn.jsdelivr.net",
       "https://www.googletagmanager.com",
       "https://www.google-analytics.com"
     ],
     'style-src': [
       "'self'",
-      "'unsafe-inline'",
       "https://cdn.jsdelivr.net",
       "https://fonts.googleapis.com"
     ],
@@ -58,6 +56,15 @@
     'upgrade-insecure-requests': []
   };
 
+  // Additional security headers
+  const securityHeaders = {
+    'X-Frame-Options': 'DENY',
+    'X-Content-Type-Options': 'nosniff',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'X-XSS-Protection': '1; mode=block',
+    'Permissions-Policy': 'geolocation=(), microphone=(), camera=()'
+  };
+
   // Convert CSP object to string
   function buildCSP() {
     return Object.entries(csp)
@@ -70,12 +77,26 @@
       .join('; ');
   }
 
-  // Apply CSP if not already set
-  if (typeof window !== 'undefined' && !document.querySelector('meta[http-equiv="Content-Security-Policy"]')) {
-    const meta = document.createElement('meta');
-    meta.httpEquiv = 'Content-Security-Policy';
-    meta.content = buildCSP();
-    document.head.appendChild(meta);
+  // Apply CSP and security headers if not already set
+  if (typeof window !== 'undefined') {
+    // Apply CSP
+    if (!document.querySelector('meta[http-equiv="Content-Security-Policy"]')) {
+      const meta = document.createElement('meta');
+      meta.httpEquiv = 'Content-Security-Policy';
+      meta.content = buildCSP();
+      document.head.appendChild(meta);
+    }
+
+    // Apply additional security headers via meta tags
+    Object.entries(securityHeaders).forEach(([header, value]) => {
+      const headerName = header.toLowerCase().replace(/-/g, '');
+      if (!document.querySelector(`meta[http-equiv="${header}"]`)) {
+        const meta = document.createElement('meta');
+        meta.httpEquiv = header;
+        meta.content = value;
+        document.head.appendChild(meta);
+      }
+    });
   }
 
   // Security monitoring

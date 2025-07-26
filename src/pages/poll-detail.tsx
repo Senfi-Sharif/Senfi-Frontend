@@ -6,6 +6,8 @@ import { SecureTokenManager } from '../utils/security';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { FaCheckCircle, FaTag, FaListUl, FaVoteYea, FaUserSecret, FaUsers, FaChartBar, FaEye } from 'react-icons/fa';
 
+import { sanitizeHTML } from '../utils/security';
+
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -194,7 +196,7 @@ export default function PollDetailPage() {
           </div>
         )}
         <div style={{ marginBottom: 18 }}>
-          <div dangerouslySetInnerHTML={{ __html: poll.description }} />
+          <div dangerouslySetInnerHTML={{ __html: sanitizeHTML(poll.description) }} />
         </div>
         <div style={{
           background: 'var(--ifm-color-primary-lightest, #f7fafd)',

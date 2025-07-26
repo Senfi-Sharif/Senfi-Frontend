@@ -9,6 +9,8 @@ import { SecureTokenManager } from '../utils/security';
 import CampaignSignatures from '../components/CampaignSignatures';
 import moment from 'moment-jalaali';
 
+import { sanitizeHTML } from '../utils/security';
+
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -180,7 +182,7 @@ const CampaignDetailPage = () => {
           <div className="blog-post-content">
             <div
               className="content"
-              dangerouslySetInnerHTML={{ __html: campaign.content }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHTML(campaign.content) }}
             />
           </div>
           {/* نمایش لیست امضاکنندگان */}
