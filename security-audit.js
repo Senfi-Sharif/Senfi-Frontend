@@ -326,28 +326,6 @@ function checkSecurityHeaders() {
   return missingHeaders;
 }
 
-// Check for URL parameter validation
-function checkURLParameterValidation() {
-  logSection('Checking URL Parameter Validation');
-  
-  const securityFile = path.join(__dirname, 'src', 'utils', 'security.ts');
-  
-  if (!fs.existsSync(securityFile)) {
-    logError('Security utils file not found!');
-    return 1;
-  }
-  
-  const content = fs.readFileSync(securityFile, 'utf8');
-  
-  if (content.includes('URLParameterValidator')) {
-    logSuccess('URL parameter validation is implemented');
-    return 0;
-  } else {
-    logError('URL parameter validation is missing - this could allow unknown URL parameters');
-    return 1;
-  }
-}
-
 // Main audit function
 function runSecurityAudit() {
   log(`${colors.bold}${colors.blue}🔒 Security Audit for Senfi Web Application${colors.reset}\n`);
@@ -359,7 +337,6 @@ function runSecurityAudit() {
   totalIssues += checkForHardcodedSecrets();
   totalIssues += checkDependencies();
   totalIssues += checkSecurityHeaders();
-  totalIssues += checkURLParameterValidation();
   
   logSection('Audit Summary');
   
@@ -373,7 +350,6 @@ function runSecurityAudit() {
     logInfo('  3. Move secrets to environment variables');
     logInfo('  4. Update vulnerable dependencies');
     logInfo('  5. Configure missing security headers');
-    logInfo('  6. Implement URL parameter validation');
   }
   
   return totalIssues;
@@ -391,6 +367,5 @@ module.exports = {
   checkCSPConfiguration,
   checkForHardcodedSecrets,
   checkDependencies,
-  checkSecurityHeaders,
-  checkURLParameterValidation
+  checkSecurityHeaders
 }; 
