@@ -50,6 +50,7 @@ const config: Config = {
       '/custom.js',
       '/security-headers.js'
     ],
+
     colorMode: {
       defaultMode: 'light',
       disableSwitch: false,
