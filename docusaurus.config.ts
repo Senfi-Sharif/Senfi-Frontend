@@ -32,8 +32,8 @@ const config: Config = {
         docs: {
           sidebarPath: require.resolve('./sidebars.ts'),
           editUrl: 'https://github.com/senfi-sharif/senfi-sharif.ir/tree/main/',
-          showLastUpdateTime: true,
-          showLastUpdateAuthor: true,
+          showLastUpdateTime: false,
+          showLastUpdateAuthor: false,
         },
         blog: false, // Disable default blog to use custom blog pages
         theme: {
@@ -79,7 +79,9 @@ const config: Config = {
           { label: 'stu.senfi@sharif.edu', href: 'mailto:stu.senfi@sharif.edu' },
         ]},
       ],
-      copyright: `کپی‌رایت © ${new Date().getFullYear()} آریا ترابی. ساخته‌شده با داکوساروس.<br/>باتشکر از امیرحسین محمدزاده`,
+      copyright: `کپی‌رایت 
+      © ${new Date().getFullYear()}
+       دوره بیستم شورای صنفی دانشجویان دانشگاه صنعتی شریف. ساخته‌شده با داکوساروس.`,
     },
     prism: {
       theme: prismThemes.github,

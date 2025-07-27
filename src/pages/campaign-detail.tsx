@@ -36,7 +36,21 @@ const CampaignDetailPage = () => {
       return;
     }
     setLoading(true);
-    fetch(`${API_BASE}/api/campaigns/${id}`)
+    
+    // Prepare headers with authentication if available
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    
+    const token = SecureTokenManager.getToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    fetch(`${API_BASE}/api/campaigns/${id}`, {
+      method: 'GET',
+      headers: headers
+    })
       .then(res => {
         return res.json().then(data => ({ status: res.status, data }));
       })
@@ -145,11 +159,36 @@ const CampaignDetailPage = () => {
     <Layout title={campaign.title} description={campaign.excerpt}>
       <div className="blog-post-detail-page">
         <div className="container">
-          {campaign.author_faculty && campaign.author_faculty !== 'نامشخص' && (
-            <span style={{ marginLeft: 12 }}>دانشکده: <b>{campaign.author_faculty}</b></span>
+          {/* Status indicator for pending/rejected campaigns */}
+          {campaign.status === 'pending' && (
+            <div style={{
+              background: '#fff3cd',
+              color: '#856404',
+              textAlign: 'center',
+              fontWeight: 500,
+              fontSize: '1.15em',
+              padding: '12px 0',
+              borderRadius: '8px',
+              marginBottom: '20px',
+              border: '1px solid #ffeaa7'
+            }}>
+              ⏳ این کارزار در انتظار تایید ادمین است
+            </div>
           )}
-          {campaign.author_dormitory && campaign.author_dormitory !== 'خوابگاهی نیستم' && (
-            <span>خوابگاه: <b>{campaign.author_dormitory}</b></span>
+          {campaign.status === 'rejected' && (
+            <div style={{
+              background: '#f8d7da',
+              color: '#721c24',
+              textAlign: 'center',
+              fontWeight: 500,
+              fontSize: '1.15em',
+              padding: '12px 0',
+              borderRadius: '8px',
+              marginBottom: '20px',
+              border: '1px solid #f5c6cb'
+            }}>
+              ❌ این کارزار رد شده است
+            </div>
           )}
           <div className="blog-post-header">
             <button onClick={handleBack} className="back-button">
@@ -183,6 +222,14 @@ const CampaignDetailPage = () => {
                 ))}
               </div>
             )}
+            <div>
+              {campaign.author_faculty && campaign.author_faculty !== 'نامشخص' && (
+              <span style={{ marginLeft: 12 }}>دانشکده کاربر: <b>{campaign.author_faculty}</b></span>
+              )}
+              {campaign.author_dormitory && campaign.author_dormitory !== 'خوابگاهی نیستم' && (
+                <span>خوابگاه کاربر: <b>{campaign.author_dormitory}</b></span>
+              )}
+            </div>
           </div>
           {campaign.image_url && (
             <div className="blog-post-featured-image">
@@ -221,7 +268,7 @@ const CampaignDetailPage = () => {
                 این کارزار به پایان رسیده است
               </div>
           )}
-          {isAuthenticated && (
+          {isAuthenticated && campaign.status === 'approved' && (
             <div style={{ marginTop: '2rem' }}>
               {!isCampaignExpired(campaign.deadline) && (
                 <SignCampaignButtons 

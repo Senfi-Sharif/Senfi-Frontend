@@ -43,7 +43,9 @@ Content-Type: application/json
 
 {
   "email": "user@sharif.edu",
-  "password": "SecurePassword123!"
+  "password": "SecurePassword123!",
+  "faculty": "مهندسی کامپیوتر",
+  "dormitory": "طرشت ۳"
 }
 ```
 
@@ -56,7 +58,8 @@ Content-Type: application/json
     "id": 1,
     "email": "user@sharif.edu",
     "role": "user",
-    "unit": null
+    "faculty": "مهندسی کامپیوتر",
+    "dormitory": "طرشت ۳"
   },
   "message": "ثبت نام با موفقیت انجام شد و وارد سیستم شدید"
 }
@@ -82,7 +85,8 @@ Content-Type: application/json
     "id": 1,
     "email": "user@sharif.edu",
     "role": "user",
-    "unit": null
+    "faculty": "مهندسی کامپیوتر",
+    "dormitory": "طرشت ۳"
   }
 }
 ```
@@ -101,27 +105,17 @@ Authorization: Bearer <your_jwt_token>
     "id": 1,
     "email": "user@sharif.edu",
     "role": "user",
-    "unit": null
+    "faculty": "مهندسی کامپیوتر",
+    "dormitory": "طرشت ۳"
   }
 }
 ```
 
-### تمدید توکن
-```http
-POST /api/auth/refresh/
-Content-Type: application/json
-
-{
-  "refresh_token": "your_refresh_token"
-}
-```
-
-## 📋 کارزارها
+## 📝 کارزارها
 
 ### دریافت کارزارهای تأیید شده
 ```http
 GET /api/campaigns/approved/
-Authorization: Bearer <your_jwt_token>
 ```
 
 **پاسخ:**
@@ -131,14 +125,14 @@ Authorization: Bearer <your_jwt_token>
   "campaigns": [
     {
       "id": 1,
-      "title": "عنوان کارزار",
-      "description": "توضیحات کارزار",
-      "email": "creator@sharif.edu",
+      "title": "بهبود سیستم گرمایشی خوابگاه‌ها",
+      "content": "درخواست بهبود سیستم گرمایشی...",
+      "category": "مسائل خوابگاهی",
+      "author_email": "author@sharif.edu",
       "created_at": "2024-01-15T10:30:00Z",
-      "status": "approved",
-      "is_anonymous": "public",
-      "end_datetime": "2024-02-15T23:59:59Z",
-      "label": "مسائل دانشگاهی"
+      "deadline": "2024-02-15T23:59:59Z",
+      "signature_count": 150,
+      "status": "approved"
     }
   ],
   "total": 1
@@ -152,11 +146,12 @@ Authorization: Bearer <your_jwt_token>
 Content-Type: application/json
 
 {
-  "title": "عنوان کارزار",
-  "description": "توضیحات کامل کارزار",
-  "is_anonymous": "public",
-  "end_datetime": "2024-02-15T23:59:59Z",
-  "label": "مسائل دانشگاهی"
+  "title": "بهبود سیستم گرمایشی خوابگاه‌ها",
+  "content": "درخواست بهبود سیستم گرمایشی خوابگاه‌ها...",
+  "category": "مسائل خوابگاهی",
+  "deadline": "2024-02-15T23:59:59Z",
+  "is_anonymous": false,
+  "anonymous_allowed": true
 }
 ```
 
@@ -164,32 +159,14 @@ Content-Type: application/json
 ```json
 {
   "success": true,
-  "campaignId": 1,
-  "status": "pending",
-  "created_at": "2024-01-15T10:30:00Z",
-  "end_datetime": "2024-02-15T23:59:59Z"
+  "message": "کارزار شما با موفقیت ثبت شد و در انتظار تایید ادمین است",
+  "campaign": {
+    "id": 1,
+    "title": "بهبود سیستم گرمایشی خوابگاه‌ها",
+    "status": "pending"
+  }
 }
 ```
-
-### دریافت کارزارهای در انتظار (ادمین)
-```http
-GET /api/campaigns/pending/
-Authorization: Bearer <your_jwt_token>
-```
-
-### تأیید/رد کارزار (ادمین)
-```http
-POST /api/campaigns/approve/
-Authorization: Bearer <your_jwt_token>
-Content-Type: application/json
-
-{
-  "campaign_id": 1,
-  "approved": true
-}
-```
-
-## ✍️ امضاها
 
 ### امضای کارزار
 ```http
@@ -198,7 +175,7 @@ Authorization: Bearer <your_jwt_token>
 Content-Type: application/json
 
 {
-  "is_anonymous": "public"
+  "is_anonymous": false
 }
 ```
 
@@ -208,7 +185,7 @@ Content-Type: application/json
   "success": true,
   "message": "کارزار با موفقیت امضا شد",
   "signature_id": 1,
-  "total_signatures": 5
+  "total_signatures": 151
 }
 ```
 
@@ -225,218 +202,183 @@ GET /api/campaigns/{campaign_id}/signatures/
     {
       "id": 1,
       "user_email": "user@sharif.edu",
-      "signed_at": "2024-01-15T10:30:00Z",
-      "is_anonymous": "public"
+      "signed_at": "2024-01-15T11:00:00Z",
+      "is_anonymous": false
     }
   ],
   "total": 1,
-  "campaign_is_anonymous": "public"
+  "campaign_anonymous_allowed": true
 }
 ```
 
-### بررسی امضای کاربر
+## 📊 نظرسنجی‌ها
+
+### دریافت نظرسنجی‌های تأیید شده
 ```http
-GET /api/campaigns/{campaign_id}/check-signature/
-Authorization: Bearer <your_jwt_token>
+GET /api/polls/
 ```
 
 **پاسخ:**
 ```json
 {
-  "has_signed": true,
-  "signature": {
-    "id": 1,
-    "signed_at": "2024-01-15T10:30:00Z",
-    "is_anonymous": "public"
-  }
+  "success": true,
+  "polls": [
+    {
+      "id": 1,
+      "title": "نظرسنجی درباره زمان امتحانات",
+      "question": "آیا موافق تغییر زمان امتحانات هستید؟",
+      "category": "مسائل آموزشی",
+      "options": [
+        {"id": 1, "text": "بله"},
+        {"id": 2, "text": "خیر"}
+      ],
+      "total_votes": 200,
+      "status": "approved",
+      "deadline": "2024-02-15T23:59:59Z"
+    }
+  ],
+  "total": 1
 }
 ```
 
-### دریافت کارزارهای امضا شده کاربر
+### ایجاد نظرسنجی جدید
+```http
+POST /api/polls/
+Authorization: Bearer <your_jwt_token>
+Content-Type: application/json
+
+{
+  "title": "نظرسنجی درباره زمان امتحانات",
+  "question": "آیا موافق تغییر زمان امتحانات هستید؟",
+  "category": "مسائل آموزشی",
+  "options": [
+    {"text": "بله"},
+    {"text": "خیر"}
+  ],
+  "max_choices": 1,
+  "is_anonymous": false,
+  "deadline": "2024-02-15T23:59:59Z"
+}
+```
+
+### رأی دادن در نظرسنجی
+```http
+POST /api/polls/{poll_id}/vote/
+Authorization: Bearer <your_jwt_token>
+Content-Type: application/json
+
+{
+  "option_ids": [1]
+}
+```
+
+## 📰 بلاگ
+
+### دریافت بلاگ‌های منتشر شده
+```http
+GET /api/blog/posts/
+```
+
+**پاسخ:**
+```json
+{
+  "success": true,
+  "posts": [
+    {
+      "id": 1,
+      "title": "گزارش جلسه شورای صنفی",
+      "slug": "report-council-meeting",
+      "excerpt": "خلاصه‌ای از جلسه شورای صنفی...",
+      "content": "متن کامل گزارش...",
+      "category": "گزارش‌ها",
+      "author_email": "admin@sharif.edu",
+      "published_at": "2024-01-15T10:00:00Z",
+      "reading_time": 5
+    }
+  ],
+  "total": 1
+}
+```
+
+### دریافت جزئیات بلاگ
+```http
+GET /api/blog/posts/{slug}/
+```
+
+## 👤 پروفایل کاربر
+
+### دریافت اطلاعات کاربر
+```http
+GET /api/auth/user-info/
+Authorization: Bearer <your_jwt_token>
+```
+
+### دریافت کارزارهای امضا شده
 ```http
 GET /api/user/signed-campaigns/
 Authorization: Bearer <your_jwt_token>
 ```
 
-## 👥 مدیریت کاربران (ادمین)
-
-### دریافت لیست کاربران
+### دریافت نظرسنجی‌های رأی داده شده
 ```http
-GET /api/users/
+GET /api/user/voted-polls/
 Authorization: Bearer <your_jwt_token>
 ```
 
-**پاسخ:**
-```json
-[
-  {
-    "id": 1,
-    "email": "user@sharif.edu",
-    "role": "user",
-    "unit": null
-  }
-]
-```
-
-### دریافت اطلاعات کاربر
+### دریافت کارزارهای ایجاد شده
 ```http
-GET /api/users/{user_id}/
+GET /api/user/created-campaigns/
 Authorization: Bearer <your_jwt_token>
 ```
 
-### تغییر نقش کاربر (سوپرادمین)
+### دریافت بلاگ‌های ایجاد شده
 ```http
-PUT /api/users/{user_id}/role/
+GET /api/user/created-blog-posts/
+Authorization: Bearer <your_jwt_token>
+```
+
+### دریافت نظرسنجی‌های ایجاد شده
+```http
+GET /api/user/created-polls/
+Authorization: Bearer <your_jwt_token>
+```
+
+## 🔧 تغییر رمز عبور
+
+```http
+POST /api/auth/change-password/
 Authorization: Bearer <your_jwt_token>
 Content-Type: application/json
 
 {
-  "new_role": "center_member"
+  "current_password": "OldPassword123!",
+  "new_password": "NewPassword123!",
+  "confirm_password": "NewPassword123!"
 }
 ```
 
-## 📊 نظارت عملکرد (ادمین)
+## 📋 کدهای خطا
 
-### خلاصه عملکرد
-```http
-GET /api/performance/summary/
-Authorization: Bearer <your_jwt_token>
-```
+| کد | معنی |
+|----|------|
+| 200 | موفقیت |
+| 400 | درخواست نامعتبر |
+| 401 | عدم احراز هویت |
+| 403 | عدم دسترسی |
+| 404 | یافت نشد |
+| 429 | تعداد درخواست بیش از حد مجاز |
+| 500 | خطای داخلی سرور |
 
-### عملکرد endpoint ها
-```http
-GET /api/performance/endpoints/
-Authorization: Bearer <your_jwt_token>
-```
+## 🔒 نکات امنیتی
 
-### درخواست‌های کند
-```http
-GET /api/performance/slow-requests/?limit=10
-Authorization: Bearer <your_jwt_token>
-```
-
-### متریک‌های سیستم
-```http
-GET /api/performance/system-metrics/?hours=24
-Authorization: Bearer <your_jwt_token>
-```
-
-## 🔧 کدهای خطا
-
-### کدهای HTTP
-- `200` - موفقیت
-- `201` - ایجاد شده
-- `400` - درخواست نامعتبر
-- `401` - احراز هویت ناموفق
-- `403` - دسترسی ممنوع
-- `404` - یافت نشد
-- `429` - تعداد درخواست زیاد
-- `500` - خطای سرور
-
-### پیام‌های خطا
-```json
-{
-  "success": false,
-  "detail": "پیام خطا"
-}
-```
-
-## 📝 مثال‌های استفاده
-
-### مثال کامل با JavaScript
-```javascript
-// ثبت‌نام کاربر
-const registerUser = async (email, password) => {
-  const response = await fetch('https://api.senfi-sharif.ir/api/auth/register/', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email, password })
-  });
-  
-  const data = await response.json();
-  return data;
-};
-
-// دریافت کارزارها
-const getCampaigns = async (token) => {
-  const response = await fetch('https://api.senfi-sharif.ir/api/campaigns/approved/', {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-  
-  const data = await response.json();
-  return data;
-};
-
-// امضای کارزار
-const signCampaign = async (campaignId, token, isAnonymous = 'public') => {
-  const response = await fetch(`https://api.senfi-sharif.ir/api/campaigns/${campaignId}/sign/`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({ is_anonymous: isAnonymous })
-  });
-  
-  const data = await response.json();
-  return data;
-};
-```
-
-### مثال با Python
-```python
-import requests
-
-# تنظیمات پایه
-BASE_URL = "https://api.senfi-sharif.ir"
-headers = {"Content-Type": "application/json"}
-
-# ثبت‌نام
-def register_user(email, password):
-    response = requests.post(
-        f"{BASE_URL}/api/auth/register/",
-        json={"email": email, "password": password},
-        headers=headers
-    )
-    return response.json()
-
-# ورود
-def login_user(email, password):
-    response = requests.post(
-        f"{BASE_URL}/api/auth/login/",
-        json={"email": email, "password": password},
-        headers=headers
-    )
-    return response.json()
-
-# دریافت کارزارها
-def get_campaigns(token):
-    headers["Authorization"] = f"Bearer {token}"
-    response = requests.get(f"{BASE_URL}/api/campaigns/approved/", headers=headers)
-    return response.json()
-```
-
-## 🔒 امنیت
-
-### بهترین شیوه‌ها
 - همیشه از HTTPS استفاده کنید
-- توکن‌ها را در جای امن ذخیره کنید
-- توکن‌ها را به موقع تمدید کنید
-- خطاها را به درستی مدیریت کنید
-- از rate limiting پیروی کنید
+- توکن‌های JWT را در جای امنی نگهداری کنید
+- توکن‌ها را به اشتراک نگذارید
+- در صورت مشکوک شدن به نشت توکن، فوراً رمز عبور را تغییر دهید
+- از رمزهای عبور قوی استفاده کنید
 
-### محدودیت‌ها
-- حداکثر 5 درخواست ورود در دقیقه
-- حداکثر 3 درخواست کد تأیید در دقیقه
-- توکن‌های دسترسی 1 ساعت اعتبار دارند
-- توکن‌های تمدید 7 روز اعتبار دارند
+## 📞 پشتیبانی
 
----
-
-**آخرین به‌روزرسانی**: تیر ۱۴۰۴
+برای سوالات فنی و مشکلات API، با تیم فنی شورای صنفی تماس بگیرید.
 
 </div> 

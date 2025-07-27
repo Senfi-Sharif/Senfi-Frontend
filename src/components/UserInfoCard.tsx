@@ -12,6 +12,7 @@ interface UserInfoCardProps {
   showActions?: boolean;
   onLogout?: () => void;
   onRoleChange?: (role: string) => void;
+  onChangePassword?: () => void;
   className?: string;
 }
 
@@ -20,6 +21,7 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({
   showActions = true,
   onLogout,
   onRoleChange,
+  onChangePassword,
   className = ''
 }) => {
   return (
@@ -50,13 +52,25 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({
           <strong>خوابگاه:</strong> {user.dormitory}
         </div>
       )}
-      {showActions && onLogout && (
-        <button 
-          onClick={onLogout}
-          className="profile-logout-button"
-        >
-          <FaSign style={{marginLeft:4}}/>خروج از حساب
-        </button>
+      {showActions && (
+        <div className="profile-actions">
+          {onChangePassword && (
+            <button 
+              onClick={onChangePassword}
+              className="profile-change-password-button"
+            >
+              🔐 تغییر رمز عبور
+            </button>
+          )}
+          {onLogout && (
+            <button 
+              onClick={onLogout}
+              className="profile-logout-button"
+            >
+              <FaSign style={{marginLeft:4}}/>خروج از حساب
+            </button>
+          )}
+        </div>
       )}
     </div>
   );

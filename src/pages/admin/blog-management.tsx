@@ -531,7 +531,20 @@ export default function AdminBlogManagementPage(): React.JSX.Element {
                 posts.map(post => (
                   <div key={post.id} className="blog-post-item">
                     <div className="post-info">
-                      <h3>{post.title}</h3>
+                      <h3>
+                        <a 
+                          href={`/blog-post?slug=${post.slug}`}
+                          style={{ 
+                            color: 'inherit', 
+                            textDecoration: 'none',
+                            cursor: 'pointer'
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                          onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                        >
+                          {post.title}
+                        </a>
+                      </h3>
                       <div className="post-meta">
                         <span className="post-date">{formatDate(post.created_at)}</span>
                         <span className="post-author">{post.author_email}</span>

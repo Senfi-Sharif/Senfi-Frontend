@@ -460,7 +460,20 @@ export default function CampaignManagement(): React.JSX.Element {
                 campaigns.map(campaign => (
                   <div key={campaign.id} className="blog-post-item">
                     <div className="post-info">
-                      <h3>{campaign.title}</h3>
+                      <h3>
+                        <a 
+                          href={`/campaign-detail?id=${campaign.id}`}
+                          style={{ 
+                            color: 'inherit', 
+                            textDecoration: 'none',
+                            cursor: 'pointer'
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                          onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                        >
+                          {campaign.title}
+                        </a>
+                      </h3>
                       <div className="post-meta">
                         <span className="post-date">{formatDate(campaign.created_at)}</span>
                         <span className="post-author">{campaign.author_email}</span>

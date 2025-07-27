@@ -21,6 +21,7 @@ function LayoutContent(props) {
   const [password2, setPassword2] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [mobileVerificationMode, setMobileVerificationMode] = useState(false); // حالت ورود با کد موبایل
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [userRole, setUserRole] = useState('');
@@ -302,6 +303,69 @@ function LayoutContent(props) {
     }
   };
 
+  const handleMobileVerificationRequest = async () => {
+    setLoading(true);
+    try {
+      const sent = await authApi.sendMobileVerificationCode(email);
+      if (sent) {
+        setMobileVerificationMode(true);
+        setCode('');
+        setCodeError('');
+        showNotification('کد تایید به ایمیل شما ارسال شد', 'success');
+      } else {
+        setCodeError('ارسال کد تایید با خطا مواجه شد');
+      }
+    } catch (err) {
+      setCodeError('خطا: ' + (err?.message || err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMobileCodeSubmit = async (e) => {
+    e.preventDefault();
+    const value = code.trim();
+    if (!value) {
+      setCodeError('کد تایید الزامی است');
+      return;
+    }
+    if (!/^[0-9]{6}$/.test(value)) {
+      setCodeError('کد باید ۶ رقم باشد');
+      return;
+    }
+    setCodeError('');
+    setLoading(true);
+    try {
+      const res = await authApi.verifyMobileCode(email, code);
+      if (res && res.success && res.token) {
+        SecureTokenManager.setToken(res.token);
+        SecureTokenManager.setRole(res.user?.role || '');
+        SecureTokenManager.setEmail(email);
+        localStorage.setItem('auth_role', res.user?.role || '');
+        localStorage.setItem('faculty', res.user?.faculty || '');
+        localStorage.setItem('dormitory', res.user?.dormitory || '');
+        
+        setIsLoggedIn(true);
+        setUserEmail(email);
+        setUserRole(res.user?.role || '');
+        
+        // Dispatch custom event to notify other components
+        window.dispatchEvent(new CustomEvent('auth:login', {
+          detail: { user: res.user, email: email }
+        }));
+        
+        showNotification('ورود با موفقیت انجام شد!', 'success');
+        handleClose();
+      } else {
+        setCodeError('کد وارد شده صحیح نیست');
+      }
+    } catch (err) {
+      setCodeError('خطا: ' + (err?.message || err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleClose = () => {
     setModalOpen(false);
     setStep(1);
@@ -318,6 +382,7 @@ function LayoutContent(props) {
     setDormitory('خوابگاهی نیستم');
     setInfoError('');
     setLoading(false);
+    setMobileVerificationMode(false);
   };
 
   // تابع خروج
@@ -400,32 +465,88 @@ function LayoutContent(props) {
             </button>
           </form>
         )}
-        {step === 2 && hasAccount === true && (
-          <form className="auth-form" onSubmit={e => handleLoginSubmit(e, rememberMe)}>
-            <label className="auth-form-label">رمز عبور:</label>
+        {step === 2 && hasAccount === true && !mobileVerificationMode && (
+          <>
+            <form className="auth-form" onSubmit={e => handleLoginSubmit(e, rememberMe)}>
+              <label className="auth-form-label">رمز عبور:</label>
+              <input 
+                type="password" 
+                value={password} 
+                dir="ltr"
+                onChange={e=>setPassword(e.target.value)} 
+                placeholder="رمز عبور" 
+                className="auth-form-input"
+                disabled={loading} 
+              />
+              <div style={{ margin: '12px 0', display: 'flex', alignItems: 'center' }}>
+                <input
+                  type="checkbox"
+                  id="rememberMe"
+                  checked={rememberMe}
+                  onChange={e => setRememberMe(e.target.checked)}
+                  style={{ marginLeft: 8 }}
+                />
+                <label htmlFor="rememberMe" style={{ cursor: 'pointer', userSelect: 'none' }}>من را به یاد بسپار (۱۴ روز)</label>
+              </div>
+              {passwordError && <div className="auth-form-error">{passwordError}</div>}
+              <button type="submit" className="auth-form-button" disabled={loading}>
+                {loading ? '...' : 'ورود'}
+              </button>
+            </form>
+            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+              <button 
+                type="button" 
+                onClick={handleMobileVerificationRequest}
+                disabled={loading}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--ifm-color-primary)',
+                  textDecoration: 'underline',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}
+              >
+                ورود با ارسال کد به ایمیل
+              </button>
+            </div>
+          </>
+        )}
+        {step === 2 && hasAccount === true && mobileVerificationMode && (
+          <form className="auth-form" onSubmit={handleMobileCodeSubmit}>
+            <label className="auth-form-label">کد ۶ رقمی ارسال‌شده به ایمیل:</label>
             <input 
-              type="password" 
-              value={password} 
+              type="text" 
+              maxLength={6} 
+              pattern="[0-9]{6}" 
+              value={code} 
               dir="ltr"
-              onChange={e=>setPassword(e.target.value)} 
-              placeholder="رمز عبور" 
-              className="auth-form-input"
+              onChange={e=>setCode(e.target.value)} 
+              placeholder="کد تایید" 
+              className="auth-form-input auth-form-input-code"
               disabled={loading} 
             />
-            <div style={{ margin: '12px 0', display: 'flex', alignItems: 'center' }}>
-              <input
-                type="checkbox"
-                id="rememberMe"
-                checked={rememberMe}
-                onChange={e => setRememberMe(e.target.checked)}
-                style={{ marginLeft: 8 }}
-              />
-              <label htmlFor="rememberMe" style={{ cursor: 'pointer', userSelect: 'none' }}>من را به یاد بسپار (۱۴ روز)</label>
-            </div>
-            {passwordError && <div className="auth-form-error">{passwordError}</div>}
+            {codeError && <div className="auth-form-error">{codeError}</div>}
             <button type="submit" className="auth-form-button" disabled={loading}>
               {loading ? '...' : 'ورود'}
             </button>
+            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+              <button 
+                type="button" 
+                onClick={() => setMobileVerificationMode(false)}
+                disabled={loading}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--ifm-color-primary)',
+                  textDecoration: 'underline',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}
+              >
+                بازگشت به ورود با رمز عبور
+              </button>
+            </div>
           </form>
         )}
         {step === 2 && hasAccount === false && !codeAccepted && (

@@ -162,11 +162,42 @@ export default function PollDetailPage() {
   if (!poll) return <Layout><div style={{ padding: 32 }}>نظرسنجی پیدا نشد.</div></Layout>;
 
   const isExpired = new Date(poll.deadline) < new Date();
-  const canVote = isAuthenticated && !poll.has_voted && !isExpired;
+  const canVote = isAuthenticated && !poll.has_voted && !isExpired && poll.status === 'approved';
 
   return (
     <Layout>
       <div className="poll-detail-page" style={cardStyle}>
+        {/* Status indicator for pending/rejected polls */}
+        {poll.status === 'pending' && (
+          <div style={{
+            background: '#fff3cd',
+            color: '#856404',
+            textAlign: 'center',
+            fontWeight: 500,
+            fontSize: '1.15em',
+            padding: '12px 0',
+            borderRadius: '8px',
+            marginBottom: '20px',
+            border: '1px solid #ffeaa7'
+          }}>
+            ⏳ این نظرسنجی در انتظار تایید ادمین است
+          </div>
+        )}
+        {poll.status === 'rejected' && (
+          <div style={{
+            background: '#f8d7da',
+            color: '#721c24',
+            textAlign: 'center',
+            fontWeight: 500,
+            fontSize: '1.15em',
+            padding: '12px 0',
+            borderRadius: '8px',
+            marginBottom: '20px',
+            border: '1px solid #f5c6cb'
+          }}>
+            ❌ این نظرسنجی رد شده است
+          </div>
+        )}
         <h1 style={{ textAlign: 'center', marginBottom: 18, color: 'var(--ifm-font-color-base, #fff)' }}>{poll.title}</h1>
         {poll.has_voted && (
           <div style={{
@@ -188,10 +219,10 @@ export default function PollDetailPage() {
         {userRole === 'simple_user' && (
           <div style={{ margin: '12px 0', fontSize: 15, color: '#555' }}>
             {userFaculty && userFaculty !== 'نامشخص' && (
-              <span style={{ marginLeft: 12 }}>دانشکده: <b>{userFaculty}</b></span>
+              <span style={{ marginLeft: 12 }}>دانشکده کاربر: <b>{userFaculty}</b></span>
             )}
             {userDormitory && userDormitory !== 'خوابگاهی نیستم' && (
-              <span>خوابگاه: <b>{userDormitory}</b></span>
+              <span>خوابگاه کاربر: <b>{userDormitory}</b></span>
             )}
           </div>
         )}

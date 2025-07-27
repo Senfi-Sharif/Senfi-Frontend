@@ -4,7 +4,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { useLocation } from '@docusaurus/router';
 import { FaCalendar, FaClock, FaUser, FaTag, FaArrowRight } from 'react-icons/fa';
 
-import { sanitizeHTML } from '../utils/security';
+import { sanitizeHTML, SecureTokenManager } from '../utils/security';
 
 interface BlogPost {
   id: number;
@@ -41,7 +41,23 @@ export default function BlogPostDetail(): React.JSX.Element {
         setLoading(true);
         const url = `${API_BASE}/api/blog/posts/${slug}`;
         
-        const response = await fetch(url);
+        // Prepare headers with authentication if available
+        const headers: HeadersInit = {
+          'Content-Type': 'application/json',
+        };
+        
+        // Add authentication token if available
+        if (typeof window !== 'undefined') {
+          const token = SecureTokenManager.getToken();
+          if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+          }
+        }
+        
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: headers
+        });
         
         if (!response.ok) {
           if (response.status === 404) {
@@ -147,6 +163,23 @@ export default function BlogPostDetail(): React.JSX.Element {
     >
       <div className="blog-post-detail-page">
         <div className="container">
+          {/* Status indicator for unpublished blog posts */}
+          {!post.is_published && (
+            <div style={{
+              background: '#fff3cd',
+              color: '#856404',
+              textAlign: 'center',
+              fontWeight: 500,
+              fontSize: '1.15em',
+              padding: '12px 0',
+              borderRadius: '8px',
+              marginBottom: '20px',
+              border: '1px solid #ffeaa7'
+            }}>
+              ⏳ این مطلب در انتظار تایید ادمین است
+            </div>
+          )}
+          
           <div className="blog-post-header">
             <button onClick={handleBackToBlog} className="back-button">
               <FaArrowRight /> بازگشت به بلاگ

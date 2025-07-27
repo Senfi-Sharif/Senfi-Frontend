@@ -8,7 +8,7 @@ export default function DocsPage() {
   useEffect(() => {
     // Redirect to Docusaurus docs after a short delay
     const timer = setTimeout(() => {
-      window.location.href = '/docs/sharif-senfi-regulationsب';
+      window.location.href = '/docs/sharif-senfi-regulations';
     }, 3000);
 
     return () => clearTimeout(timer);
@@ -33,7 +33,7 @@ export default function DocsPage() {
       title: 'راهنمای ادمین',
       description: 'راهنمای مدیریت و اداره پلتفرم برای ادمین‌ها',
       icon: <FaUsers />,
-      link: '/docs/admin-guide',
+      link: '/admin-guide',
       color: 'var(--ifm-color-success)'
     },
     {
@@ -49,6 +49,13 @@ export default function DocsPage() {
       icon: <FaQuestionCircle />,
       link: '/docs/faq',
       color: 'var(--ifm-color-danger)'
+    },
+    {
+      title: 'درباره ما',
+      description: 'اطلاعات تیم توسعه و پشتیبانی پلتفرم',
+      icon: <FaUsers />,
+      link: '/docs/about-us',
+      color: 'var(--ifm-color-info-dark)'
     }
   ];
 

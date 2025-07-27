@@ -195,10 +195,10 @@ export default function CampaignsEnhanced(): React.JSX.Element {
                             </a>
                           </h2>
                           {c.author_faculty && c.author_faculty !== 'نامشخص' && (
-                            <span style={{ marginLeft: 12, fontSize: 14, color: '#555' }}>دانشکده: <b>{c.author_faculty}</b></span>
+                            <span style={{ marginLeft: 12, fontSize: 14, color: '#555' }}>دانشکده کاربر: <b>{c.author_faculty}</b></span>
                           )}
                           {c.author_dormitory && c.author_dormitory !== 'خوابگاهی نیستم' && (
-                            <span style={{ fontSize: 14, color: '#555' }}>خوابگاه: <b>{c.author_dormitory}</b></span>
+                            <span style={{ fontSize: 14, color: '#555' }}>خوابگاه کاربر: <b>{c.author_dormitory}</b></span>
                           )}
                           <span className="blog-enhanced-post-category" style={{ marginRight: 8, fontWeight: 500, color: '#1e40af', display: 'inline-block' }}>
                             {c.category}

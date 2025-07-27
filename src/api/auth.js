@@ -94,6 +94,59 @@ export function useAuthApi() {
     return data.valid;
   }
 
+  async function sendMobileVerificationCode(email) {
+    let res;
+    try {
+      res = await fetch(`${API_BASE}/api/auth/send-mobile-code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+    } catch (err) {
+      throw new Error('ارتباط با سرور برقرار نشد');
+    }
+    const data = await processResponse(res);
+    return data.success;
+  }
+
+  async function verifyMobileCode(email, code) {
+    let res;
+    try {
+      res = await fetch(`${API_BASE}/api/auth/verify-mobile-code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code }),
+      });
+    } catch (err) {
+      throw new Error('ارتباط با سرور برقرار نشد');
+    }
+    return await processResponse(res);
+  }
+
+  async function changePassword(currentPassword, newPassword, confirmPassword) {
+    const token = SecureTokenManager.getToken();
+    if (!token) throw new Error('توکن احراز هویت یافت نشد');
+    
+    let res;
+    try {
+      res = await fetch(`${API_BASE}/api/auth/change-password`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ 
+          current_password: currentPassword, 
+          new_password: newPassword, 
+          confirm_password: confirmPassword 
+        }),
+      });
+    } catch (err) {
+      throw new Error('ارتباط با سرور برقرار نشد');
+    }
+    return await processResponse(res);
+  }
+
   async function register(email, password, faculty, dormitory) {
     let res;
     try {
@@ -445,10 +498,85 @@ export function useAuthApi() {
     return await processResponse(res);
   }
 
+  async function getUserVotedPolls() {
+    const token = SecureTokenManager.getToken();
+    if (!token) throw new Error('توکن احراز هویت یافت نشد');
+    let res;
+    try {
+      res = await fetch(`${API_BASE}/api/user/voted-polls`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+      });
+    } catch (err) {
+      throw new Error('ارتباط با سرور برقرار نشد');
+    }
+    return await processResponse(res);
+  }
+
+  async function getUserCreatedCampaigns() {
+    const token = SecureTokenManager.getToken();
+    if (!token) throw new Error('توکن احراز هویت یافت نشد');
+    let res;
+    try {
+      res = await fetch(`${API_BASE}/api/user/created-campaigns`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+      });
+    } catch (err) {
+      throw new Error('ارتباط با سرور برقرار نشد');
+    }
+    return await processResponse(res);
+  }
+
+  async function getUserCreatedBlogPosts() {
+    const token = SecureTokenManager.getToken();
+    if (!token) throw new Error('توکن احراز هویت یافت نشد');
+    let res;
+    try {
+      res = await fetch(`${API_BASE}/api/user/created-blog-posts`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+      });
+    } catch (err) {
+      throw new Error('ارتباط با سرور برقرار نشد');
+    }
+    return await processResponse(res);
+  }
+
+  async function getUserCreatedPolls() {
+    const token = SecureTokenManager.getToken();
+    if (!token) throw new Error('توکن احراز هویت یافت نشد');
+    let res;
+    try {
+      res = await fetch(`${API_BASE}/api/user/created-polls`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+      });
+    } catch (err) {
+      throw new Error('ارتباط با سرور برقرار نشد');
+    }
+    return await processResponse(res);
+  }
+
   return {
     checkEmailExists,
     sendVerificationCode,
     verifyCode,
+    sendMobileVerificationCode,
+    verifyMobileCode,
+    changePassword,
     register,
     login,
     decodeJWT,
@@ -469,5 +597,9 @@ export function useAuthApi() {
     updateUserRole,
     submitCampaign,
     getUsers,
+    getUserVotedPolls,
+    getUserCreatedCampaigns,
+    getUserCreatedBlogPosts,
+    getUserCreatedPolls,
   };
 }

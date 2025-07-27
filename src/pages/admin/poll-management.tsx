@@ -419,7 +419,20 @@ export default function PollManagementPage() {
                 polls.map(poll => (
                   <div key={poll.id} className="blog-post-item">
                     <div className="post-info">
-                      <h3>{poll.title}</h3>
+                      <h3>
+                        <a 
+                          href={`/poll-detail?id=${poll.id}`}
+                          style={{ 
+                            color: 'inherit', 
+                            textDecoration: 'none',
+                            cursor: 'pointer'
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                          onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                        >
+                          {poll.title}
+                        </a>
+                      </h3>
                       <div className="post-meta">
                         <span className="post-date">{formatDate(poll.created_at)}</span>
                         <span className="post-category">{poll.status === 'approved' ? 'تایید شده' : poll.status === 'pending' ? 'در انتظار تایید' : poll.status === 'rejected' ? 'رد شده' : 'بسته شده'}</span>

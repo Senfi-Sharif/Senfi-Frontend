@@ -42,6 +42,11 @@ const sidebars: SidebarsConfig = {
         'faq',
       ],
     },
+    {
+      type: 'doc',
+      id: 'about-us',
+      label: '👥 درباره ما',
+    },
   ],
 };
 
