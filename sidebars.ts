@@ -15,11 +15,12 @@ import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
 const sidebars: SidebarsConfig = {
   // By default, Docusaurus generates a sidebar from the docs folder structure
   tutorialSidebar: [
-    {
-      type: 'doc',
-      id: 'sharif-senfi-regulations',
-      label: '📜 آیین‌نامه داخلی شورا',
-    },
+    // Temporarily hidden - will be restored later
+    // {
+    //   type: 'doc',
+    //   id: 'sharif-senfi-regulations',
+    //   label: '📜 آیین‌نامه داخلی شورا',
+    // },
     {
       type: 'category',
       label: '📚 راهنماهای کاربری',

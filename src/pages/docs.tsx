@@ -6,22 +6,23 @@ import { FaBook, FaUsers, FaCode, FaQuestionCircle, FaArrowRight, FaFileAlt } fr
 
 export default function DocsPage() {
   useEffect(() => {
-    // Redirect to Docusaurus docs after a short delay
+    // Redirect to user guide after a short delay
     const timer = setTimeout(() => {
-      window.location.href = '/docs/sharif-senfi-regulations';
+      window.location.href = '/docs/user-guide';
     }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
 
   const docSections = [
-    {
-      title: 'آیین‌نامه داخلی شورا',
-      description: 'آیین‌نامه و مقررات داخلی شورای صنفی دانشجویان',
-      icon: <FaFileAlt />,
-      link: '/docs/sharif-senfi-regulations',
-      color: 'var(--ifm-color-info)'
-    },
+    // Temporarily hidden - will be restored later
+    // {
+    //   title: 'آیین‌نامه داخلی شورا',
+    //   description: 'آیین‌نامه و مقررات داخلی شورای صنفی دانشجویان',
+    //   icon: <FaFileAlt />,
+    //   link: '/docs/sharif-senfi-regulations',
+    //   color: 'var(--ifm-color-info)'
+    // },
     {
       title: 'راهنمای کاربری',
       description: 'راهنمای کامل استفاده از پلتفرم برای کاربران عادی',
