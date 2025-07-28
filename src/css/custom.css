@@ -2962,12 +2962,16 @@ body, * {
   transform: translateY(-2px);
 }
 
+.docusaurus-mt-lg {
+  margin-top: 0 !important; 
+}
+
 /* Layout and Auth Modal Styles */
 .layout-content-wrapper {
   position: relative;
   z-index: 1;
   background: linear-gradient(120deg, var(--ifm-hero-gradient-start) 0, transparent 100%);
-  min-height: 100vh;
+  background-attachment: fixed;
 }
 
 .auth-modal-title {
