@@ -4169,7 +4169,7 @@ export const groupedPeriods =[
       periods: rebornPeriods
     },
     {
-      groupTitle: "دوران نباتی (سال ۹۶-۴۰۱)",
+      groupTitle: "دوران بحران (سال ۹۶-۴۰۱)",
       periods: deathPeriods
     },
     {
