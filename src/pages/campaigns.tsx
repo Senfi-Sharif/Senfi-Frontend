@@ -245,7 +245,7 @@ export default function CampaignsEnhanced(): React.JSX.Element {
 
   return (
     <Layout>
-      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', flexDirection: 'row', minHeight: 'calc(100vh - 60px)' }}>
         <GeneralSidebar current="campaigns" />
         <div style={{ flex: 1 }}>
       <GenericListPage

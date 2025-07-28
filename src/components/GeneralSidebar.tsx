@@ -171,7 +171,7 @@ const GeneralSidebar: React.FC<GeneralSidebarProps> = ({ current }) => {
         padding: '2rem 0 2rem 0',
         position: 'sticky',
         top: 0,
-        height: '100vh',
+        alignSelf: 'stretch',
         display: 'flex',
         flexDirection: 'column',
         gap: '1rem',

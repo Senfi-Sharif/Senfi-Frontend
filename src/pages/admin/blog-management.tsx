@@ -368,11 +368,11 @@ export default function AdminBlogManagementPage(): React.JSX.Element {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      <AdminSidebar current="blog" />
-      <div style={{ flex: 1 }}>
     <Layout title="مدیریت بلاگ" description="مدیریت مطالب بلاگ">
-        <div className="container">
+      <div style={{ display: 'flex', minHeight: 'calc(100vh - 60px)' }}>
+        <AdminSidebar current="blog" />
+        <div style={{ flex: 1 }}>
+          <div className="container">
           <div className="blog-management-header">
             <h1>مدیریت مطالب بلاگ</h1>
           </div>
@@ -583,9 +583,9 @@ export default function AdminBlogManagementPage(): React.JSX.Element {
               )}
             </div>
           )}
+          </div>
         </div>
-    </Layout>
       </div>
-    </div>
+    </Layout>
   );
 } 

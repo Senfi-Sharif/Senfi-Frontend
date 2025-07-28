@@ -58,7 +58,7 @@ body {
 .home-bg-logo {
   position: fixed;
   z-index: 0;
-  top: 0;
+  top: 20px;
   left: 0;
   width: 100vw;
   height: 100vh;
@@ -2967,11 +2967,22 @@ body, * {
 }
 
 /* Layout and Auth Modal Styles */
+/* Global gradient background - works like home-bg-logo */
+.global-gradient-bg {
+  position: fixed;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  background: linear-gradient(120deg, var(--ifm-hero-gradient-start) 0, transparent 100%);
+  background-attachment: fixed;
+}
+
 .layout-content-wrapper {
   position: relative;
   z-index: 1;
-  background: linear-gradient(120deg, var(--ifm-hero-gradient-start) 0, transparent 100%);
-  background-attachment: fixed;
 }
 
 .auth-modal-title {

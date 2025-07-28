@@ -434,6 +434,10 @@ function LayoutContent(props) {
         className="home-bg-logo"
         aria-hidden="true"
       />
+      <div
+        className="global-gradient-bg"
+        aria-hidden="true"
+      />
       {/* BG overlays end */}
 
       {/* کل محتوا میاد روی پس‌زمینه */}

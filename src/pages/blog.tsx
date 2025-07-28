@@ -153,7 +153,7 @@ export default function BlogEnhanced(): React.JSX.Element {
 
   return (
     <Layout title="بلاگ" description="آخرین اخبار، اطلاعیه‌ها و به‌روزرسانی‌های شورای صنفی دانشجویان دانشگاه صنعتی شریف">
-      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', flexDirection: 'row', minHeight: 'calc(100vh - 60px)' }}>
         <GeneralSidebar current="blog" />
         <div style={{ flex: 1 }}>
       <GenericListPage

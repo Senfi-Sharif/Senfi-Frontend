@@ -217,7 +217,7 @@ export default function PollsPage() {
 
   return (
     <Layout title="نظرسنجی‌ها" description="لیست نظرسنجی‌های فعال و گذشته شورای صنفی دانشجویان دانشگاه صنعتی شریف">
-      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', flexDirection: 'row', minHeight: 'calc(100vh - 60px)' }}>
         <GeneralSidebar current="polls" />
         <div style={{ flex: 1 }}>
       <GenericListPage
