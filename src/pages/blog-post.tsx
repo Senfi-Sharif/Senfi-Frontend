@@ -93,7 +93,7 @@ export default function BlogPostDetail(): React.JSX.Element {
   };
 
   const handleBackToBlog = () => {
-    window.location.href = '/blog-enhanced';
+    window.location.href = '/blog';
   };
 
   if (loading) {

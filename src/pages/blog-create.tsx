@@ -158,7 +158,7 @@ export default function BlogCreate(): React.JSX.Element {
   };
 
   const handleCancel = () => {
-    window.location.href = '/blog-enhanced';
+    window.location.href = '/blog';
   };
 
   // دسته‌بندی‌ها را فیلتر نکن، فقط از categoryChoices استفاده کن

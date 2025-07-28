@@ -3409,8 +3409,8 @@ body, * {
 }
 
 /* --- فاصله سراسری بعد از هدر برای همه صفحات --- */
-main, .container, .main-campaigns-container, .theme-doc-markdown {
-  padding-top: 64px !important;
+main, .container, .main-campaigns-container{
+  padding-top: 20px !important;
   margin-top: 0 !important;
 }
 
