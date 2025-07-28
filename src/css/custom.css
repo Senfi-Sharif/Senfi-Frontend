@@ -3518,6 +3518,10 @@ h1, h2, h3, h4, h5, h6, [id] {
   color: var(--ifm-color-primary-dark);
 }
 
+.menu_SIkG {
+  padding-top: 13px;
+}
+
 .theme-doc-sidebar-item-link-level-2 {
   padding-right: 1rem;
 }
