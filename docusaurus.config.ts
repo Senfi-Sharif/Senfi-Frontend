@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
+import { themes as prismThemes } from 'prism-react-renderer';
+import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const ENABLE_ALGOLIA = process.env.ENABLE_ALGOLIA === 'true';
@@ -11,10 +11,10 @@ const config: Config = {
   tagline: ' در دست ساخت ⏱️',
   favicon: 'img/maini_colors.png',
   future: { v4: true },
-  url: 'https://senfi-sharif.ir',
+  url: process.env.REACT_APP_SITE_URL || 'https://senfi-sharif.ir',
   baseUrl: '/',
-  organizationName: 'aryatrb',
-  projectName: 'senfi.sharif.ir',
+  organizationName: 'senfi-sharif',
+  projectName: 'senfi-website',
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   i18n: {
@@ -31,7 +31,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.ts'),
-          editUrl: 'https://github.com/senfi-sharif/senfi-sharif.ir/tree/main/',
+          editUrl: 'https://github.com/senfi-sharif/senfi-frontend/tree/main/',
           showLastUpdateTime: false,
           showLastUpdateAuthor: false,
         },
@@ -67,17 +67,23 @@ const config: Config = {
     footer: {
       style: 'dark',
       links: [
-        { title: 'Telegram channels', items: [
-          { label: 'sharif_senfi@', to: 'https://t.me/sharif_senfi' },
-          { label: 'sharif_senfi_media@', to: 'https://t.me/sharif_senfi_media' },
-        ]},
-        { title: 'Telegram Groups', items: [
-          { label: 'مسائل صنفی دانشگاه شریف', href: 'https://t.me/shora_sharif' },
-        ]},
-        { title: 'تماس با ما', items: [
-          { label: 'پشتیبانی تلگرام', to: 'https://t.me/sharif_senfi_dabir' },
-          { label: 'stu.senfi@sharif.edu', href: 'mailto:stu.senfi@sharif.edu' },
-        ]},
+        {
+          title: 'Telegram channels', items: [
+            { label: 'sharif_senfi@', to: 'https://t.me/sharif_senfi' },
+            { label: 'sharif_senfi_media@', to: 'https://t.me/sharif_senfi_media' },
+          ]
+        },
+        {
+          title: 'Telegram Groups', items: [
+            { label: 'مسائل صنفی دانشگاه شریف', href: 'https://t.me/shora_sharif' },
+          ]
+        },
+        {
+          title: 'تماس با ما', items: [
+            { label: 'پشتیبانی تلگرام', to: 'https://t.me/sharif_senfi_dabir' },
+            { label: 'stu.senfi@sharif.edu', href: 'mailto:stu.senfi@sharif.edu' },
+          ]
+        },
       ],
       copyright: `کپی‌رایت 
       © ${new Date().getFullYear()}
