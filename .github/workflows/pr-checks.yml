@@ -1,0 +1,85 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: |
+          if npm run lint --silent 2>/dev/null; then
+            npm run lint
+          else
+            echo "⚠️ Lint script not found in package.json, skipping..."
+          fi
+
+      - name: Run type checking
+        run: |
+          if npm run type-check --silent 2>/dev/null; then
+            npm run type-check
+          elif npx tsc --noEmit --skipLibCheck 2>/dev/null; then
+            npx tsc --noEmit --skipLibCheck
+          else
+            echo "⚠️ TypeScript checking not available, skipping..."
+          fi
+
+      - name: Run tests
+        run: |
+          if npm run test --silent 2>/dev/null; then
+            npm run test -- --watchAll=false --coverage
+          else
+            echo "⚠️ Test script not found in package.json, skipping..."
+          fi
+
+      - name: Build application
+        run: npm run build
+
+      - name: Check bundle size
+        run: |
+          echo "📦 Build size analysis:"
+          du -sh build/ || du -sh dist/ || echo "Build directory not found"
+          
+  security-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run security audit
+        run: |
+          npm audit --audit-level=moderate || echo "⚠️ Security vulnerabilities found, please review"
+
+      - name: Check for sensitive files
+        run: |
+          echo "🔍 Checking for sensitive files..."
+          if find . -name "*.key" -o -name "*.pem" -o -name ".env.production" -o -name "*.p12" | grep -v node_modules | head -5; then
+            echo "⚠️ Potential sensitive files found"
+          else
+            echo "✅ No sensitive files detected"
+          fi

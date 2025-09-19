@@ -1,0 +1,15 @@
+node_modules
+dist
+build
+*.log
+Dockerfile*
+docker-compose*
+.git
+.github
+README.md
+temp.html
+*.tsbuildinfo
+coverage
+.env*
+!.env.prod
+!.env.dev.*
