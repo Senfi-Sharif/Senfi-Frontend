@@ -31,7 +31,7 @@ export default function PollsPage() {
   useEffect(() => {
     setLoading(true);
     const token = SecureTokenManager.getToken();
-    fetch(`${API_BASE}/api/polls`, {
+    fetch(`${API_BASE}/polls`, {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     })
       .then(res => res.json())

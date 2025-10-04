@@ -33,7 +33,11 @@
     ],
     'connect-src': [
       "'self'",
+      "https://senfi-sharif.ir",
       "https://api.senfi-sharif.ir",
+      "https://senfi.stu.sharif.edu",
+      "https://senfi.stu.sharif.ir",
+      "https://senfi.stu.sharif.ac.ir",
       "https://127.0.0.1:8000",
       "https://localhost:8000",
       "https://www.google-analytics.com"

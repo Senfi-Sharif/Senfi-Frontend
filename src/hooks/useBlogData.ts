@@ -42,7 +42,7 @@ interface BlogResponse {
 // Function to fetch blog data from Django API
 const fetchBlogData = async (apiBase: string): Promise<BlogPost[]> => {
   try {
-    const response = await fetch(`${apiBase}/api/blog/posts?page_size=50`);
+    const response = await fetch(`${apiBase}/blog/posts?page_size=50`);
     if (!response.ok) {
       throw new Error('Failed to fetch blog posts');
     }

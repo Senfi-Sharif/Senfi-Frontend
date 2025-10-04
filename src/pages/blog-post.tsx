@@ -39,7 +39,7 @@ export default function BlogPostDetail(): React.JSX.Element {
     const fetchPost = async () => {
       try {
         setLoading(true);
-        const url = `${API_BASE}/api/blog/posts/${slug}`;
+        const url = `${API_BASE}/blog/posts/${slug}`;
         
         // Prepare headers with authentication if available
         const headers: HeadersInit = {

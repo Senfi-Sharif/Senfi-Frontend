@@ -45,7 +45,7 @@ export default function CampaignCreatePage() {
 
   useEffect(() => {
     const token = SecureTokenManager.getToken();
-    fetch(`${API_BASE}/api/campaigns/categories`, {
+    fetch(`${API_BASE}/campaigns/categories`, {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     })
       .then(res => res.json())

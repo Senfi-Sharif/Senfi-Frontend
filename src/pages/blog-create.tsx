@@ -59,7 +59,7 @@ export default function BlogCreate(): React.JSX.Element {
 
   useEffect(() => {
     const token = SecureTokenManager.getToken();
-    fetch(`${API_BASE}/api/campaigns/categories`, {
+    fetch(`${API_BASE}/campaigns/categories`, {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     })
       .then(res => res.json())
@@ -113,7 +113,7 @@ export default function BlogCreate(): React.JSX.Element {
         .map(tag => tag.trim())
         .filter(tag => tag.length > 0);
 
-      const response = await fetch(`${API_BASE}/api/admin/blog/posts/create`, {
+      const response = await fetch(`${API_BASE}/admin/blog/posts/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

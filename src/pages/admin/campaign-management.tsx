@@ -79,7 +79,7 @@ export default function CampaignManagement(): React.JSX.Element {
 
   useEffect(() => {
     const token = SecureTokenManager.getToken();
-    fetch(`${API_BASE}/api/campaigns/categories`, {
+    fetch(`${API_BASE}/campaigns/categories`, {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     })
       .then(res => res.json())
@@ -95,7 +95,7 @@ export default function CampaignManagement(): React.JSX.Element {
 
   const checkUserRole = async (token: string) => {
     try {
-      const response = await fetch(`${API_BASE}/api/auth/user`, {
+      const response = await fetch(`${API_BASE}/auth/user`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -108,7 +108,7 @@ export default function CampaignManagement(): React.JSX.Element {
   const fetchCampaigns = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE}/api/admin/campaigns`, {
+      const response = await fetch(`${API_BASE}/admin/campaigns`, {
         headers: { 'Authorization': `Bearer ${userToken}` }
       });
       const data = await response.json();
@@ -159,8 +159,8 @@ export default function CampaignManagement(): React.JSX.Element {
         deadline: formData.deadline ? moment(formData.deadline?.toDate ? formData.deadline.toDate() : formData.deadline).toISOString() : '',
       };
       const url = editingCampaign
-        ? `${API_BASE}/api/campaigns/${editingCampaign.id}`
-        : `${API_BASE}/api/campaigns/submit`;
+        ? `${API_BASE}/campaigns/${editingCampaign.id}`
+        : `${API_BASE}/campaigns/submit`;
       const method = editingCampaign ? 'PUT' : 'POST';
       const response = await fetch(url, {
         method,
@@ -201,7 +201,7 @@ export default function CampaignManagement(): React.JSX.Element {
   const handleDelete = async (id: number) => {
     if (!confirm('آیا مطمئن هستید که می‌خواهید این کارزار را حذف کنید؟')) return;
     try {
-      const response = await fetch(`${API_BASE}/api/campaigns/${id}/delete`, {
+      const response = await fetch(`${API_BASE}/campaigns/${id}/delete`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${userToken}` }
       });
@@ -216,7 +216,7 @@ export default function CampaignManagement(): React.JSX.Element {
     try {
       setLoading(true);
       const newStatus = currentStatus === 'approved' ? 'pending' : 'approved';
-      const response = await fetch(`${API_BASE}/api/campaigns/${id}/status`, {
+      const response = await fetch(`${API_BASE}/campaigns/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

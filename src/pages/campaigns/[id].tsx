@@ -5,6 +5,10 @@ import { FaCalendar, FaUser, FaTag, FaArrowRight } from 'react-icons/fa';
 import { useHistory } from 'react-router-dom';
 
 import { sanitizeHTML } from '../../utils/security';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+
+const { siteConfig } = useDocusaurusContext();
+const API_BASE = siteConfig.customFields.apiUrl;
 
 interface Campaign {
   id: number;
@@ -34,7 +38,7 @@ export default function CampaignDetailDynamic() {
     const fetchCampaign = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/campaigns/${id}`);
+        const response = await fetch(`${API_BASE}/campaigns/${id}`);
         if (!response.ok) {
           if (response.status === 404) throw new Error('کارزار مورد نظر یافت نشد');
           throw new Error('خطا در بارگذاری کارزار');

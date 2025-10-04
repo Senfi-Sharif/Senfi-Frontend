@@ -10,6 +10,7 @@ import ErrorMessage from './ErrorMessage';
 import EmptyState from './EmptyState';
 import { FaClipboardList, FaHourglass, FaExclamationTriangle, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import '../css/approvedCampaigns.css';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 
 const ApprovedCampaigns = () => {
   const [campaigns, setCampaigns] = useState([]);
@@ -150,10 +151,12 @@ const ApprovedCampaigns = () => {
   const [allCategories, setAllCategories] = useState<string[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesError, setCategoriesError] = useState<string | null>(null);
+  const { siteConfig } = useDocusaurusContext();
+  const API_BASE = siteConfig.customFields.apiUrl;
 
   useEffect(() => {
     setCategoriesLoading(true);
-    fetch('/api/campaigns/categories')
+    fetch(`${API_BASE}/campaigns/categories`)
       .then(res => res.json())
       .then(data => {
         setAllCategories(data.categories || []);

@@ -32,7 +32,7 @@ export default function PollCreatePage() {
 
   useEffect(() => {
     const token = SecureTokenManager.getToken();
-    fetch(`${API_BASE}/api/campaigns/categories`, {
+    fetch(`${API_BASE}/campaigns/categories`, {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     })
       .then(res => res.json())
@@ -87,7 +87,7 @@ export default function PollCreatePage() {
     setLoading(true);
     try {
       const token = SecureTokenManager.getToken();
-      const res = await fetch(`${API_BASE}/api/polls`, {
+      const res = await fetch(`${API_BASE}/polls`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

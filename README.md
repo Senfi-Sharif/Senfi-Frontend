@@ -54,8 +54,8 @@ A modern web application for managing student council campaigns and publications
 
 ```bash
 # Clone the repository
-git clone https://github.com/senfi-sharif/senfi-sharif.ir.git
-cd senfi-sharif.ir
+git clone https://github.com/senfi-sharif/senfi-frontend
+cd senfi-frontend
 
 # Install dependencies
 npm install
@@ -69,7 +69,7 @@ Create a `.env` file in the root directory:
 
 ```bash
 # API Configuration
-REACT_APP_API_BASE=https://api.senfi-sharif.ir
+REACT_APP_API_BASE=https://senfi.stu.sharif.ir/api
 
 # For local development
 # REACT_APP_API_BASE=http://localhost:8000
@@ -159,10 +159,10 @@ The main configuration is in `docusaurus.config.ts`:
 ```typescript
 const config: Config = {
   title: 'شورای صنفی دانشجویان',
-  url: 'https://senfi-sharif.ir',
+  url: 'https://senfi.stu.sharif.ir',
   baseUrl: '/',
   customFields: {
-    apiUrl: process.env.REACT_APP_API_BASE || 'https://api.senfi-sharif.ir',
+    apiUrl: process.env.REACT_APP_API_BASE || 'https://senfi.stu.sharif.ir/api',
   },
   // ... other configuration
 };
@@ -268,7 +268,7 @@ const Component: React.FC<ComponentProps> = ({ prop1, prop2 }) => {
 ### Environment Variables
 ```bash
 # Required
-REACT_APP_API_BASE=https://api.senfi-sharif.ir
+REACT_APP_API_BASE=https://senfi.stu.sharif.ir/api
 
 # Optional
 NODE_ENV=production
@@ -301,7 +301,7 @@ NODE_ENV=production
 For support and questions:
 - **Telegram**: [@sharif_senfi](https://t.me/sharif_senfi)
 - **Email**: stu.senfi@sharif.edu
-- **Website**: [senfi-sharif.ir](https://senfi-sharif.ir)
+- **Website**: [senfi.stu.sharif.ir](https://senfi.stu.sharif.ir)
 
 ---
 

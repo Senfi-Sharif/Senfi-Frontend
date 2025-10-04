@@ -47,7 +47,7 @@ const CampaignDetailPage = () => {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    fetch(`${API_BASE}/api/campaigns/${id}`, {
+    fetch(`${API_BASE}/campaigns/${id}`, {
       method: 'GET',
       headers: headers
     })

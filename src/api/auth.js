@@ -52,7 +52,7 @@ export function useAuthApi() {
   async function checkEmailExists(email) {
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/auth/check-email`, {
+      res = await fetch(`${API_BASE}/auth/check-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -67,7 +67,7 @@ export function useAuthApi() {
   async function sendVerificationCode(email) {
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/auth/send-code`, {
+      res = await fetch(`${API_BASE}/auth/send-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -82,7 +82,7 @@ export function useAuthApi() {
   async function verifyCode(email, code) {
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/auth/verify-code`, {
+      res = await fetch(`${API_BASE}/auth/verify-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code }),
@@ -97,7 +97,7 @@ export function useAuthApi() {
   async function sendMobileVerificationCode(email) {
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/auth/send-mobile-code`, {
+      res = await fetch(`${API_BASE}/auth/send-mobile-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -112,7 +112,7 @@ export function useAuthApi() {
   async function verifyMobileCode(email, code) {
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/auth/verify-mobile-code`, {
+      res = await fetch(`${API_BASE}/auth/verify-mobile-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code }),
@@ -129,7 +129,7 @@ export function useAuthApi() {
     
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/auth/change-password`, {
+      res = await fetch(`${API_BASE}/auth/change-password`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -150,7 +150,7 @@ export function useAuthApi() {
   async function register(email, password, faculty, dormitory) {
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/auth/register`, {
+      res = await fetch(`${API_BASE}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, faculty, dormitory }),
@@ -164,7 +164,7 @@ export function useAuthApi() {
   async function login(email, password, rememberMe = false) {
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/auth/login`, {
+      res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, remember_me: rememberMe }),
@@ -270,7 +270,7 @@ export function useAuthApi() {
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/admin/campaigns`, {
+      res = await fetch(`${API_BASE}/admin/campaigns`, {
         method: 'GET',
         headers: { 
           'Content-Type': 'application/json',
@@ -288,7 +288,7 @@ export function useAuthApi() {
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/campaigns/${campaignId}/status`, {
+      res = await fetch(`${API_BASE}/campaigns/${campaignId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -308,7 +308,7 @@ export function useAuthApi() {
     if (token) headers['Authorization'] = `Bearer ${token}`;
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/campaigns/approved`, {
+      res = await fetch(`${API_BASE}/campaigns/approved`, {
         method: 'GET',
         headers,
       });
@@ -327,7 +327,7 @@ export function useAuthApi() {
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/campaigns/${campaignId}/sign`, {
+      res = await fetch(`${API_BASE}/campaigns/${campaignId}/sign`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -344,7 +344,7 @@ export function useAuthApi() {
   async function getCampaignSignatures(campaignId) {
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/campaigns/${campaignId}/signatures`, {
+      res = await fetch(`${API_BASE}/campaigns/${campaignId}/signatures`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -363,7 +363,7 @@ export function useAuthApi() {
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/user/signed-campaigns`, {
+      res = await fetch(`${API_BASE}/user/signed-campaigns`, {
         method: 'GET',
         headers: { 
           'Content-Type': 'application/json',
@@ -385,7 +385,7 @@ export function useAuthApi() {
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/campaigns/${campaignId}/check-signature`, {
+      res = await fetch(`${API_BASE}/campaigns/${campaignId}/check-signature`, {
         method: 'GET',
         headers: { 
           'Content-Type': 'application/json',
@@ -407,7 +407,7 @@ export function useAuthApi() {
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/auth/validate`, {
+      res = await fetch(`${API_BASE}/auth/validate`, {
         method: 'GET',
         headers: { 
           'Content-Type': 'application/json',
@@ -429,7 +429,7 @@ export function useAuthApi() {
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/auth/user/${userId}`, {
+      res = await fetch(`${API_BASE}/auth/user/${userId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -447,7 +447,7 @@ export function useAuthApi() {
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/user/${userId}/role`, {
+      res = await fetch(`${API_BASE}/user/${userId}/role`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -466,7 +466,7 @@ export function useAuthApi() {
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/campaigns/submit`, {
+      res = await fetch(`${API_BASE}/campaigns/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -485,7 +485,7 @@ export function useAuthApi() {
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/auth/users`, {
+      res = await fetch(`${API_BASE}/auth/users`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -503,7 +503,7 @@ export function useAuthApi() {
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/user/voted-polls`, {
+      res = await fetch(`${API_BASE}/user/voted-polls`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -521,7 +521,7 @@ export function useAuthApi() {
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/user/created-campaigns`, {
+      res = await fetch(`${API_BASE}/user/created-campaigns`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -539,7 +539,7 @@ export function useAuthApi() {
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/user/created-blog-posts`, {
+      res = await fetch(`${API_BASE}/user/created-blog-posts`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -557,7 +557,7 @@ export function useAuthApi() {
     if (!token) throw new Error('توکن احراز هویت یافت نشد');
     let res;
     try {
-      res = await fetch(`${API_BASE}/api/user/created-polls`, {
+      res = await fetch(`${API_BASE}/user/created-polls`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

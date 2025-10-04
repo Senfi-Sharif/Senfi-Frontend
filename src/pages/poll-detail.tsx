@@ -36,7 +36,7 @@ export default function PollDetailPage() {
     if (!id) return;
     setLoading(true);
     const token = SecureTokenManager.getToken();
-    fetch(`${API_BASE}/api/polls/${id}`, {
+    fetch(`${API_BASE}/polls/${id}`, {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     })
       .then(res => res.json())
@@ -61,7 +61,7 @@ export default function PollDetailPage() {
 
   const fetchResults = () => {
     const token = SecureTokenManager.getToken();
-    fetch(`${API_BASE}/api/polls/${id}/results`, {
+    fetch(`${API_BASE}/polls/${id}/results`, {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     })
       .then(res => res.json())
@@ -71,7 +71,7 @@ export default function PollDetailPage() {
 
   const fetchVoters = () => {
     const token = SecureTokenManager.getToken();
-    fetch(`${API_BASE}/api/polls/${id}/voters`, {
+    fetch(`${API_BASE}/polls/${id}/voters`, {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     })
       .then(res => res.json())
@@ -106,7 +106,7 @@ export default function PollDetailPage() {
     setVoting(true);
     try {
       const token = SecureTokenManager.getToken();
-      const res = await fetch(`${API_BASE}/api/polls/${id}/vote`, {
+      const res = await fetch(`${API_BASE}/polls/${id}/vote`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -68,7 +68,7 @@ export default function AdminBlogManagementPage(): React.JSX.Element {
 
   useEffect(() => {
     const token = SecureTokenManager.getToken();
-    fetch(`${API_BASE}/api/campaigns/categories`, {
+    fetch(`${API_BASE}/campaigns/categories`, {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     })
       .then(res => res.json())
@@ -82,7 +82,7 @@ export default function AdminBlogManagementPage(): React.JSX.Element {
 
   const checkUserRole = async (token: string) => {
     try {
-      const response = await fetch(`${API_BASE}/api/auth/user`, {
+      const response = await fetch(`${API_BASE}/auth/user`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -108,7 +108,7 @@ export default function AdminBlogManagementPage(): React.JSX.Element {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE}/api/admin/blog/posts`, {
+      const response = await fetch(`${API_BASE}/admin/blog/posts`, {
         headers: {
           'Authorization': `Bearer ${userToken}`
         }
@@ -241,8 +241,8 @@ export default function AdminBlogManagementPage(): React.JSX.Element {
       };
 
             const url = editingPost
-        ? `${API_BASE}/api/admin/blog/posts/${editingPost.id}`
-        : `${API_BASE}/api/admin/blog/posts/create`;
+        ? `${API_BASE}/admin/blog/posts/${editingPost.id}`
+        : `${API_BASE}/admin/blog/posts/create`;
       
       const method = editingPost ? 'PUT' : 'POST';
 
@@ -299,7 +299,7 @@ export default function AdminBlogManagementPage(): React.JSX.Element {
     }
 
     try {
-      const response = await fetch(`${API_BASE}/api/admin/blog/posts/${postId}/delete`, {
+      const response = await fetch(`${API_BASE}/admin/blog/posts/${postId}/delete`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${userToken}`
@@ -318,7 +318,7 @@ export default function AdminBlogManagementPage(): React.JSX.Element {
 
   const handlePublish = async (postId: number) => {
     try {
-      const response = await fetch(`${API_BASE}/api/admin/blog/posts/${postId}/publish`, {
+      const response = await fetch(`${API_BASE}/admin/blog/posts/${postId}/publish`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${userToken}`

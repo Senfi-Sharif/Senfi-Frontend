@@ -11,7 +11,7 @@ const config: Config = {
   tagline: ' در دست ساخت ⏱️',
   favicon: 'img/maini_colors.png',
   future: { v4: true },
-  url: process.env.REACT_APP_SITE_URL || 'https://senfi-sharif.ir',
+  url: process.env.REACT_APP_SITE_URL || 'https://senfi.stu.sharif.ir',
   baseUrl: '/',
   organizationName: 'senfi-sharif',
   projectName: 'senfi-website',
@@ -23,7 +23,7 @@ const config: Config = {
     localeConfigs: { fa: { label: 'فارسی', direction: 'rtl' } },
   },
   customFields: {
-    apiUrl: process.env.REACT_APP_API_BASE || 'https://api.senfi-sharif.ir',
+    apiUrl: process.env.REACT_APP_API_BASE || 'https://senfi.stu.sharif.ir/api',
   },
   presets: [
     [

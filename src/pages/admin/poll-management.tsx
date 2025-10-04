@@ -47,7 +47,7 @@ export default function PollManagementPage() {
 
   useEffect(() => {
     const token = SecureTokenManager.getToken();
-    fetch(`${API_BASE}/api/campaigns/categories`, {
+    fetch(`${API_BASE}/campaigns/categories`, {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     })
       .then(res => res.json())
@@ -61,7 +61,7 @@ export default function PollManagementPage() {
 
   const checkUserRole = async (token: string) => {
     try {
-      const response = await fetch(`${API_BASE}/api/auth/user`, {
+      const response = await fetch(`${API_BASE}/auth/user`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -74,7 +74,7 @@ export default function PollManagementPage() {
   const fetchPolls = () => {
     setLoading(true);
     const token = SecureTokenManager.getToken();
-    fetch(`${API_BASE}/api/admin/polls`, {
+    fetch(`${API_BASE}/admin/polls`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -97,7 +97,7 @@ export default function PollManagementPage() {
     setActionLoading(true);
     const token = SecureTokenManager.getToken();
     const newStatus = currentStatus === 'approved' ? 'pending' : 'approved';
-    await fetch(`${API_BASE}/api/polls/${pollId}/status`, {
+    await fetch(`${API_BASE}/polls/${pollId}/status`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ status: newStatus })
@@ -110,7 +110,7 @@ export default function PollManagementPage() {
     if (!window.confirm('آیا مطمئن هستید؟')) return;
     setActionLoading(true);
     const token = SecureTokenManager.getToken();
-    await fetch(`${API_BASE}/api/polls/${pollId}/delete`, {
+    await fetch(`${API_BASE}/polls/${pollId}/delete`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -180,7 +180,7 @@ export default function PollManagementPage() {
       category,
       options,
     };
-    const url = editingPoll ? `${API_BASE}/api/polls/${editingPoll.id}` : `${API_BASE}/api/polls`;
+    const url = editingPoll ? `${API_BASE}/polls/${editingPoll.id}` : `${API_BASE}/polls`;
     const method = editingPoll ? 'PUT' : 'POST';
     const res = await fetch(url, {
       method,

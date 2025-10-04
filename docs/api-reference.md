@@ -14,7 +14,7 @@ description: مستندات کامل API پلتفرم شورای صنفی برا
 
 ### Base URL
 ```
-https://api.senfi-sharif.ir
+https://senfi.stu.sharif.ir/api
 ```
 
 ### احراز هویت

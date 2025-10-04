@@ -21,7 +21,7 @@ export default function AdminGuidePage() {
         }
 
         // Check user info to get role
-        const response = await fetch(`${siteConfig.customFields.apiUrl}/api/auth/user-info/`, {
+        const response = await fetch(`${siteConfig.customFields.apiUrl}/auth/user-info/`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',

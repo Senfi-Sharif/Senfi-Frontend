@@ -123,10 +123,10 @@ export default function TreePage() {
       <Head>
         <title>شجره‌نامه شورا | شورای صنفی دانشجویان دانشگاه صنعتی شریف</title>
         <meta name="description" content="تاریخچه کامل ادوار، کارگروه‌ها و واحدهای شورای صنفی دانشجویان دانشگاه صنعتی شریف" />
-        <meta property="og:image" content="https://senfi-sharif.ir/img/shora-og.png" />
+        <meta property="og:image" content="https://senfi.stu.sharif.ir/img/shora-og.png" />
         <meta property="og:title" content="شجره‌نامه شورای صنفی شریف" />
         <meta property="og:description" content="تاریخچه کامل ادوار، کارگروه‌ها و واحدهای شورا" />
-        <meta property="og:url" content="https://senfi-sharif.ir/tree" />
+        <meta property="og:url" content="https://senfi.stu.sharif.ir/tree" />
       </Head>
       <TreeContent />
     </Layout>

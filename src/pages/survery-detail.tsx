@@ -33,7 +33,7 @@ const CampaignDetailPage = () => {
       return;
     }
     setLoading(true);
-    fetch(`${API_BASE}/api/campaigns/${id}`)
+    fetch(`${API_BASE}/campaigns/${id}`)
       .then(res => {
         return res.json().then(data => ({ status: res.status, data }));
       })
