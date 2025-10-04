@@ -7,9 +7,6 @@ import { useHistory } from 'react-router-dom';
 import { sanitizeHTML } from '../../utils/security';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 
-const { siteConfig } = useDocusaurusContext();
-const API_BASE = siteConfig.customFields.apiUrl;
-
 interface Campaign {
   id: number;
   title: string;
@@ -33,6 +30,9 @@ export default function CampaignDetailDynamic() {
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const { siteConfig } = useDocusaurusContext();
+  const API_BASE = siteConfig.customFields.apiUrl;
 
   useEffect(() => {
     const fetchCampaign = async () => {

@@ -125,7 +125,7 @@ export default function CampaignCreatePage() {
     <Layout>
       <div className="campaign-create-page" style={{...campaignCreatePageStyles.container, backgroundColor: 'var(--ifm-color-primary-lightest)'}}>
         <h1>ایجاد کارزار جدید</h1>
-        <form onSubmit={handleSubmit} style={campaignCreatePageStyles.form}>
+        <form onSubmit={handleSubmit} style={campaignCreatePageStyles.form as React.CSSProperties}>
           <div>
             <label style={campaignCreatePageStyles.label}>عنوان کارزار:</label>
             <input type="text" value={title} onChange={e => setTitle(e.target.value)} required maxLength={255} style={campaignCreatePageStyles.input} />

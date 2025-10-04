@@ -14,7 +14,7 @@ const config: Config = {
   url: process.env.REACT_APP_SITE_URL || 'https://senfi.stu.sharif.ir',
   baseUrl: '/',
   organizationName: 'senfi-sharif',
-  projectName: 'senfi-website',
+  projectName: 'senfi-frontend',
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   i18n: {
