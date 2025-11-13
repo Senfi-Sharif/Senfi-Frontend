@@ -32,6 +32,7 @@
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
     "typecheck": "tsc",
+    "generate:university-publications": "node scripts/generate-university-publications-data.mjs",
     "auto-sanitize": "node scripts/auto-sanitize.js",
     "security-audit": "node security-audit.js",
     "lint": "eslint src --ext .ts,.tsx,.js,.jsx --fix"
@@ -66,7 +67,8 @@
     "react-markdown": "^10.1.0",
     "react-multi-date-picker": "^4.5.2",
     "react-organizational-chart": "^2.2.1",
-    "tiptap-text-direction": "^0.3.2"
+    "tiptap-text-direction": "^0.3.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.8.1",

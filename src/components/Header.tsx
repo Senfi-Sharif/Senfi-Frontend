@@ -132,6 +132,7 @@ export default function Header({
         <nav className="header-nav-section">
           <a href="/tree" className="header-nav-link">شجره‌نامه</a>
           <a href="/publications" className="header-nav-link">نشریه شورا</a>
+          <a href="/university-publications" className="header-nav-link">آرشیو نشریات دانشگاه</a>
           <a href="/blog" className="header-nav-link">اخبار و اطلاعیه‌ها</a>
             <a href="/campaigns" className="header-nav-link">کارزارها</a>
           <a href="/polls" className="header-nav-link">نظرسنجی‌ها</a>
@@ -223,6 +224,7 @@ export default function Header({
             <button className="close-btn" onClick={closeMobileMenu} aria-label="بستن منو"><FaTimes /></button>
             <a href="/tree">شجره‌نامه</a>
             <a href="/publications">نشریه شورا</a>
+            <a href="/university-publications">آرشیو نشریات دانشگاه</a>
             <a href="/blog">اخبار و اطلاعیه‌ها</a>
             <a href="/campaigns">کارزارها</a>
             <a href="/polls">نظرسنجی‌ها</a>

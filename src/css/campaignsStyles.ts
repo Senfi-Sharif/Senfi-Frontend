@@ -851,7 +851,7 @@ export const campaignCreatePageStyles = {
   },
   form: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     gap: 18,
   },
   label: {

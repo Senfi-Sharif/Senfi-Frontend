@@ -65,17 +65,13 @@ function PublicationsContent() {
           <SenfiAccordion
             key={i}
             title={<><FaUser /> مدیرمسئول: {mag.manager}</>}
-            icon={null}
             defaultOpen={managerOpen.includes(i)}
-            styleOverrides={{}}
           >
             {mag.editors.map((ed, j) => (
               <SenfiAccordion
                 key={j}
                 title={ed.title ? ed.title : "(بدون عنوان سردبیر)"}
-                icon={null}
                 defaultOpen={editorOpen.includes(`${i}-${j}`)}
-                styleOverrides={{}}
               >
                 <ul className="publications-issues-list">
                   {ed.issues.map((issue, k) => (
