@@ -202,3 +202,16 @@ blog/*sample*.md
 blog/*demo*.md
 blog/*temp*.md
 blog/*backup*.md
+
+# Excel files in src/data (should be in static/)
+src/data/*.xlsx
+
+# Python scripts (temporary/utility files)
+scripts/generate_publication_charts.py
+
+# Alembic (database migration tool - not needed in frontend)
+alembic/
+alembic.ini
+
+# Docker files (if not needed)
+Dockerfile.dev

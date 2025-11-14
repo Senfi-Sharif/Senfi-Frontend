@@ -3,6 +3,8 @@ import Layout from '@theme/Layout';
 import PDFPreview from '../components/PDFPreview';
 import SenfiAccordion from '../components/SenfiAccordion';
 import StatsPanel from '../components/StatsPanel';
+import PublicationCharts from '../components/PublicationCharts';
+import PublicationFilterTree from '../components/PublicationFilterTree';
 import { container as sharedContainer } from '../theme/sharedStyles';
 import {
   FaRegFileAlt,
@@ -16,20 +18,26 @@ import {
 import DatePicker, { DateObject } from 'react-multi-date-picker';
 import persian from 'react-date-object/calendars/persian';
 import persian_fa from 'react-date-object/locales/persian_fa';
-import { universityPublications } from '../data/universityPublications';
+import { useExcelData } from '../hooks/useExcelData';
 import type {
   UniversityPublication,
   UniversityPublicationIssue,
   UniversityPublicationCategory,
-} from '../data/universityPublications';
+} from '../hooks/useExcelData';
 import moment from 'moment-jalaali';
 
 export default function UniversityPublicationsPage() {
+  const { data: excelData, loading: excelLoading, error: excelError } = useExcelData();
   const [currentPdf, setCurrentPdf] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilters, setRoleFilters] = useState({ owner: true, manager: true, editor: true });
   const [startDate, setStartDate] = useState<DateObject | null>(null);
   const [endDate, setEndDate] = useState<DateObject | null>(null);
+  const [selectedPaths, setSelectedPaths] = useState<Set<string>>(new Set());
+  const [showFilterTree, setShowFilterTree] = useState(true);
+
+  // استفاده از داده‌های اکسل - اگر داده‌ای نبود، آرایه خالی استفاده می‌شود
+  const sourceData = excelData.length > 0 ? excelData : [];
 
   type SubcategoryNode = {
     name: string;
@@ -148,8 +156,18 @@ export default function UniversityPublicationsPage() {
       : [];
 
     const rawPrimaryTitle = cleanedTitleParts.shift();
+    
+    // بررسی اینکه آیا issueNumber یک عدد است یا نه
+    const isNumericIssueNumber = issue.issueNumber && /^\d+$/.test(issue.issueNumber.replace(/[۰-۹]/g, (d) => {
+      const persianToEnglish: Record<string, string> = {
+        '۰': '0', '۱': '1', '۲': '2', '۳': '3', '۴': '4',
+        '۵': '5', '۶': '6', '۷': '7', '۸': '8', '۹': '9'
+      };
+      return persianToEnglish[d] || d;
+    }));
+    
     const primaryTitle = issue.issueNumber
-      ? `شماره ${toPersianDigits(issue.issueNumber)}`
+      ? (isNumericIssueNumber ? `شماره ${toPersianDigits(issue.issueNumber)}` : toPersianDigits(issue.issueNumber))
       : rawPrimaryTitle || cleanedTitleParts.shift() || issue.title || 'شماره بدون عنوان';
     const displayTitle = toPersianDigits(primaryTitle);
     const subtitleRaw = cleanedTitleParts.length ? cleanedTitleParts.join(' • ') : undefined;
@@ -173,24 +191,24 @@ export default function UniversityPublicationsPage() {
           {subtitle && <div className="publications-issue-subtitle">{subtitle}</div>}
         </div>
         <div className="publications-issue-meta-grid">
-          <div className="publication-role-card">
-            <span className="publication-role-title">صاحب امتیاز</span>
-            <span className="publication-role-value">{ownerName}</span>
-          </div>
-          <div className="publication-role-card">
-            <span className="publication-role-title">مدیرمسئول</span>
-            <span className="publication-role-value">{managerName}</span>
-          </div>
-          <div className="publication-role-card">
-            <span className="publication-role-title">سردبیر</span>
-            <span className="publication-role-value">{editorName}</span>
-          </div>
           {hasDateInfo && (
             <div className="publication-role-card publication-role-card-accent">
               <span className="publication-role-title">تاریخ انتشار</span>
               <span className="publication-role-value">{localizedDateValue || 'نامشخص'}</span>
             </div>
           )}
+          <div className="publication-role-card">
+            <span className="publication-role-title">سردبیر</span>
+            <span className="publication-role-value">{editorName}</span>
+          </div>
+          <div className="publication-role-card">
+            <span className="publication-role-title">مدیرمسئول</span>
+            <span className="publication-role-value">{managerName}</span>
+          </div>
+          <div className="publication-role-card">
+            <span className="publication-role-title">صاحب امتیاز</span>
+            <span className="publication-role-value">{ownerName}</span>
+          </div>
         </div>
       </div>
     );
@@ -312,7 +330,7 @@ export default function UniversityPublicationsPage() {
   };
 
   const normalizedCategories = useMemo<UniversityPublicationCategory[]>(() => {
-    return universityPublications.map((category) => {
+    return sourceData.map((category) => {
       const normalizedPublications = category.publications.map((publication) => {
         let subcategories = [...publication.subcategories];
         while (subcategories.length > 0 && subcategories[0] === category.name) {
@@ -340,7 +358,7 @@ export default function UniversityPublicationsPage() {
         publications: normalizedPublications,
       };
     });
-  }, []);
+  }, [sourceData]);
 
   const filteredCategories = useMemo<UniversityPublicationCategory[]>(() => {
     const query = normalizeText(searchQuery.trim());
@@ -355,7 +373,7 @@ export default function UniversityPublicationsPage() {
  
     const matchesFilters = (issue: UniversityPublicationIssue, publication: UniversityPublication) => {
       const issueMoment = issue.date ? parseIssueDateToMoment(issue.date) : null;
- 
+
       if (startMoment && (!issueMoment || issueMoment.isBefore(startMoment, 'day'))) {
         return false;
       }
@@ -385,7 +403,61 @@ export default function UniversityPublicationsPage() {
       return searchFields.some((field) => normalizeText(field || '').includes(query));
     };
 
-    return normalizedCategories
+    // ابتدا فیلتر بر اساس selectedPaths
+    let categoriesToFilter = normalizedCategories;
+    if (selectedPaths.size > 0) {
+      categoriesToFilter = normalizedCategories
+        .map((category) => {
+          const filteredPublications = category.publications.filter((publication) => {
+            const publicationPath = publication.pathSegments.join('/');
+            const pathParts = publicationPath.split('/');
+            
+            // بررسی اینکه آیا مسیر کامل نشریه در selectedPaths است
+            if (selectedPaths.has(publicationPath)) {
+              return true;
+            }
+            
+            // بررسی اینکه آیا یکی از ancestorهای آن در selectedPaths است
+            // از root به پایین بررسی می‌کنیم
+            // یک نشریه باید نمایش داده شود اگر و فقط اگر:
+            // 1. مسیر کامل آن در selectedPaths باشد، یا
+            // 2. یکی از ancestorهای آن در selectedPaths باشد، اما باید مطمئن شویم که
+            //    تمام ancestorهای بالاتر هم در selectedPaths هستند
+            //    و هیچ ancestor بالاتری که uncheck شده باشد وجود ندارد
+            
+            // از پایین به بالا بررسی می‌کنیم تا اولین ancestor انتخاب شده را پیدا کنیم
+            for (let i = pathParts.length - 1; i >= 0; i--) {
+              const partialPath = pathParts.slice(0, i + 1).join('/');
+              if (selectedPaths.has(partialPath)) {
+                // بررسی می‌کنیم که آیا تمام ancestorهای بالاتر هم در selectedPaths هستند
+                let allAncestorsSelected = true;
+                for (let j = 0; j < i; j++) {
+                  const ancestorPath = pathParts.slice(0, j + 1).join('/');
+                  if (!selectedPaths.has(ancestorPath)) {
+                    allAncestorsSelected = false;
+                    break;
+                  }
+                }
+                // اگر تمام ancestorهای بالاتر در selectedPaths باشند، این نشریه باید نمایش داده شود
+                if (allAncestorsSelected) {
+                  return true;
+                }
+              }
+            }
+            
+            return false;
+          });
+
+          return {
+            ...category,
+            publications: filteredPublications,
+          };
+        })
+        .filter((category) => category.publications.length > 0);
+    }
+
+    // سپس فیلتر بر اساس searchQuery, roleFilters, dates
+    return categoriesToFilter
       .map((category) => {
         const publications = category.publications
           .map((publication) => {
@@ -397,7 +469,7 @@ export default function UniversityPublicationsPage() {
         return { ...category, publications };
       })
       .filter((category) => category.publications.length > 0);
-  }, [normalizedCategories, searchQuery, roleFilters, startDate, endDate]);
+  }, [normalizedCategories, searchQuery, roleFilters, startDate, endDate, selectedPaths]);
 
   const councilCategory = useMemo(
     () => filteredCategories.find((category) => category.name === 'شورا'),
@@ -440,6 +512,35 @@ export default function UniversityPublicationsPage() {
     >
       <div className="senfi-page-container">
         <div style={sharedContainer}>
+          {excelLoading && (
+            <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
+              در حال بارگذاری داده‌ها از فایل اکسل...
+            </div>
+          )}
+          {excelError && (
+            <div style={{ padding: '20px', textAlign: 'center', color: '#d32f2f', backgroundColor: '#ffebee', borderRadius: '8px', marginBottom: '20px' }}>
+              <strong>خطا در بارگذاری فایل اکسل:</strong>
+              <br />
+              <div style={{ marginTop: '10px', fontFamily: 'monospace', fontSize: '14px', wordBreak: 'break-word' }}>
+                {excelError}
+              </div>
+              <br />
+              <small style={{ color: '#666', marginTop: '10px', display: 'block' }}>
+                لطفاً مطمئن شوید فایل اکسل در مسیر <code>static/📁 Public Folder Listing.xlsx</code> وجود دارد.
+                <br />
+                در Docusaurus، فایل‌های static باید در پوشه <code>static</code> قرار گیرند تا در runtime قابل دسترسی باشند.
+              </small>
+            </div>
+          )}
+          {!excelLoading && !excelError && sourceData.length === 0 && (
+            <div style={{ padding: '20px', textAlign: 'center', color: '#d32f2f', backgroundColor: '#ffebee', borderRadius: '8px', marginBottom: '20px' }}>
+              <strong>هیچ داده‌ای یافت نشد</strong>
+              <br />
+              <small style={{ color: '#666', marginTop: '10px', display: 'block' }}>
+                لطفاً فایل اکسل را در مسیر صحیح قرار دهید.
+              </small>
+            </div>
+          )}
           <section className="publications-filter-section">
             <div className="publications-filter-row">
               <div className="publications-filter-group">
@@ -545,6 +646,53 @@ export default function UniversityPublicationsPage() {
               { icon: <FaCheckCircle />, label: 'قابل مشاهده', value: stats.availableIssues },
             ]}
           />
+
+          <section
+            style={{
+              marginBottom: '2rem',
+              padding: '1.25rem',
+              borderRadius: '1rem',
+              border: '1px solid rgba(32, 118, 255, 0.12)',
+              background: 'rgba(32, 118, 255, 0.03)',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '15px',
+              }}
+            >
+              <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--ifm-color-primary)' }}>
+                فیلتر دسته‌بندی‌ها و نشریات
+              </h3>
+              <button
+                onClick={() => setShowFilterTree(!showFilterTree)}
+                style={{
+                  padding: '6px 12px',
+                  border: '1px solid rgba(32, 118, 255, 0.18)',
+                  borderRadius: '6px',
+                  background: showFilterTree ? 'var(--ifm-color-primary)' : '#fff',
+                  color: showFilterTree ? '#fff' : '#333',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                }}
+              >
+                {showFilterTree ? '▼ بستن' : '▶ باز کردن'}
+              </button>
+            </div>
+            {showFilterTree && (
+              <PublicationFilterTree
+                categories={normalizedCategories}
+                selectedPaths={selectedPaths}
+                onSelectionChange={setSelectedPaths}
+                defaultSelectAll={true}
+              />
+            )}
+          </section>
+
+          <PublicationCharts categories={filteredCategories} />
 
           {filteredCategories.length === 0 && (
             <div className="publications-empty-state">
