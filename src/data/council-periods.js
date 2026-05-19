@@ -3298,7 +3298,7 @@ members: [
 ],
   },
   {
-    meta: {'period': 18, 'year': '', 'faTitle': 'دوره هجدهم (سال ۱۴۰۰-۱۴۰۱)', 'description': ''},
+    meta: {'period': 18, 'year': '', 'faTitle': 'دوره هجدهم (سال ۱۴۰۰-۱۴۰۲)', 'description': ''},
     committees: [
   {
     name: "شورای مرکزی دوره هجدهم",
@@ -3563,7 +3563,7 @@ members: [
 ],
   },
   {
-    meta: {'period': 19, 'year': '', 'faTitle': 'دوره نوزدهم (سال ۱۴۰۱-۱۴۰۲)', 'description': ''},
+    meta: {'period': 19, 'year': '', 'faTitle': 'دوره نوزدهم (سال ۱۴۰۲-۱۴۰۳)', 'description': ''},
     committees: [
   {
     name: "شورای مرکزی دوره نوزدهم",
@@ -3734,7 +3734,7 @@ members: [
 ],
   },
   {
-    meta: {'period': 20, 'year': '', 'faTitle': 'دوره بیستم (سال ۱۴۰۲-۱۴۰۳)', 'description': ''},
+    meta: {'period': 20, 'year': '', 'faTitle': 'دوره بیستم (سال ۱۴۰۳-۱۴۰۴)', 'description': ''},
     committees: [
   { name: "دبیر شورای صنفی", members: [{ name: "محمد عموشاهی", role: "دبیر" }] },
   { name: "نائب دبیر", members: [{ name: "فرزاد رحمانی", role: "نائب دبیر" }] },
@@ -3913,8 +3913,8 @@ members: [
   {
     meta: {
     period: 26,
-    year: "۱۴۰۳-۱۴۰۴",
-    faTitle: "دوره بیست‌وششم شورای صنفی (۱۴۰۳-۱۴۰۴)",  
+    year: "۱۴۰۴-۱۴۰۵",
+    faTitle: "دوره بیست‌وششم شورای صنفی (۱۴۰۴-۱۴۰۵)",  
     description: `
     از آن‌جا که ۵ دوره جدید پیش از دوره یکم پیدا شد و همچنین دوره‌ها نباید براساس شورای مرکز، بلکه بر اساس برگزاری انتخابات باشند، قرار بر این شد که ۵ دوره موردنظر را از این‌جا به بعد لحاظ کنیم.
     پس از برگزاری انتخابات، مشخص شد که معاونت در شمارش آرا اشتباه کرده و از این رو باتوجه به نهایی شدن نتایج اولیه، تصمیم بر آن شد که اعضای فعلی، باقی بمانند و اعضای جدید، یعنی آقایان:
@@ -3923,8 +3923,8 @@ members: [
     `.trim(),
     },
     committees: [
-        { name: "دبیر شورای صنفی", members: [{ name: "tba" }] },
-        { name: "نائب دبیر", members: [{ name: "tba" }] }
+        { name: "دبیر شورای صنفی", members: [{ name: "فرزاد رحمانی" }] },
+        { name: "نائب دبیر", members: [{ name: "عرفان بیدمشکی" }] }
     ],
     units: [
     {
@@ -4169,11 +4169,11 @@ export const groupedPeriods =[
       periods: rebornPeriods
     },
     {
-      groupTitle: "دوران بحران (سال ۹۶-۴۰۱)",
+      groupTitle: "دوران بحران (سال ۹۶-۴۰۲)",
       periods: deathPeriods
     },
     {
-      groupTitle: "تولد دوباره (سال ۴۰۱-امروز)",
+      groupTitle: "تولد دوباره (سال ۴۰۲-امروز)",
       periods: rebirthPeriods
     }
 ]
