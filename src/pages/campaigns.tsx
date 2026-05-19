@@ -139,16 +139,16 @@ export default function CampaignsEnhanced(): React.JSX.Element {
   ];
 
   // Create button
-  const createButton = isAuthenticated ? (
-    <button
-      className="blog-enhanced-create-btn"
-      onClick={() => window.location.href = '/campaign-create'}
-      title="ایجاد کارزار جدید"
-    >
-      <FaPlus className="blog-enhanced-create-icon" />
-      ایجاد کارزار جدید
-    </button>
-  ) : null;
+  // const createButton = isAuthenticated ? (
+  //   <button
+  //     className="blog-enhanced-create-btn"
+  //     onClick={() => window.location.href = '/campaign-create'}
+  //     title="ایجاد کارزار جدید"
+  //   >
+  //     <FaPlus className="blog-enhanced-create-icon" />
+  //     ایجاد کارزار جدید
+  //   </button>
+  // ) : null;
 
   // Render item
   const renderItem = (c: any) => {

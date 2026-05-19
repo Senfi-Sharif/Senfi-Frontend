@@ -88,16 +88,16 @@ export default function BlogEnhanced(): React.JSX.Element {
   ];
 
   // Create button
-  const createButton = isAuthenticated ? (
-    <button
-      className="blog-enhanced-create-btn"
-      onClick={() => window.location.href = '/blog-create'}
-      title="ایجاد مطلب جدید"
-    >
-      <FaPlus className="blog-enhanced-create-icon" />
-      ایجاد مطلب جدید
-    </button>
-  ) : null;
+  // const createButton = isAuthenticated ? (
+  //   <button
+  //     className="blog-enhanced-create-btn"
+  //     onClick={() => window.location.href = '/blog-create'}
+  //     title="ایجاد مطلب جدید"
+  //   >
+  //     <FaPlus className="blog-enhanced-create-icon" />
+  //     ایجاد مطلب جدید
+  //   </button>
+  // ) : null;
 
   // Render item
   const renderItem = (post: any) => {

@@ -92,7 +92,7 @@ function ProfileContent({
       </div>
 
       {/* کارزارهای ایجاد شده */}
-      <div className="profile-signed-campaigns-card">
+      {/* <div className="profile-signed-campaigns-card">
         <h2 className="profile-campaigns-title"><FaEdit style={{marginLeft:8}}/>کارزارهای من <span style={{fontWeight:400}}>({userCreatedCampaigns.length} کارزار)</span></h2>
         {userCreatedCampaigns.length === 0 ? (
           <EmptyState 
@@ -111,10 +111,10 @@ function ProfileContent({
             ))}
           </div>
         )}
-      </div>
+      </div> */}
 
       {/* بلاگ‌های ایجاد شده */}
-      <div className="profile-signed-campaigns-card">
+      {/* <div className="profile-signed-campaigns-card">
         <h2 className="profile-campaigns-title"><FaNewspaper style={{marginLeft:8}}/>بلاگ‌های من <span style={{fontWeight:400}}>({userCreatedBlogPosts.length} بلاگ)</span></h2>
         {userCreatedBlogPosts.length === 0 ? (
           <EmptyState 
@@ -133,10 +133,10 @@ function ProfileContent({
             ))}
           </div>
         )}
-      </div>
+      </div> */}
 
       {/* نظرسنجی‌های ایجاد شده */}
-      <div className="profile-signed-campaigns-card">
+      {/* <div className="profile-signed-campaigns-card">
         <h2 className="profile-campaigns-title"><FaPoll style={{marginLeft:8}}/>نظرسنجی‌های من <span style={{fontWeight:400}}>({userCreatedPolls.length} نظرسنجی)</span></h2>
         {userCreatedPolls.length === 0 ? (
           <EmptyState 
@@ -155,7 +155,7 @@ function ProfileContent({
             ))}
           </div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 }

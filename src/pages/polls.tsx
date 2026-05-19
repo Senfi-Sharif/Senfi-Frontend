@@ -133,16 +133,16 @@ export default function PollsPage() {
   ];
 
   // Create button
-  const createButton = isAuthenticated ? (
-              <button
-      className="blog-enhanced-create-btn"
-                onClick={() => window.location.href = '/poll-create'}
-                title="ایجاد نظرسنجی جدید"
-              >
-      <FaPlus className="blog-enhanced-create-icon" />
-      ایجاد نظرسنجی جدید
-              </button>
-  ) : null;
+  // const createButton = isAuthenticated ? (
+  //             <button
+  //     className="blog-enhanced-create-btn"
+  //               onClick={() => window.location.href = '/poll-create'}
+  //               title="ایجاد نظرسنجی جدید"
+  //             >
+  //     <FaPlus className="blog-enhanced-create-icon" />
+  //     ایجاد نظرسنجی جدید
+  //             </button>
+  // ) : null;
 
   // Render item
   const renderItem = (poll: any) => {
