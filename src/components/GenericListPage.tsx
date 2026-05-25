@@ -36,7 +36,7 @@ interface GenericListPageProps<T> {
   renderItem: (item: T) => ReactNode;
   sidebar?: ReactNode;
   onClearFilters?: () => void;
-  createButton?: ReactNode;
+  // createButton?: ReactNode;
   emptyState?: ReactNode;
 }
 

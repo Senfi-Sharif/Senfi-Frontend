@@ -247,7 +247,7 @@ export default function PollsPage() {
           setShowClosed(true);
           setSortType('created_at');
         }}
-        createButton={createButton}
+        // createButton={createButton}
           />
         </div>
       </div>
