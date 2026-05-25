@@ -61,7 +61,7 @@ export default function GenericListPage<T>({
   renderItem,
   sidebar,
   onClearFilters,
-  createButton,
+  // createButton,
   emptyState
 }: GenericListPageProps<T>) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -109,7 +109,7 @@ export default function GenericListPage<T>({
             {description && <div className="blog-enhanced-description">{description}</div>}
           </div>
           <div className="blog-enhanced-controls" style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}>
-            {createButton}
+            {/* {createButton} */}
             <div className="blog-search-container">
               <div className="blog-search-input-wrapper">
                 <input

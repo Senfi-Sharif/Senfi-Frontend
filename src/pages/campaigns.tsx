@@ -272,7 +272,7 @@ export default function CampaignsEnhanced(): React.JSX.Element {
           setSearchQuery('');
           setSelectedCategories(categoryOptions);
         }}
-        createButton={createButton}
+        // createButton={createButton}
               />
         </div>
       </div>

@@ -180,7 +180,7 @@ export default function BlogEnhanced(): React.JSX.Element {
           setSearchQuery('');
           setSelectedCategories(categoryOptions);
         }}
-        createButton={createButton}
+        // createButton={createButton}
       />
         </div>
       </div>
